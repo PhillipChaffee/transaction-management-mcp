@@ -1,0 +1,68 @@
+{
+  "name": "transaction-management-mcp",
+  "version": "0.1.0",
+  "description": "A read-only-by-default MCP server for transaction management workflows",
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
+  "bin": {
+    "transaction-management-mcp": "dist/transport/stdio.js",
+    "transaction-management-mcp-http": "dist/transport/http.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "NOTICE",
+    "openapi.sha256",
+    "server.json"
+  ],
+  "mcpName": "io.github.PhillipChaffee/transaction-management-mcp",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PhillipChaffee/transaction-management-mcp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/PhillipChaffee/transaction-management-mcp/issues"
+  },
+  "homepage": "https://github.com/PhillipChaffee/transaction-management-mcp#readme",
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "transaction-management"
+  ],
+  "scripts": {
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "build": "tsc -p tsconfig.build.json && node scripts/copy-runtime-artifacts.mjs",
+    "verify:manifest": "tsx scripts/verify-manifest.ts",
+    "openapi:pin": "tsx scripts/fetch-openapi.ts --pin",
+    "openapi:generate": "tsx scripts/fetch-openapi.ts --generate",
+    "package:check": "npm pack --dry-run"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/node": "^2.0.0",
+    "@modelcontextprotocol/server": "^2.0.0",
+    "openapi-fetch": "^0.17.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@modelcontextprotocol/client": "^2.0.0",
+    "@types/node": "^20.19.43",
+    "eslint": "^10.8.0",
+    "msw": "^2.15.0",
+    "openapi-typescript": "^7.13.0",
+    "orval": "^8.23.0",
+    "prettier": "^3.9.6",
+    "tsx": "^4.23.1",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.65.0",
+    "vitest": "^4.1.10"
+  }
+}

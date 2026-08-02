@@ -1,0 +1,1459 @@
+{
+  "openapiSha256": "8ab0b76fde7103e28166b9d7c62e03a8abf3d3f6e710c7a9caff2785724d1107",
+  "census": {
+    "total": 207,
+    "get": 91,
+    "nonGet": 116
+  },
+  "operations": [
+    {
+      "operationId": "Checklists_GetChecklistTypesSingleOffice",
+      "method": "get",
+      "path": "/api/checklistTypes",
+      "apiVersion": "v1",
+      "tag": "Checklists"
+    },
+    {
+      "operationId": "Contacts_GetContacts",
+      "method": "get",
+      "path": "/api/contacts",
+      "apiVersion": "v1",
+      "tag": "Contacts"
+    },
+    {
+      "operationId": "Contacts_CreateContact",
+      "method": "post",
+      "path": "/api/contacts",
+      "apiVersion": "v1",
+      "tag": "Contacts"
+    },
+    {
+      "operationId": "Contacts_DeleteContact",
+      "method": "delete",
+      "path": "/api/contacts/{contactGuid}",
+      "apiVersion": "v1",
+      "tag": "Contacts"
+    },
+    {
+      "operationId": "Contacts_UpdateContacts",
+      "method": "patch",
+      "path": "/api/contacts/{contactGuid}",
+      "apiVersion": "v1",
+      "tag": "Contacts"
+    },
+    {
+      "operationId": "BulkExport_GetBulkExport",
+      "method": "get",
+      "path": "/api/files",
+      "apiVersion": "v1",
+      "tag": "Bulk Export"
+    },
+    {
+      "operationId": "Listings_GetListingForm",
+      "method": "get",
+      "path": "/api/files/listingForm",
+      "apiVersion": "v1",
+      "tag": "Listings"
+    },
+    {
+      "operationId": "Listings_GetListings",
+      "method": "get",
+      "path": "/api/files/listings",
+      "apiVersion": "v1",
+      "tag": "Listings"
+    },
+    {
+      "operationId": "Listings_CreateListing",
+      "method": "post",
+      "path": "/api/files/listings",
+      "apiVersion": "v1",
+      "tag": "Listings"
+    },
+    {
+      "operationId": "Listings_GetListing",
+      "method": "get",
+      "path": "/api/files/listings/{listingGuid}",
+      "apiVersion": "v1",
+      "tag": "Listings"
+    },
+    {
+      "operationId": "Listings_UpdateListings",
+      "method": "put",
+      "path": "/api/files/listings/{listingGuid}",
+      "apiVersion": "v1",
+      "tag": "Listings"
+    },
+    {
+      "operationId": "ListingCommissions_GetListingCommissionForm",
+      "method": "get",
+      "path": "/api/files/listings/{listingGuid}/addCommissionsToListingForm",
+      "apiVersion": "v1",
+      "tag": "Listing Commissions"
+    },
+    {
+      "operationId": "Documents_GetAddDocumentToListingForm",
+      "method": "get",
+      "path": "/api/files/listings/{listingGuid}/addDocumentsToListingForm",
+      "apiVersion": "v1",
+      "tag": "Listing Documents"
+    },
+    {
+      "operationId": "ListingContacts_GetAddHomeWarrantyContactToListingForm",
+      "method": "get",
+      "path": "/api/files/listings/{listingGuid}/addHomeWarrantyContactToListingForm",
+      "apiVersion": "v1",
+      "tag": "Listing Contacts"
+    },
+    {
+      "operationId": "ListingContacts_GetAddMiscellaneousContactToListingForm",
+      "method": "get",
+      "path": "/api/files/listings/{listingGuid}/addMiscellaneousContactToListingForm",
+      "apiVersion": "v1",
+      "tag": "Listing Contacts"
+    },
+    {
+      "operationId": "ListingReferringAgents_GetAddReferringAgentToListingForm",
+      "method": "get",
+      "path": "/api/files/listings/{listingGuid}/addReferringAgentToListingForm",
+      "apiVersion": "v1",
+      "tag": "Listing Referring Agents"
+    },
+    {
+      "operationId": "ListingContacts_GetAddSellerContactToListingForm",
+      "method": "get",
+      "path": "/api/files/listings/{listingGuid}/addSellerContactToListingForm",
+      "apiVersion": "v1",
+      "tag": "Listing Contacts"
+    },
+    {
+      "operationId": "ListingAgents_UpdateListingAgent",
+      "method": "put",
+      "path": "/api/files/listings/{listingGuid}/agent",
+      "apiVersion": "v1",
+      "tag": "Listing Agents"
+    },
+    {
+      "operationId": "Listings_GetListingAuditLogs",
+      "method": "get",
+      "path": "/api/files/listings/{listingGuid}/auditLogs",
+      "apiVersion": "v1",
+      "tag": "Listings"
+    },
+    {
+      "operationId": "Listings_AssignDocumentToChecklistItem",
+      "method": "post",
+      "path": "/api/files/listings/{listingGuid}/checklist-items/{checklistItemId}",
+      "apiVersion": "v1",
+      "tag": "Listings"
+    },
+    {
+      "operationId": "Listings_AddNoteToChecklistItem",
+      "method": "post",
+      "path": "/api/files/listings/{listingGuid}/checklist-items/{checklistItemId}/notes",
+      "apiVersion": "v1",
+      "tag": "Listings"
+    },
+    {
+      "operationId": "Listings_UnassignDocumentFromChecklistItem",
+      "method": "post",
+      "path": "/api/files/listings/{listingGuid}/checklist-items/{checklistItemId}/unassign",
+      "apiVersion": "v1",
+      "tag": "Listings"
+    },
+    {
+      "operationId": "Listings_AcceptChecklistItem",
+      "method": "post",
+      "path": "/api/files/listings/{listingGuid}/checklist-items/{listingChecklistItemId}/accept",
+      "apiVersion": "v1",
+      "tag": "Listings"
+    },
+    {
+      "operationId": "Listings_RejectChecklistItem",
+      "method": "post",
+      "path": "/api/files/listings/{listingGuid}/checklist-items/{listingChecklistItemId}/reject",
+      "apiVersion": "v1",
+      "tag": "Listings"
+    },
+    {
+      "operationId": "Listings_UnAcceptChecklistItem",
+      "method": "post",
+      "path": "/api/files/listings/{listingGuid}/checklist-items/{listingChecklistItemId}/unaccept",
+      "apiVersion": "v1",
+      "tag": "Listings"
+    },
+    {
+      "operationId": "Listings_UnRejectChecklistItem",
+      "method": "post",
+      "path": "/api/files/listings/{listingGuid}/checklist-items/{listingChecklistItemId}/unreject",
+      "apiVersion": "v1",
+      "tag": "Listings"
+    },
+    {
+      "operationId": "ListingChecklistType_UpdateListingChecklistType",
+      "method": "put",
+      "path": "/api/files/listings/{listingGuid}/checklistType",
+      "apiVersion": "v1",
+      "tag": "Listing Checklist Types"
+    },
+    {
+      "operationId": "ListingCoAgents_UpdateListingCoAgents",
+      "method": "put",
+      "path": "/api/files/listings/{listingGuid}/coAgents",
+      "apiVersion": "v1",
+      "tag": "Listing Co Agents"
+    },
+    {
+      "operationId": "ListingCommissionReferral_PatchCommissionToListing",
+      "method": "patch",
+      "path": "/api/files/listings/{listingGuid}/commissionReferral",
+      "apiVersion": "v1",
+      "tag": "Listing Commission Referral"
+    },
+    {
+      "operationId": "ListingCommissionReferral_AddCommissionToListingPOST",
+      "method": "post",
+      "path": "/api/files/listings/{listingGuid}/commissionReferral",
+      "apiVersion": "v1",
+      "tag": "Listing Commission Referral"
+    },
+    {
+      "operationId": "ListingCommissionReferral_AddCommissionToListingGET",
+      "method": "get",
+      "path": "/api/files/listings/{listingGuid}/commissionReferralForm",
+      "apiVersion": "v1",
+      "tag": "Listing Commission Referral"
+    },
+    {
+      "operationId": "ListingCommissions_AddCommissionToListing",
+      "method": "post",
+      "path": "/api/files/listings/{listingGuid}/commissions",
+      "apiVersion": "v1",
+      "tag": "Listing Commissions"
+    },
+    {
+      "operationId": "ListingCommissions_UpdateListingCommission",
+      "method": "put",
+      "path": "/api/files/listings/{listingGuid}/commissions",
+      "apiVersion": "v1",
+      "tag": "Listing Commissions"
+    },
+    {
+      "operationId": "ListingContacts_UpdateListingContact",
+      "method": "put",
+      "path": "/api/files/listings/{listingGuid}/contact/{contactGuid}",
+      "apiVersion": "v1",
+      "tag": "Listing Contacts"
+    },
+    {
+      "operationId": "ListingContacts_GetUpdateListingContactForm",
+      "method": "get",
+      "path": "/api/files/listings/{listingGuid}/contacts/{contactGuid}/updateListingContactForm",
+      "apiVersion": "v1",
+      "tag": "Listing Contacts"
+    },
+    {
+      "operationId": "Listings_ConvertListingToSale",
+      "method": "post",
+      "path": "/api/files/listings/{listingGuid}/convert-to-sale",
+      "apiVersion": "v1",
+      "tag": "Listings"
+    },
+    {
+      "operationId": "ListingCustomFields_UpdateFields",
+      "method": "put",
+      "path": "/api/files/listings/{listingGuid}/customFields",
+      "apiVersion": "v1",
+      "tag": "Listing custom fields"
+    },
+    {
+      "operationId": "ListingDocuments_GetListingDocuments",
+      "method": "get",
+      "path": "/api/files/listings/{listingGuid}/documents",
+      "apiVersion": "v1",
+      "tag": "Listing Documents"
+    },
+    {
+      "operationId": "Documents_AddDocumentToListing",
+      "method": "post",
+      "path": "/api/files/listings/{listingGuid}/documents",
+      "apiVersion": "v1",
+      "tag": "Listing Documents"
+    },
+    {
+      "operationId": "ListingDocuments_GetListingDocument",
+      "method": "get",
+      "path": "/api/files/listings/{listingGuid}/documents/{documentGuid}",
+      "apiVersion": "v1",
+      "tag": "Listing Documents"
+    },
+    {
+      "operationId": "ListingDocuments_PatchListingDocument",
+      "method": "patch",
+      "path": "/api/files/listings/{listingGuid}/documents/{documentGuid}",
+      "apiVersion": "v1",
+      "tag": "Listing Documents"
+    },
+    {
+      "operationId": "ListingContacts_AddHomeWarrantyContacts",
+      "method": "post",
+      "path": "/api/files/listings/{listingGuid}/homeWarrantyContact",
+      "apiVersion": "v1",
+      "tag": "Listing Contacts"
+    },
+    {
+      "operationId": "ListingContacts_AddMiscellaneousContacts",
+      "method": "post",
+      "path": "/api/files/listings/{listingGuid}/miscellaneousContact",
+      "apiVersion": "v1",
+      "tag": "Listing Contacts"
+    },
+    {
+      "operationId": "ListingOffice_UpdateListingOffice",
+      "method": "put",
+      "path": "/api/files/listings/{listingGuid}/office",
+      "apiVersion": "v1",
+      "tag": "Listing Offices"
+    },
+    {
+      "operationId": "ListingProperties_UpdateListingProperty",
+      "method": "put",
+      "path": "/api/files/listings/{listingGuid}/property",
+      "apiVersion": "v1",
+      "tag": "Listing Properties"
+    },
+    {
+      "operationId": "ListingReferringAgents_GetListingReferringAgent",
+      "method": "get",
+      "path": "/api/files/listings/{listingGuid}/referringagent",
+      "apiVersion": "v1",
+      "tag": "Listing Referring Agents"
+    },
+    {
+      "operationId": "ListingReferringAgents_AddReferringAgentToListing",
+      "method": "post",
+      "path": "/api/files/listings/{listingGuid}/referringagent",
+      "apiVersion": "v1",
+      "tag": "Listing Referring Agents"
+    },
+    {
+      "operationId": "ListingReferringAgents_UpdateListingReferringAgent",
+      "method": "put",
+      "path": "/api/files/listings/{listingGuid}/referringagent",
+      "apiVersion": "v1",
+      "tag": "Listing Referring Agents"
+    },
+    {
+      "operationId": "Listings_UpdateReviewer",
+      "method": "put",
+      "path": "/api/files/listings/{listingGuid}/reviewer",
+      "apiVersion": "v1",
+      "tag": "Listings"
+    },
+    {
+      "operationId": "ListingContacts_AddSellerContacts",
+      "method": "post",
+      "path": "/api/files/listings/{listingGuid}/sellerContact",
+      "apiVersion": "v1",
+      "tag": "Listing Contacts"
+    },
+    {
+      "operationId": "ListingTieredCommissions_GetListingTieredCommissions",
+      "method": "get",
+      "path": "/api/files/listings/{listingGuid}/tieredCommissions",
+      "apiVersion": "v1",
+      "tag": "Listing Tiered Commissions"
+    },
+    {
+      "operationId": "ListingTieredCommissions_AddListingTieredCommissions",
+      "method": "post",
+      "path": "/api/files/listings/{listingGuid}/tieredCommissions",
+      "apiVersion": "v1",
+      "tag": "Listing Tiered Commissions"
+    },
+    {
+      "operationId": "ListingTieredCommissions_UpdateListingTieredCommissions",
+      "method": "put",
+      "path": "/api/files/listings/{listingGuid}/tieredCommissions",
+      "apiVersion": "v1",
+      "tag": "Listing Tiered Commissions"
+    },
+    {
+      "operationId": "ListingTransactionCoordinators_GetListingTransactionCoordinators",
+      "method": "get",
+      "path": "/api/files/listings/{listingGuid}/transactionCoordinators",
+      "apiVersion": "v1",
+      "tag": "Listing Transaction Coordinators"
+    },
+    {
+      "operationId": "ListingTransactionCoordinators_AddListingTransactionCoordinator",
+      "method": "post",
+      "path": "/api/files/listings/{listingGuid}/transactionCoordinators",
+      "apiVersion": "v1",
+      "tag": "Listing Transaction Coordinators"
+    },
+    {
+      "operationId": "ListingTransactionCoordinators_RemoveListingTransactionCoordinator",
+      "method": "delete",
+      "path": "/api/files/listings/{listingGuid}/transactionCoordinators/{contactGuid}",
+      "apiVersion": "v1",
+      "tag": "Listing Transaction Coordinators"
+    },
+    {
+      "operationId": "ListingCoAgents_GetUpdateListingCoAgentsForm",
+      "method": "get",
+      "path": "/api/files/listings/{listingGuid}/updateListingCoAgentsForm",
+      "apiVersion": "v1",
+      "tag": "Listing Co Agents"
+    },
+    {
+      "operationId": "ListingCommissions_GetUpdateListingForm",
+      "method": "get",
+      "path": "/api/files/listings/{listingGuid}/updateListingCommissionsForm",
+      "apiVersion": "v1",
+      "tag": "Listing Commissions"
+    },
+    {
+      "operationId": "Listings_GetUpdateListingForm",
+      "method": "get",
+      "path": "/api/files/listings/{listingGuid}/updateListingForm",
+      "apiVersion": "v1",
+      "tag": "Listings"
+    },
+    {
+      "operationId": "ListingProperties_GetUpdateListingForm",
+      "method": "get",
+      "path": "/api/files/listings/{listingGuid}/updateListingPropertyForm",
+      "apiVersion": "v1",
+      "tag": "Listing Properties"
+    },
+    {
+      "operationId": "ListingReferringAgents_GetUpdateListingReferringAgentForm",
+      "method": "get",
+      "path": "/api/files/listings/{listingGuid}/updateListingReferringAgentForm",
+      "apiVersion": "v1",
+      "tag": "Listing Referring Agents"
+    },
+    {
+      "operationId": "BulkExport_GetReplicaTimestamp",
+      "method": "get",
+      "path": "/api/files/replica-timestamp",
+      "apiVersion": "v1",
+      "tag": "Bulk Export"
+    },
+    {
+      "operationId": "Sales_GetSaleForm",
+      "method": "get",
+      "path": "/api/files/saleForm",
+      "apiVersion": "v1",
+      "tag": "Sales"
+    },
+    {
+      "operationId": "Sales_GetSales2",
+      "method": "get",
+      "path": "/api/files/sales",
+      "apiVersion": "v1",
+      "tag": "Sales"
+    },
+    {
+      "operationId": "Sales_CreateSale",
+      "method": "post",
+      "path": "/api/files/sales",
+      "apiVersion": "v1",
+      "tag": "Sales"
+    },
+    {
+      "operationId": "Sales_GetSale",
+      "method": "get",
+      "path": "/api/files/sales/{saleGuid}",
+      "apiVersion": "v1",
+      "tag": "Sales"
+    },
+    {
+      "operationId": "Sales_UpdateSale",
+      "method": "put",
+      "path": "/api/files/sales/{saleGuid}",
+      "apiVersion": "v1",
+      "tag": "Sales"
+    },
+    {
+      "operationId": "SaleContacts_GetAddAttorneyContactForm",
+      "method": "get",
+      "path": "/api/files/sales/{saleGuid}/addAttorneyContactToSaleForm",
+      "apiVersion": "v1",
+      "tag": "Sale Contacts"
+    },
+    {
+      "operationId": "SaleContacts_GetAddBuyerContactForm",
+      "method": "get",
+      "path": "/api/files/sales/{saleGuid}/addBuyerContactToSaleForm",
+      "apiVersion": "v1",
+      "tag": "Sale Contacts"
+    },
+    {
+      "operationId": "SaleCommissions_GetAddCommissionsToSaleForm",
+      "method": "get",
+      "path": "/api/files/sales/{saleGuid}/addCommissionsToSaleForm",
+      "apiVersion": "v1",
+      "tag": "Sale Commissions"
+    },
+    {
+      "operationId": "Documents_GetAddDocumentToSaleForm",
+      "method": "get",
+      "path": "/api/files/sales/{saleGuid}/addDocumentsToSaleForm",
+      "apiVersion": "v1",
+      "tag": "Sale documents"
+    },
+    {
+      "operationId": "SaleContacts_GetAddEscrowContactForm",
+      "method": "get",
+      "path": "/api/files/sales/{saleGuid}/addEscrowContactToSaleForm",
+      "apiVersion": "v1",
+      "tag": "Sale Contacts"
+    },
+    {
+      "operationId": "SaleContacts_GetAddHomeWarrantyContactForm",
+      "method": "get",
+      "path": "/api/files/sales/{saleGuid}/addHomeWarrantyContactToSaleForm",
+      "apiVersion": "v1",
+      "tag": "Sale Contacts"
+    },
+    {
+      "operationId": "SaleContacts_GetAddLenderContactForm",
+      "method": "get",
+      "path": "/api/files/sales/{saleGuid}/addLenderContactToSaleForm",
+      "apiVersion": "v1",
+      "tag": "Sale Contacts"
+    },
+    {
+      "operationId": "SaleContacts_GetAddMiscellaneousContactForm",
+      "method": "get",
+      "path": "/api/files/sales/{saleGuid}/addMiscellaneousContactToSaleForm",
+      "apiVersion": "v1",
+      "tag": "Sale Contacts"
+    },
+    {
+      "operationId": "SaleContacts_GetAddOtherSideAgentContactForm",
+      "method": "get",
+      "path": "/api/files/sales/{saleGuid}/addOtherSideAgentContactToSaleForm",
+      "apiVersion": "v1",
+      "tag": "Sale Contacts"
+    },
+    {
+      "operationId": "SaleReferringAgent_GetAddReferringAgentToSaleForm",
+      "method": "get",
+      "path": "/api/files/sales/{saleGuid}/addReferringAgentToSaleForm",
+      "apiVersion": "v1",
+      "tag": "Sale Referring Agents"
+    },
+    {
+      "operationId": "SaleContacts_GetAddSellerContactForm",
+      "method": "get",
+      "path": "/api/files/sales/{saleGuid}/addSellerContactToSaleForm",
+      "apiVersion": "v1",
+      "tag": "Sale Contacts"
+    },
+    {
+      "operationId": "SaleContacts_GetAddTitleContactForm",
+      "method": "get",
+      "path": "/api/files/sales/{saleGuid}/addTitleContactToSaleForm",
+      "apiVersion": "v1",
+      "tag": "Sale Contacts"
+    },
+    {
+      "operationId": "SaleAgents_UpdateSaleAgent",
+      "method": "put",
+      "path": "/api/files/sales/{saleGuid}/agent",
+      "apiVersion": "v1",
+      "tag": "Sale Agents"
+    },
+    {
+      "operationId": "SaleContacts_AddAttorneyContact",
+      "method": "post",
+      "path": "/api/files/sales/{saleGuid}/attorneyContact",
+      "apiVersion": "v1",
+      "tag": "Sale Contacts"
+    },
+    {
+      "operationId": "Sales_GetSaleAuditLogs",
+      "method": "get",
+      "path": "/api/files/sales/{saleGuid}/auditLogs",
+      "apiVersion": "v1",
+      "tag": "Sales"
+    },
+    {
+      "operationId": "SaleContacts_AddBuyerContact",
+      "method": "post",
+      "path": "/api/files/sales/{saleGuid}/buyerContact",
+      "apiVersion": "v1",
+      "tag": "Sale Contacts"
+    },
+    {
+      "operationId": "CdaDocumentData_GetCdaDocumentData",
+      "method": "get",
+      "path": "/api/files/sales/{saleGuid}/cdaDocumentData",
+      "apiVersion": "v1",
+      "tag": "Sale CDA document data"
+    },
+    {
+      "operationId": "CdaDocumentData_SetCdaDocumentData",
+      "method": "put",
+      "path": "/api/files/sales/{saleGuid}/cdaDocumentData",
+      "apiVersion": "v1",
+      "tag": "Sale CDA document data"
+    },
+    {
+      "operationId": "Sales_AssignDocumentToChecklistItem",
+      "method": "post",
+      "path": "/api/files/sales/{saleGuid}/checklist-items/{checklistItemId}",
+      "apiVersion": "v1",
+      "tag": "Sales"
+    },
+    {
+      "operationId": "Sales_AddNoteToChecklistItem",
+      "method": "post",
+      "path": "/api/files/sales/{saleGuid}/checklist-items/{checklistItemId}/notes",
+      "apiVersion": "v1",
+      "tag": "Sales"
+    },
+    {
+      "operationId": "Sales_UnassignDocumentFromChecklistItem",
+      "method": "post",
+      "path": "/api/files/sales/{saleGuid}/checklist-items/{checklistItemId}/unassign",
+      "apiVersion": "v1",
+      "tag": "Sales"
+    },
+    {
+      "operationId": "Sales_AcceptChecklistItem",
+      "method": "post",
+      "path": "/api/files/sales/{saleGuid}/checklist-items/{transactionChecklistId}/accept",
+      "apiVersion": "v1",
+      "tag": "Sales"
+    },
+    {
+      "operationId": "Sales_RejectChecklistItem",
+      "method": "post",
+      "path": "/api/files/sales/{saleGuid}/checklist-items/{transactionChecklistId}/reject",
+      "apiVersion": "v1",
+      "tag": "Sales"
+    },
+    {
+      "operationId": "Sales_UnAcceptChecklistItem",
+      "method": "post",
+      "path": "/api/files/sales/{saleGuid}/checklist-items/{transactionChecklistId}/unaccept",
+      "apiVersion": "v1",
+      "tag": "Sales"
+    },
+    {
+      "operationId": "Sales_UnRejectChecklistItem",
+      "method": "post",
+      "path": "/api/files/sales/{saleGuid}/checklist-items/{transactionChecklistId}/unreject",
+      "apiVersion": "v1",
+      "tag": "Sales"
+    },
+    {
+      "operationId": "SaleChecklistTypes_UpdateChecklistType",
+      "method": "put",
+      "path": "/api/files/sales/{saleGuid}/checklistType",
+      "apiVersion": "v1",
+      "tag": "Sale Checklist Types"
+    },
+    {
+      "operationId": "Sales_CloseSale",
+      "method": "put",
+      "path": "/api/files/sales/{saleGuid}/close",
+      "apiVersion": "v1",
+      "tag": "Sales"
+    },
+    {
+      "operationId": "SaleCoAgents_UpdateSaleCoAgents",
+      "method": "put",
+      "path": "/api/files/sales/{saleGuid}/coAgents",
+      "apiVersion": "v1",
+      "tag": "Sale Co Agents"
+    },
+    {
+      "operationId": "SaleCommissionBreakdowns_UpdateSaleCommissionBreakdown",
+      "method": "put",
+      "path": "/api/files/sales/{saleGuid}/commissionBreakdown",
+      "apiVersion": "v1",
+      "tag": "Sale Commission Breakdowns"
+    },
+    {
+      "operationId": "SaleCommissionInformationLog_GetSaleCommissionLog",
+      "method": "get",
+      "path": "/api/files/sales/{saleGuid}/commissionLog",
+      "apiVersion": "v1",
+      "tag": "Sale Additional Commissions Information Log"
+    },
+    {
+      "operationId": "SaleCommissionInformationLog_AddSaleCommissionsLogEntry",
+      "method": "post",
+      "path": "/api/files/sales/{saleGuid}/commissionLog",
+      "apiVersion": "v1",
+      "tag": "Sale Additional Commissions Information Log"
+    },
+    {
+      "operationId": "SaleCommissionInformationLog_DeleteSaleCommissionLogEntry",
+      "method": "delete",
+      "path": "/api/files/sales/{saleGuid}/commissionLog/{commentId}",
+      "apiVersion": "v1",
+      "tag": "Sale Additional Commissions Information Log"
+    },
+    {
+      "operationId": "SaleCommissionInformationLog_EditSaleCommissionLogEntry",
+      "method": "patch",
+      "path": "/api/files/sales/{saleGuid}/commissionLog/{commentId}",
+      "apiVersion": "v1",
+      "tag": "Sale Additional Commissions Information Log"
+    },
+    {
+      "operationId": "SaleCommissionReferral_PatchCommissionToListing",
+      "method": "patch",
+      "path": "/api/files/sales/{saleGuid}/commissionReferral",
+      "apiVersion": "v1",
+      "tag": "Sale Commission Referral"
+    },
+    {
+      "operationId": "SaleCommissionReferral_AddCommissionToSale",
+      "method": "post",
+      "path": "/api/files/sales/{saleGuid}/commissionReferral",
+      "apiVersion": "v1",
+      "tag": "Sale Commission Referral"
+    },
+    {
+      "operationId": "SaleCommissionReferral_GetForm",
+      "method": "get",
+      "path": "/api/files/sales/{saleGuid}/commissionReferralForm",
+      "apiVersion": "v1",
+      "tag": "Sale Commission Referral"
+    },
+    {
+      "operationId": "SaleCommissions_AddCommissionsToSale",
+      "method": "post",
+      "path": "/api/files/sales/{saleGuid}/commissions",
+      "apiVersion": "v1",
+      "tag": "Sale Commissions"
+    },
+    {
+      "operationId": "SaleCommissions_UpdateSaleCommissions",
+      "method": "put",
+      "path": "/api/files/sales/{saleGuid}/commissions",
+      "apiVersion": "v1",
+      "tag": "Sale Commissions"
+    },
+    {
+      "operationId": "SaleCommissionSplits_UpdateSaleCommissionSplit",
+      "method": "put",
+      "path": "/api/files/sales/{saleGuid}/commissionSplit",
+      "apiVersion": "v1",
+      "tag": "Sale Commission Splits"
+    },
+    {
+      "operationId": "SaleContacts_UpdateSaleContact",
+      "method": "put",
+      "path": "/api/files/sales/{saleGuid}/contacts/{contactGuid}",
+      "apiVersion": "v1",
+      "tag": "Sale Contacts"
+    },
+    {
+      "operationId": "SaleContacts_GetUpdateSaleContactForm",
+      "method": "get",
+      "path": "/api/files/sales/{saleGuid}/contacts/{contactGuid}/updateSaleContactForm",
+      "apiVersion": "v1",
+      "tag": "Sale Contacts"
+    },
+    {
+      "operationId": "Sales_ConvertSaleToUnderContract",
+      "method": "put",
+      "path": "/api/files/sales/{saleGuid}/convert/under-contract",
+      "apiVersion": "v1",
+      "tag": "Sales"
+    },
+    {
+      "operationId": "SalesCustomFields_UpdateFields",
+      "method": "put",
+      "path": "/api/files/sales/{saleGuid}/customFields",
+      "apiVersion": "v1",
+      "tag": "Sale custom fields"
+    },
+    {
+      "operationId": "SalesDocuments_GetSaleDocuments",
+      "method": "get",
+      "path": "/api/files/sales/{saleGuid}/documents",
+      "apiVersion": "v1",
+      "tag": "Sale Documents"
+    },
+    {
+      "operationId": "Documents_AddDocumentToSale",
+      "method": "post",
+      "path": "/api/files/sales/{saleGuid}/documents",
+      "apiVersion": "v1",
+      "tag": "Sale documents"
+    },
+    {
+      "operationId": "SalesDocuments_GetSaleDocument",
+      "method": "get",
+      "path": "/api/files/sales/{saleGuid}/documents/{documentGuid}",
+      "apiVersion": "v1",
+      "tag": "Sale Documents"
+    },
+    {
+      "operationId": "Documents_PatchSaleDocument",
+      "method": "patch",
+      "path": "/api/files/sales/{saleGuid}/documents/{documentGuid}",
+      "apiVersion": "v1",
+      "tag": "Sale documents"
+    },
+    {
+      "operationId": "EarnestMoneyDeposit_GetUpdateSaleContactForm",
+      "method": "patch",
+      "path": "/api/files/sales/{saleGuid}/earnestMoneyDeposit",
+      "apiVersion": "v1",
+      "tag": "Earnest money deposit"
+    },
+    {
+      "operationId": "SaleContacts_AddEscrowContact",
+      "method": "post",
+      "path": "/api/files/sales/{saleGuid}/escrowContact",
+      "apiVersion": "v1",
+      "tag": "Sale Contacts"
+    },
+    {
+      "operationId": "SaleContacts_AddHomeWarrantyContact",
+      "method": "post",
+      "path": "/api/files/sales/{saleGuid}/homeWarrantyContact",
+      "apiVersion": "v1",
+      "tag": "Sale Contacts"
+    },
+    {
+      "operationId": "SaleContacts_AddLenderContact",
+      "method": "post",
+      "path": "/api/files/sales/{saleGuid}/lenderContact",
+      "apiVersion": "v1",
+      "tag": "Sale Contacts"
+    },
+    {
+      "operationId": "SaleContacts_AddMiscellaneousContact",
+      "method": "post",
+      "path": "/api/files/sales/{saleGuid}/miscellaneousContact",
+      "apiVersion": "v1",
+      "tag": "Sale Contacts"
+    },
+    {
+      "operationId": "SaleOffices_UpdateSaleOffice",
+      "method": "put",
+      "path": "/api/files/sales/{saleGuid}/office",
+      "apiVersion": "v1",
+      "tag": "Sale Offices"
+    },
+    {
+      "operationId": "SaleContacts_AddOtherSideAgentContact",
+      "method": "post",
+      "path": "/api/files/sales/{saleGuid}/otherSideAgentContact",
+      "apiVersion": "v1",
+      "tag": "Sale Contacts"
+    },
+    {
+      "operationId": "SaleProperties_UpdateSaleProperty",
+      "method": "put",
+      "path": "/api/files/sales/{saleGuid}/property",
+      "apiVersion": "v1",
+      "tag": "Sale Properties"
+    },
+    {
+      "operationId": "SaleReferringAgent_GetSaleReferringAgent",
+      "method": "get",
+      "path": "/api/files/sales/{saleGuid}/referringagent",
+      "apiVersion": "v1",
+      "tag": "Sale Referring Agents"
+    },
+    {
+      "operationId": "SaleReferringAgent_AddReferringAgentToSale",
+      "method": "post",
+      "path": "/api/files/sales/{saleGuid}/referringagent",
+      "apiVersion": "v1",
+      "tag": "Sale Referring Agents"
+    },
+    {
+      "operationId": "SaleReferringAgent_UpdateSaleReferringAgent",
+      "method": "put",
+      "path": "/api/files/sales/{saleGuid}/referringagent",
+      "apiVersion": "v1",
+      "tag": "Sale Referring Agents"
+    },
+    {
+      "operationId": "Sales_UpdateReviewer",
+      "method": "put",
+      "path": "/api/files/sales/{saleGuid}/reviewer",
+      "apiVersion": "v1",
+      "tag": "Sales"
+    },
+    {
+      "operationId": "SaleContacts_AddSellerContact",
+      "method": "post",
+      "path": "/api/files/sales/{saleGuid}/sellerContact",
+      "apiVersion": "v1",
+      "tag": "Sale Contacts"
+    },
+    {
+      "operationId": "SaleTieredCommissions_GetSaleTieredCommissions",
+      "method": "get",
+      "path": "/api/files/sales/{saleGuid}/tieredCommissions",
+      "apiVersion": "v1",
+      "tag": "Sale Tiered Commissions"
+    },
+    {
+      "operationId": "SaleTieredCommissions_AddSaleTieredCommissions",
+      "method": "post",
+      "path": "/api/files/sales/{saleGuid}/tieredCommissions",
+      "apiVersion": "v1",
+      "tag": "Sale Tiered Commissions"
+    },
+    {
+      "operationId": "SaleTieredCommissions_UpdateSaleTieredCommissions",
+      "method": "put",
+      "path": "/api/files/sales/{saleGuid}/tieredCommissions",
+      "apiVersion": "v1",
+      "tag": "Sale Tiered Commissions"
+    },
+    {
+      "operationId": "SaleContacts_AddTitleContact",
+      "method": "post",
+      "path": "/api/files/sales/{saleGuid}/titleContact",
+      "apiVersion": "v1",
+      "tag": "Sale Contacts"
+    },
+    {
+      "operationId": "SaleTransactionCoordinators_GetSaleTransactionCoordinators",
+      "method": "get",
+      "path": "/api/files/sales/{saleGuid}/transactionCoordinators",
+      "apiVersion": "v1",
+      "tag": "Sale Transaction Coordinators"
+    },
+    {
+      "operationId": "SaleTransactionCoordinators_AddSaleTransactionCoordinator",
+      "method": "post",
+      "path": "/api/files/sales/{saleGuid}/transactionCoordinators",
+      "apiVersion": "v1",
+      "tag": "Sale Transaction Coordinators"
+    },
+    {
+      "operationId": "SaleTransactionCoordinators_RemoveSaleTransactionCoordinator",
+      "method": "delete",
+      "path": "/api/files/sales/{saleGuid}/transactionCoordinators/{contactGuid}",
+      "apiVersion": "v1",
+      "tag": "Sale Transaction Coordinators"
+    },
+    {
+      "operationId": "SaleCommissionBreakdowns_GetUpdateSaleCommissionBreakdownsForm",
+      "method": "get",
+      "path": "/api/files/sales/{saleGuid}/updateCommissionBreakdownsForm",
+      "apiVersion": "v1",
+      "tag": "Sale Commission Breakdowns"
+    },
+    {
+      "operationId": "SaleCommissionSplits_GetUpdateSaleChecklistTypeForm",
+      "method": "get",
+      "path": "/api/files/sales/{saleGuid}/updateCommissionSplitForm",
+      "apiVersion": "v1",
+      "tag": "Sale Commission Splits"
+    },
+    {
+      "operationId": "SaleCoAgents_GetUpdateSaleCoAgentsForm",
+      "method": "get",
+      "path": "/api/files/sales/{saleGuid}/updateSaleCoAgentsForm",
+      "apiVersion": "v1",
+      "tag": "Sale Co Agents"
+    },
+    {
+      "operationId": "SaleCommissions_GetUpdateSaleCommissionForm",
+      "method": "get",
+      "path": "/api/files/sales/{saleGuid}/updateSaleCommissionsForm",
+      "apiVersion": "v1",
+      "tag": "Sale Commissions"
+    },
+    {
+      "operationId": "Sales_GetUpdateSaleForm",
+      "method": "get",
+      "path": "/api/files/sales/{saleGuid}/updateSaleForm",
+      "apiVersion": "v1",
+      "tag": "Sales"
+    },
+    {
+      "operationId": "SaleProperties_GetUpdateSaleForm",
+      "method": "get",
+      "path": "/api/files/sales/{saleGuid}/updateSalePropertyForm",
+      "apiVersion": "v1",
+      "tag": "Sale Properties"
+    },
+    {
+      "operationId": "SaleReferringAgent_GetUpdateSaleReferringAgentForm",
+      "method": "get",
+      "path": "/api/files/sales/{saleGuid}/updateSaleReferringAgentForm",
+      "apiVersion": "v1",
+      "tag": "Sale Referring Agents"
+    },
+    {
+      "operationId": "Sales_GetSales",
+      "method": "get",
+      "path": "/api/files/sales/fields",
+      "apiVersion": "v1",
+      "tag": "Sales"
+    },
+    {
+      "operationId": "ListingStage_ChangeListingStage",
+      "method": "patch",
+      "path": "/api/listings/{listingGuid}/stage",
+      "apiVersion": "v1",
+      "tag": "Listing Stage"
+    },
+    {
+      "operationId": "Offices_GetOffices",
+      "method": "get",
+      "path": "/api/offices",
+      "apiVersion": "v1",
+      "tag": "Offices"
+    },
+    {
+      "operationId": "Offices_CreateOffice",
+      "method": "post",
+      "path": "/api/offices",
+      "apiVersion": "v1",
+      "tag": "Offices"
+    },
+    {
+      "operationId": "Offices_DeactivateOffice",
+      "method": "delete",
+      "path": "/api/offices/{officeGuid}",
+      "apiVersion": "v1",
+      "tag": "Offices"
+    },
+    {
+      "operationId": "Offices_GetOffice",
+      "method": "get",
+      "path": "/api/offices/{officeGuid}",
+      "apiVersion": "v1",
+      "tag": "Offices"
+    },
+    {
+      "operationId": "Offices_PatchOffice",
+      "method": "patch",
+      "path": "/api/offices/{officeGuid}",
+      "apiVersion": "v1",
+      "tag": "Offices"
+    },
+    {
+      "operationId": "Offices_UpdateOffice",
+      "method": "put",
+      "path": "/api/offices/{officeGuid}",
+      "apiVersion": "v1",
+      "tag": "Offices"
+    },
+    {
+      "operationId": "Checklists_GetChecklistTypes",
+      "method": "get",
+      "path": "/api/offices/{officeGuid}/checklistTypes",
+      "apiVersion": "v1",
+      "tag": "Checklists"
+    },
+    {
+      "operationId": "Checklists_CopyChecklists",
+      "method": "post",
+      "path": "/api/offices/{sourceOfficeGuid}/checklists/copy",
+      "apiVersion": "v1",
+      "tag": "Checklists"
+    },
+    {
+      "operationId": "PropertyTypes_GetSubtypes",
+      "method": "get",
+      "path": "/api/propertySubtypes/{parentTypeId}",
+      "apiVersion": "v1",
+      "tag": "PropertyTypes"
+    },
+    {
+      "operationId": "PropertyTypes_GetPropertyTypes",
+      "method": "get",
+      "path": "/api/propertyTypes",
+      "apiVersion": "v1",
+      "tag": "PropertyTypes"
+    },
+    {
+      "operationId": "SaleStage_ChangeSaleStage",
+      "method": "patch",
+      "path": "/api/sales/{saleGuid}/stage",
+      "apiVersion": "v1",
+      "tag": "Sale Stage"
+    },
+    {
+      "operationId": "Stages_GetStages",
+      "method": "get",
+      "path": "/api/stages",
+      "apiVersion": "v1",
+      "tag": "Stages"
+    },
+    {
+      "operationId": "Stages_UpdateStage",
+      "method": "patch",
+      "path": "/api/stages",
+      "apiVersion": "v1",
+      "tag": "Stages"
+    },
+    {
+      "operationId": "Stages_CreateStage",
+      "method": "post",
+      "path": "/api/stages",
+      "apiVersion": "v1",
+      "tag": "Stages"
+    },
+    {
+      "operationId": "Subscribers_GetRootResources",
+      "method": "get",
+      "path": "/api/subscribers",
+      "apiVersion": "v1",
+      "tag": "Subscriber Resources"
+    },
+    {
+      "operationId": "Terminology_GetContactTypes",
+      "method": "get",
+      "path": "/api/terminology/contact-types",
+      "apiVersion": "v1",
+      "tag": "Terminology"
+    },
+    {
+      "operationId": "Users_GetUsers",
+      "method": "get",
+      "path": "/api/users",
+      "apiVersion": "v1",
+      "tag": "Users"
+    },
+    {
+      "operationId": "Users_GetUser",
+      "method": "get",
+      "path": "/api/users/{userGuid}",
+      "apiVersion": "v1",
+      "tag": "Users"
+    },
+    {
+      "operationId": "V2Listings_GetListingForm",
+      "method": "get",
+      "path": "/api/v2/files/listingForm",
+      "apiVersion": "v2",
+      "tag": "V2 Listings"
+    },
+    {
+      "operationId": "V2Listings_CreateListing",
+      "method": "post",
+      "path": "/api/v2/files/listings",
+      "apiVersion": "v2",
+      "tag": "V2 Listings"
+    },
+    {
+      "operationId": "V2Listings_UpdateListing",
+      "method": "put",
+      "path": "/api/v2/files/listings/{listingGuid}",
+      "apiVersion": "v2",
+      "tag": "V2 Listings"
+    },
+    {
+      "operationId": "V2ListingCommissions_GetListingCommissionForm",
+      "method": "get",
+      "path": "/api/v2/files/listings/{listingGuid}/addCommissionsToListingForm",
+      "apiVersion": "v2",
+      "tag": "V2 Listing Commissions"
+    },
+    {
+      "operationId": "V2ListingContacts_GetAddContactsToListingForm",
+      "method": "get",
+      "path": "/api/v2/files/listings/{listingGuid}/addContactsToListingForm",
+      "apiVersion": "v2",
+      "tag": "V2 Listing Contacts"
+    },
+    {
+      "operationId": "V2ListingReferringAgent_GetAddReferringAgentToListingForm",
+      "method": "get",
+      "path": "/api/v2/files/listings/{listingGuid}/addReferringAgentToListingForm",
+      "apiVersion": "v2",
+      "tag": "V2 Listing Referring Agents"
+    },
+    {
+      "operationId": "V2ListingContacts_GetAddSellerContactToListingForm",
+      "method": "get",
+      "path": "/api/v2/files/listings/{listingGuid}/addSellerContactToListingForm",
+      "apiVersion": "v2",
+      "tag": "V2 Listing Contacts"
+    },
+    {
+      "operationId": "V2ListingCommissions_AddCommissionToListing",
+      "method": "post",
+      "path": "/api/v2/files/listings/{listingGuid}/commissions",
+      "apiVersion": "v2",
+      "tag": "V2 Listing Commissions"
+    },
+    {
+      "operationId": "V2ListingCommissions_UpdateListingCommission",
+      "method": "put",
+      "path": "/api/v2/files/listings/{listingGuid}/commissions",
+      "apiVersion": "v2",
+      "tag": "V2 Listing Commissions"
+    },
+    {
+      "operationId": "V2ListingContacts_UpdateListingContact",
+      "method": "put",
+      "path": "/api/v2/files/listings/{listingGuid}/contact/{contactGuid}",
+      "apiVersion": "v2",
+      "tag": "V2 Listing Contacts"
+    },
+    {
+      "operationId": "V2ListingContacts_AddContacts",
+      "method": "post",
+      "path": "/api/v2/files/listings/{listingGuid}/contacts",
+      "apiVersion": "v2",
+      "tag": "V2 Listing Contacts"
+    },
+    {
+      "operationId": "V2ListingContacts_GetUpdateListingContactForm",
+      "method": "get",
+      "path": "/api/v2/files/listings/{listingGuid}/contacts/{contactGuid}/updateListingContactForm",
+      "apiVersion": "v2",
+      "tag": "V2 Listing Contacts"
+    },
+    {
+      "operationId": "V2ListingProperties_UpdateListingProperty",
+      "method": "put",
+      "path": "/api/v2/files/listings/{listingGuid}/property",
+      "apiVersion": "v2",
+      "tag": "V2 Listing Properties"
+    },
+    {
+      "operationId": "V2ListingReferringAgent_AddReferringAgentToListing",
+      "method": "post",
+      "path": "/api/v2/files/listings/{listingGuid}/referringagent",
+      "apiVersion": "v2",
+      "tag": "V2 Listing Referring Agents"
+    },
+    {
+      "operationId": "V2ListingReferringAgent_UpdateListingReferringAgent",
+      "method": "put",
+      "path": "/api/v2/files/listings/{listingGuid}/referringagent",
+      "apiVersion": "v2",
+      "tag": "V2 Listing Referring Agents"
+    },
+    {
+      "operationId": "V2ListingContacts_AddSellerContact",
+      "method": "post",
+      "path": "/api/v2/files/listings/{listingGuid}/sellerContact",
+      "apiVersion": "v2",
+      "tag": "V2 Listing Contacts"
+    },
+    {
+      "operationId": "V2ListingTieredCommissions_GetListingTieredCommissions",
+      "method": "get",
+      "path": "/api/v2/files/listings/{listingGuid}/tieredCommissions",
+      "apiVersion": "v2",
+      "tag": "V2 Listing Tiered Commissions"
+    },
+    {
+      "operationId": "V2ListingTieredCommissions_AddListingTieredCommissions",
+      "method": "post",
+      "path": "/api/v2/files/listings/{listingGuid}/tieredCommissions",
+      "apiVersion": "v2",
+      "tag": "V2 Listing Tiered Commissions"
+    },
+    {
+      "operationId": "V2ListingTieredCommissions_UpdateListingTieredCommissions",
+      "method": "put",
+      "path": "/api/v2/files/listings/{listingGuid}/tieredCommissions",
+      "apiVersion": "v2",
+      "tag": "V2 Listing Tiered Commissions"
+    },
+    {
+      "operationId": "V2ListingCommissions_GetUpdateListingCommissionsForm",
+      "method": "get",
+      "path": "/api/v2/files/listings/{listingGuid}/updateListingCommissionsForm",
+      "apiVersion": "v2",
+      "tag": "V2 Listing Commissions"
+    },
+    {
+      "operationId": "V2Listings_GetUpdateListingForm",
+      "method": "get",
+      "path": "/api/v2/files/listings/{listingGuid}/updateListingForm",
+      "apiVersion": "v2",
+      "tag": "V2 Listings"
+    },
+    {
+      "operationId": "V2ListingProperties_GetUpdateListingPropertyForm",
+      "method": "get",
+      "path": "/api/v2/files/listings/{listingGuid}/updateListingPropertyForm",
+      "apiVersion": "v2",
+      "tag": "V2 Listing Properties"
+    },
+    {
+      "operationId": "V2ListingReferringAgent_GetUpdateListingReferringAgentForm",
+      "method": "get",
+      "path": "/api/v2/files/listings/{listingGuid}/updateListingReferringAgentForm",
+      "apiVersion": "v2",
+      "tag": "V2 Listing Referring Agents"
+    },
+    {
+      "operationId": "V2Sales_GetSaleForm",
+      "method": "get",
+      "path": "/api/v2/files/saleForm",
+      "apiVersion": "v2",
+      "tag": "V2 Sales"
+    },
+    {
+      "operationId": "V2Sales_CreateSale",
+      "method": "post",
+      "path": "/api/v2/files/sales",
+      "apiVersion": "v2",
+      "tag": "V2 Sales"
+    },
+    {
+      "operationId": "V2Sales_UpdateSale",
+      "method": "put",
+      "path": "/api/v2/files/sales/{saleGuid}",
+      "apiVersion": "v2",
+      "tag": "V2 Sales"
+    },
+    {
+      "operationId": "V2SaleCommissions_GetAddCommissionsToSaleForm",
+      "method": "get",
+      "path": "/api/v2/files/sales/{saleGuid}/addCommissionsToSaleForm",
+      "apiVersion": "v2",
+      "tag": "V2 Sale Commissions"
+    },
+    {
+      "operationId": "V2SaleContacts_GetAddContactsToSaleForm",
+      "method": "get",
+      "path": "/api/v2/files/sales/{saleGuid}/addContactsToSaleForm",
+      "apiVersion": "v2",
+      "tag": "V2 Sale Contacts"
+    },
+    {
+      "operationId": "V2SaleReferringAgent_GetAddReferringAgentToSaleForm",
+      "method": "get",
+      "path": "/api/v2/files/sales/{saleGuid}/addReferringAgentToSaleForm",
+      "apiVersion": "v2",
+      "tag": "V2 Sale Referring Agents"
+    },
+    {
+      "operationId": "V2SaleCommissions_AddCommissionsToSale",
+      "method": "post",
+      "path": "/api/v2/files/sales/{saleGuid}/commissions",
+      "apiVersion": "v2",
+      "tag": "V2 Sale Commissions"
+    },
+    {
+      "operationId": "V2SaleCommissions_UpdateSaleCommissions",
+      "method": "put",
+      "path": "/api/v2/files/sales/{saleGuid}/commissions",
+      "apiVersion": "v2",
+      "tag": "V2 Sale Commissions"
+    },
+    {
+      "operationId": "V2SaleContacts_AddSaleContacts",
+      "method": "post",
+      "path": "/api/v2/files/sales/{saleGuid}/contacts",
+      "apiVersion": "v2",
+      "tag": "V2 Sale Contacts"
+    },
+    {
+      "operationId": "V2SaleContacts_UpdateSaleContact",
+      "method": "put",
+      "path": "/api/v2/files/sales/{saleGuid}/contacts/{contactGuid}",
+      "apiVersion": "v2",
+      "tag": "V2 Sale Contacts"
+    },
+    {
+      "operationId": "V2SaleContacts_GetUpdateSaleContactForm",
+      "method": "get",
+      "path": "/api/v2/files/sales/{saleGuid}/contacts/{contactGuid}/updateSaleContactForm",
+      "apiVersion": "v2",
+      "tag": "V2 Sale Contacts"
+    },
+    {
+      "operationId": "V2Sales_ConvertSaleToUnderContract",
+      "method": "put",
+      "path": "/api/v2/files/sales/{saleGuid}/convert/under-contract",
+      "apiVersion": "v2",
+      "tag": "V2 Sales"
+    },
+    {
+      "operationId": "V2SaleProperties_UpdateSaleProperty",
+      "method": "put",
+      "path": "/api/v2/files/sales/{saleGuid}/property",
+      "apiVersion": "v2",
+      "tag": "V2 Sale Properties"
+    },
+    {
+      "operationId": "V2SaleReferringAgent_AddReferringAgentToSale",
+      "method": "post",
+      "path": "/api/v2/files/sales/{saleGuid}/referringagent",
+      "apiVersion": "v2",
+      "tag": "V2 Sale Referring Agents"
+    },
+    {
+      "operationId": "V2SaleReferringAgent_UpdateSaleReferringAgent",
+      "method": "put",
+      "path": "/api/v2/files/sales/{saleGuid}/referringagent",
+      "apiVersion": "v2",
+      "tag": "V2 Sale Referring Agents"
+    },
+    {
+      "operationId": "V2SaleTieredCommissions_GetSaleTieredCommissions",
+      "method": "get",
+      "path": "/api/v2/files/sales/{saleGuid}/tieredCommissions",
+      "apiVersion": "v2",
+      "tag": "V2 Sale Tiered Commissions"
+    },
+    {
+      "operationId": "V2SaleTieredCommissions_AddSaleTieredCommissions",
+      "method": "post",
+      "path": "/api/v2/files/sales/{saleGuid}/tieredCommissions",
+      "apiVersion": "v2",
+      "tag": "V2 Sale Tiered Commissions"
+    },
+    {
+      "operationId": "V2SaleTieredCommissions_UpdateSaleTieredCommissions",
+      "method": "put",
+      "path": "/api/v2/files/sales/{saleGuid}/tieredCommissions",
+      "apiVersion": "v2",
+      "tag": "V2 Sale Tiered Commissions"
+    },
+    {
+      "operationId": "V2SaleCommissions_GetUpdateSaleCommissionForm",
+      "method": "get",
+      "path": "/api/v2/files/sales/{saleGuid}/updateSaleCommissionsForm",
+      "apiVersion": "v2",
+      "tag": "V2 Sale Commissions"
+    },
+    {
+      "operationId": "V2Sales_GetUpdateSaleForm",
+      "method": "get",
+      "path": "/api/v2/files/sales/{saleGuid}/updateSaleForm",
+      "apiVersion": "v2",
+      "tag": "V2 Sales"
+    },
+    {
+      "operationId": "V2SaleProperties_GetUpdateSalePropertyForm",
+      "method": "get",
+      "path": "/api/v2/files/sales/{saleGuid}/updateSalePropertyForm",
+      "apiVersion": "v2",
+      "tag": "V2 Sale Properties"
+    },
+    {
+      "operationId": "V2SaleReferringAgent_GetUpdateSaleReferringAgentForm",
+      "method": "get",
+      "path": "/api/v2/files/sales/{saleGuid}/updateSaleReferringAgentForm",
+      "apiVersion": "v2",
+      "tag": "V2 Sale Referring Agents"
+    },
+    {
+      "operationId": "V2Sales_GetSaleFields",
+      "method": "get",
+      "path": "/api/v2/files/sales/fields",
+      "apiVersion": "v2",
+      "tag": "V2 Sales"
+    }
+  ]
+}

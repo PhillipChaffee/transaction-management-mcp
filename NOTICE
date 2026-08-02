@@ -1,0 +1,14 @@
+transaction-management-mcp
+Copyright (c) 2026 Phillip Chaffee
+
+This project is an unofficial, independently maintained Model Context Protocol
+(MCP) server for transaction-management REST workflows. It is not affiliated
+with, endorsed by, or sponsored by SkySlope or any related trademark holder.
+
+Use of this software requires the operator's own API credentials and agreement
+with the upstream API provider. This package does not grant API access and does
+not ship the raw OpenAPI document; only a content hash and derived artifacts
+are included.
+
+Third-party dependencies are distributed under their respective licenses.
+See package-lock.json for the full dependency tree.

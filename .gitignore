@@ -1,0 +1,33 @@
+# Dependencies and build
+node_modules/
+dist/
+coverage/
+*.tgz
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Raw OpenAPI / swagger (never commit)
+swagger.json
+openapi.json
+**/swagger.json
+**/openapi.json
+*.openapi.json
+*.swagger.json
+
+# Temp and local tooling
+.tmp/
+.tmp_*/
+.tmp_ss_probe/
+.cursor/
+temp/
+tmp/
+*.log
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
+*.swp

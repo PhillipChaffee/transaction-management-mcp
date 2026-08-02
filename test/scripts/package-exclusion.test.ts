@@ -1,0 +1,52 @@
+import { execFile } from "node:child_process";
+import { access } from "node:fs/promises";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { promisify } from "node:util";
+
+import { describe, expect, it } from "vitest";
+
+const execFileAsync = promisify(execFile);
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
+
+describe("package exclusion", () => {
+  it("keeps raw OpenAPI / swagger out of the repository root", async () => {
+    await expect(access(path.join(root, "openapi.json"))).rejects.toThrow();
+    await expect(access(path.join(root, "swagger.json"))).rejects.toThrow();
+    await expect(access(path.join(root, "src/generated/openapi.json"))).rejects.toThrow();
+    await expect(access(path.join(root, "src/generated/swagger.json"))).rejects.toThrow();
+  });
+
+  it("npm pack allowlist excludes specs, scripts, tests, and temp dirs", async () => {
+    const { stdout } = await execFileAsync("npm", ["pack", "--dry-run", "--json"], {
+      cwd: root,
+      env: { ...process.env, npm_config_fund: "false", npm_config_audit: "false" },
+    });
+    const parsed = JSON.parse(stdout) as Array<{ files: Array<{ path: string }> }>;
+    const files = new Set((parsed[0]?.files ?? []).map((file) => file.path));
+
+    for (const forbidden of [
+      "openapi.json",
+      "swagger.json",
+      "scripts/generate.ts",
+      "test/fixtures/openapi/synthetic.openapi.json",
+      ".tmp_ss_probe/openapi.json",
+      ".env",
+      "src/generated/tool-name-abbreviations.json",
+    ]) {
+      expect(files.has(forbidden)).toBe(false);
+    }
+
+    // Runtime-derived artifacts are allowed once present.
+    for (const allowedPrefix of ["dist/", "README.md", "LICENSE", "NOTICE", "openapi.sha256"]) {
+      const present = [...files].some(
+        (file) => file === allowedPrefix || file.startsWith(allowedPrefix),
+      );
+      if (allowedPrefix === "dist/" || allowedPrefix === "openapi.sha256") {
+        // May be absent before first pin/build in some local states; assert no forbidden instead.
+        continue;
+      }
+      expect(present).toBe(true);
+    }
+  });
+});
