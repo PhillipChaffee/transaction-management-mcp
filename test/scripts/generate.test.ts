@@ -56,6 +56,7 @@ async function generateOnce(): Promise<{
     outDir,
     operationsOverrides: {},
   });
+  // Generated temp paths only exist after this helper runs; cache-bust each module import.
   const schemas = (await import(
     `${pathToFileURL(path.join(outDir, "tool-schemas.ts")).href}?t=${Date.now()}`
   )) as ToolSchemasModule;

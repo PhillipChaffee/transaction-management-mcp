@@ -1,3 +1,4 @@
+import { access } from "node:fs/promises";
 import path from "node:path";
 import type { Stream } from "node:stream";
 import { fileURLToPath } from "node:url";
@@ -45,7 +46,6 @@ function collectStderr(transport: StdioClientTransport): {
 
 describe("stdio transport contract", () => {
   beforeAll(async () => {
-    const { access } = await import("node:fs/promises");
     await access(stdioBin);
   });
 

@@ -1,7 +1,11 @@
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 import { http, HttpResponse } from "msw";
+import { McpServer } from "@modelcontextprotocol/server";
 
+import { SessionManager } from "../../src/auth/session-manager.ts";
 import { allManifestToolNames, registerTools } from "../../src/binder/register.ts";
+import { TokenBucketRateLimiter } from "../../src/client/rate-limiter.ts";
+import { TransactionApiClient } from "../../src/client/transaction-api-client.ts";
 import { createRuntimeLimits } from "../../src/config/runtime-limits.ts";
 import { resolveRuntimeConfig } from "../../src/config/resolve.ts";
 import { createResolvedRuntimePolicy } from "../../src/config/runtime-policy.ts";
@@ -10,7 +14,7 @@ import { toolSchemas } from "../../src/generated/tool-schemas.ts";
 import type { ManifestOperation } from "../../src/manifest/types.ts";
 import { API_BASE_URL } from "../msw/handlers.ts";
 import { mswServer } from "../msw/server.ts";
-import { argsForTool, createBinderHarness } from "./harness.ts";
+import { argsForTool, createBinderHarness, syntheticCredentials } from "./harness.ts";
 
 beforeAll(() => {
   mswServer.listen({ onUnhandledRequest: "error" });
@@ -71,13 +75,6 @@ describe("registerTools", () => {
   });
 
   it("fails closed on unknown selected tool names", async () => {
-    const { McpServer } = await import("@modelcontextprotocol/server");
-    const { SessionManager } = await import("../../src/auth/session-manager.ts");
-    const { TokenBucketRateLimiter } = await import("../../src/client/rate-limiter.ts");
-    const { TransactionApiClient } = await import("../../src/client/transaction-api-client.ts");
-    const { syntheticCredentials } = await import("./harness.ts");
-    const { API_BASE_URL } = await import("../msw/handlers.ts");
-
     const server = new McpServer({ name: "x", version: "0" }, { capabilities: { tools: {} } });
     const client = new TransactionApiClient({
       sessionManager: new SessionManager({

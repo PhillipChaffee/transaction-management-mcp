@@ -52,6 +52,16 @@ credentials, or customer PII to vulnerability reports. Use synthetic fixtures.
   front of the process.
 - This binary does not terminate TLS and is not a multi-tenant hosted service.
 
+## Known transitive advisory
+
+`@modelcontextprotocol/node@2.0.0` currently depends on
+`@hono/node-server@1.19.x`, which npm reports under
+[GHSA-frvp-7c67-39w9](https://github.com/advisories/GHSA-frvp-7c67-39w9).
+The advisory affects Hono's `serveStatic` path handling on Windows; this package
+does not import or use `serveStatic`. No compatible upstream fix is currently
+available through the MCP SDK dependency range. Dependabot tracks the dependency
+until the SDK adopts a patched release.
+
 ## Bad release recovery (npm + MCP Registry)
 
 Publication is tag-gated. Prefer a **prerelease** for the first tag.

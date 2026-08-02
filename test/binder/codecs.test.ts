@@ -1,6 +1,7 @@
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 import { http, HttpResponse } from "msw";
 
+import { SessionManager } from "../../src/auth/session-manager.ts";
 import {
   executeOperation,
   normalizeEmptyValue,
@@ -15,11 +16,18 @@ import {
   OctetStreamOutputSchema,
 } from "../../src/binder/codecs/output-schemas.ts";
 import { ToolExecutionError } from "../../src/binder/errors.ts";
+import { TokenBucketRateLimiter } from "../../src/client/rate-limiter.ts";
+import { TransactionApiClient } from "../../src/client/transaction-api-client.ts";
 import { createRuntimeLimits } from "../../src/config/runtime-limits.ts";
 import { toolSchemas } from "../../src/generated/tool-schemas.ts";
 import { API_BASE_URL } from "../msw/handlers.ts";
 import { mswServer } from "../msw/server.ts";
-import { argsForTool, createBinderHarness, operationById } from "./harness.ts";
+import {
+  argsForTool,
+  createBinderHarness,
+  operationById,
+  syntheticCredentials,
+} from "./harness.ts";
 
 beforeAll(() => {
   mswServer.listen({ onUnhandledRequest: "error" });
@@ -464,11 +472,6 @@ describe("codec execution via MCP", () => {
   }, 10_000);
 
   it("executes empty-value normalization through the dispatcher", async () => {
-    const { SessionManager } = await import("../../src/auth/session-manager.ts");
-    const { TokenBucketRateLimiter } = await import("../../src/client/rate-limiter.ts");
-    const { TransactionApiClient } = await import("../../src/client/transaction-api-client.ts");
-    const { syntheticCredentials } = await import("./harness.ts");
-
     mswServer.use(
       http.get(`${API_BASE_URL}/api/synthetic/empty-value`, () =>
         HttpResponse.json({
