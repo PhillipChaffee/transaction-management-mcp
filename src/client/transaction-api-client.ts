@@ -10,6 +10,7 @@ import {
   NetworkRequestError,
 } from "./errors.js";
 import type { TokenBucketRateLimiter } from "./rate-limiter.js";
+import { cancelResponseBody } from "./response-body.js";
 
 export type FetchLike = (input: Request) => Promise<Response>;
 export type ClockFn = () => Date;
@@ -196,11 +197,14 @@ export class TransactionApiClient {
         }
       }
 
-      this.#applyRateLimitHeaders(response.headers);
+      if (response.status === 429) {
+        this.#applyRateLimitHeaders(response.headers);
+      }
 
       if (response.status === 401) {
         if (isGet && !sessionRefreshUsed) {
           sessionRefreshUsed = true;
+          await cancelResponseBody(response);
           await this.#sessionManager.forceRefresh();
           continue;
         }
@@ -210,10 +214,10 @@ export class TransactionApiClient {
       if (isGet && isRetryableHttpStatus(response.status) && transportRetries < GET_MAX_RETRIES) {
         transportRetries += 1;
         const delayMs = retryDelayMs(response.headers, this.#clock);
+        await cancelResponseBody(response);
         if (delayMs > 0) {
           await this.#sleep(delayMs);
         }
-        // Do not consume the response body before retrying.
         continue;
       }
 

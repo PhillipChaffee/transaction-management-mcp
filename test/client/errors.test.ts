@@ -71,4 +71,20 @@ describe("upstream error mapping", () => {
     expect(ambiguous.structuredContent.retryable).toBe(false);
     expect(ambiguous.content[0]?.text).toMatch(/read the current resource state/i);
   });
+
+  it("caps oversized error bodies and never leaks secret material", async () => {
+    const secret = "ss leaked-secret-material-should-not-appear";
+    const oversized = `${JSON.stringify({ message: "too big", secret })}${"x".repeat(70_000)}`;
+    const response = new Response(oversized, {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+
+    const error = await mapUpstreamError(response);
+    expect(error).toBeInstanceOf(UpstreamApiError);
+    expect(error.details.httpStatus).toBe(500);
+    const serialized = JSON.stringify(toMcpToolError(error));
+    expect(serialized).not.toContain(secret);
+    expect(serialized).not.toContain("leaked-secret");
+  });
 });

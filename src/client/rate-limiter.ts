@@ -28,6 +28,8 @@ async function defaultSleep(ms: number): Promise<void> {
  * Process-wide token bucket with optional defer-until support for Retry-After / rate reset.
  *
  * Capacity 100 and refill 100 tokens / 60 seconds match the Transaction Management quota.
+ * Acquisitions are serialized through a FIFO promise queue so many concurrent waiters share
+ * a single sleep path instead of creating one timer per waiter.
  */
 export class TokenBucketRateLimiter {
   readonly capacity: number;
@@ -36,6 +38,7 @@ export class TokenBucketRateLimiter {
   #tokens: number;
   #updatedAtMs: number;
   #deferUntilMs = 0;
+  #tail: Promise<void> = Promise.resolve();
   readonly #now: Clock;
   readonly #sleep: Sleep;
 
@@ -78,6 +81,15 @@ export class TokenBucketRateLimiter {
    * Wait until the defer window has elapsed and one token is available, then consume it.
    */
   async acquire(): Promise<void> {
+    const run = this.#tail.then(() => this.#acquireSerialized());
+    this.#tail = run.then(
+      () => undefined,
+      () => undefined,
+    );
+    return run;
+  }
+
+  async #acquireSerialized(): Promise<void> {
     for (;;) {
       const now = this.#now();
       if (this.#deferUntilMs > now) {

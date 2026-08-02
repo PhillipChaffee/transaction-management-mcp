@@ -9,6 +9,10 @@
 import type { ManifestOperation } from "../manifest/types.js";
 import {
   createRuntimeLimits,
+  MAX_BINARY_OUTPUT_BYTES_CEILING,
+  MAX_BULK_ITEMS_CEILING,
+  MAX_STRUCTURED_OUTPUT_BYTES_CEILING,
+  MAX_UPLOAD_BYTES_CEILING,
   parsePositiveSafeIntegerLimit,
   type RuntimeLimits,
 } from "./runtime-limits.js";
@@ -331,24 +335,28 @@ function resolveLimits(env: Record<string, string | undefined>): RuntimeLimits {
     overrides.maxStructuredOutputBytes = parsePositiveSafeIntegerLimit(
       env.SKYSLOPE_TM_MAX_OUTPUT_BYTES,
       "SKYSLOPE_TM_MAX_OUTPUT_BYTES",
+      MAX_STRUCTURED_OUTPUT_BYTES_CEILING,
     );
   }
   if (env.SKYSLOPE_TM_MAX_BINARY_BYTES !== undefined) {
     overrides.maxBinaryOutputBytes = parsePositiveSafeIntegerLimit(
       env.SKYSLOPE_TM_MAX_BINARY_BYTES,
       "SKYSLOPE_TM_MAX_BINARY_BYTES",
+      MAX_BINARY_OUTPUT_BYTES_CEILING,
     );
   }
   if (env.SKYSLOPE_TM_MAX_UPLOAD_BYTES !== undefined) {
     overrides.maxUploadBytes = parsePositiveSafeIntegerLimit(
       env.SKYSLOPE_TM_MAX_UPLOAD_BYTES,
       "SKYSLOPE_TM_MAX_UPLOAD_BYTES",
+      MAX_UPLOAD_BYTES_CEILING,
     );
   }
   if (env.SKYSLOPE_TM_MAX_BULK_ITEMS !== undefined) {
     overrides.maxBulkItems = parsePositiveSafeIntegerLimit(
       env.SKYSLOPE_TM_MAX_BULK_ITEMS,
       "SKYSLOPE_TM_MAX_BULK_ITEMS",
+      MAX_BULK_ITEMS_CEILING,
     );
   }
   return createRuntimeLimits(overrides);

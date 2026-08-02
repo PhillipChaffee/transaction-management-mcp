@@ -1,7 +1,13 @@
 import { describe, expect, it } from "vitest";
 
 import { isReadOperation, resolveRuntimeConfig } from "../../src/config/resolve.ts";
-import { createRuntimeLimits, DEFAULT_RUNTIME_LIMITS } from "../../src/config/runtime-limits.ts";
+import {
+  createRuntimeLimits,
+  DEFAULT_RUNTIME_LIMITS,
+  MAX_BULK_ITEMS_CEILING,
+  MAX_STRUCTURED_OUTPUT_BYTES_CEILING,
+  MAX_UPLOAD_BYTES_CEILING,
+} from "../../src/config/runtime-limits.ts";
 import operationsManifest from "../../src/generated/operations.manifest.json" with { type: "json" };
 import type { ManifestOperation } from "../../src/manifest/types.ts";
 
@@ -215,6 +221,25 @@ describe("resolveRuntimeConfig", () => {
       maxBulkItems: 7,
     });
     expect(() => createRuntimeLimits({ maxBulkItems: 0 })).toThrow(/positive safe integer/);
+  });
+
+  it("rejects runtime limit overrides above field-specific ceilings", () => {
+    expect(() =>
+      createRuntimeLimits({ maxStructuredOutputBytes: MAX_STRUCTURED_OUTPUT_BYTES_CEILING + 1 }),
+    ).toThrow(new RegExp(String(MAX_STRUCTURED_OUTPUT_BYTES_CEILING)));
+    expect(() => createRuntimeLimits({ maxUploadBytes: MAX_UPLOAD_BYTES_CEILING + 1 })).toThrow(
+      new RegExp(String(MAX_UPLOAD_BYTES_CEILING)),
+    );
+    expect(() => createRuntimeLimits({ maxBulkItems: MAX_BULK_ITEMS_CEILING + 1 })).toThrow(
+      new RegExp(String(MAX_BULK_ITEMS_CEILING)),
+    );
+    expect(() =>
+      resolve({
+        env: {
+          SKYSLOPE_TM_MAX_OUTPUT_BYTES: String(Number.MAX_SAFE_INTEGER),
+        },
+      }),
+    ).toThrow(/SKYSLOPE_TM_MAX_OUTPUT_BYTES/);
   });
 });
 

@@ -36,9 +36,19 @@ jobs:
   publish:
     name: Publish npm + MCP Registry
     runs-on: ubuntu-latest
+    env:
+      MCP_PUBLISHER_VERSION: v1.8.0
+      MCP_PUBLISHER_LINUX_AMD64_SHA256: 1370446bbe74d562608e8005a6ccce02d146a661fbd78674e11cc70b9618d6cf
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Require tag commit on main
+        run: |
+          git fetch origin main
+          git merge-base --is-ancestor "${GITHUB_SHA}" origin/main
 
       - name: Setup Node.js
         uses: actions/setup-node@v7
@@ -50,7 +60,7 @@ jobs:
 
       - name: Ensure npm >= 11.5.1
         run: |
-          npm install -g npm@latest
+          npm install -g npm@11.5.1
           npm --version
           node -e 'const [maj,min,pat]=process.versions.node.split(".").map(Number); if(maj<22|| (maj===22&&min<14)) { console.error("Node >= 22.14 required"); process.exit(1); }'
           node -e 'const {execSync}=require("node:child_process"); const v=execSync("npm --version",{encoding:"utf8"}).trim(); const [maj,min,pat]=v.split(".").map(Number); if(maj<11||(maj===11&&min<5)||(maj===11&&min===5&&pat<1)) { console.error("npm >= 11.5.1 required, got", v); process.exit(1); }'
@@ -79,6 +89,9 @@ jobs:
       - name: Validate server.json
         run: npm run validate:server-json
 
+      - name: Validate package contents
+        run: npm run package:check
+
       - name: Validate tag matches package and server versions
         run: |
           set -euo pipefail
@@ -100,9 +113,12 @@ jobs:
       - name: Install MCP Publisher
         run: |
           set -euo pipefail
+          ASSET="mcp-publisher_linux_amd64.tar.gz"
           curl -fsSL \
-            "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_$(uname -s | tr '[:upper:]' '[:lower:]')_$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/').tar.gz" \
-            | tar xz mcp-publisher
+            "https://github.com/modelcontextprotocol/registry/releases/download/${MCP_PUBLISHER_VERSION}/${ASSET}" \
+            -o "${ASSET}"
+          echo "${MCP_PUBLISHER_LINUX_AMD64_SHA256}  ${ASSET}" | sha256sum -c -
+          tar xzf "${ASSET}" mcp-publisher
           ./mcp-publisher --help >/dev/null
 
       - name: Login to MCP Registry (GitHub OIDC)

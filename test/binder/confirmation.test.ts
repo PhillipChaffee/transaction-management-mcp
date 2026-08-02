@@ -3,11 +3,14 @@ import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from "vitest
 import {
   augmentInputSchemaWithConfirmation,
   buildConfirmationSchema,
+  clientSupportsFormElicitation,
+  confirmationToElicitSchema,
   createSdkConfirmationElicitor,
   enforceConfirmation,
   expectedConfirmation,
   isHighRiskOperation,
   pathResourceKeys,
+  reconstructConfirmationFromElicitContent,
   type ConfirmationElicitor,
   type ElicitationOutcome,
 } from "../../src/binder/confirmation.ts";
@@ -146,6 +149,21 @@ describe("confirmation helpers", () => {
   });
 });
 
+describe("clientSupportsFormElicitation", () => {
+  it("accepts legacy empty elicitation and explicit form capability", () => {
+    expect(clientSupportsFormElicitation({ elicitation: {} })).toBe(true);
+    expect(clientSupportsFormElicitation({ elicitation: { form: {} } })).toBe(true);
+    expect(clientSupportsFormElicitation({ elicitation: { form: {}, url: {} } })).toBe(true);
+  });
+
+  it("rejects missing elicitation and URL-only capability", () => {
+    expect(clientSupportsFormElicitation(undefined)).toBe(false);
+    expect(clientSupportsFormElicitation({})).toBe(false);
+    expect(clientSupportsFormElicitation({ elicitation: { url: {} } })).toBe(false);
+    expect(clientSupportsFormElicitation({ elicitation: { form: undefined } })).toBe(false);
+  });
+});
+
 describe("confirmation elicitation", () => {
   it("uses intent echo only when elicitation is unsupported", async () => {
     const elicit = vi.fn();
@@ -155,6 +173,92 @@ describe("confirmation elicitation", () => {
 
     await enforceConfirmation({ operation, input, elicitor });
     expect(elicit).not.toHaveBeenCalled();
+  });
+
+  it("emits flat primitive elicitation schemas and reconstructs nested payloads", () => {
+    const operation = operationById("Sales_RejectChecklistItem");
+    const expected = expectedConfirmation(operation, {
+      path: { saleGuid: "sale-1", transactionChecklistId: 42 },
+    });
+    const schema = confirmationToElicitSchema(operation, expected);
+    expect(schema.properties).toEqual({
+      confirm: { type: "boolean", description: "Must be true to proceed" },
+      saleGuid: { type: "string" },
+      transactionChecklistId: { type: "number" },
+    });
+    expect(schema.required).toEqual(["confirm", "saleGuid", "transactionChecklistId"]);
+    expect(schema.properties).not.toHaveProperty("resources");
+
+    const flat = {
+      confirm: true as const,
+      saleGuid: "sale-1",
+      transactionChecklistId: 42,
+    };
+    expect(reconstructConfirmationFromElicitContent(operation, flat)).toEqual(expected);
+  });
+
+  it("flattens bulk filter keys for elicitation and reconstructs filters", async () => {
+    const operation = operationById("BulkExport_GetBulkExport");
+    const input = {
+      query: { createdAfter: "2020-01-01", modifiedAfter: null, status: "Open" },
+    };
+    const expected = expectedConfirmation(operation, input);
+    const schema = confirmationToElicitSchema(operation, expected);
+    expect(schema.properties).toMatchObject({
+      confirm: { type: "boolean", description: "Must be true to proceed" },
+      createdAfter: { type: "string" },
+      status: { type: "string" },
+    });
+    expect(schema.properties).not.toHaveProperty("filters");
+    expect(schema.properties).not.toHaveProperty("resources");
+    expect(schema.properties).not.toHaveProperty("modifiedAfter");
+
+    const flat = {
+      confirm: true,
+      createdAfter: "2020-01-01",
+      status: "Open",
+    };
+    expect(reconstructConfirmationFromElicitContent(operation, flat)).toEqual(expected);
+
+    await enforceConfirmation({
+      operation,
+      input: { ...input, confirmation: expected },
+      elicitor: {
+        supported: true,
+        elicit: async () => ({ status: "accept", content: flat }),
+      },
+    });
+  });
+
+  it("accepts flat elicitation content with string and numeric resources", async () => {
+    const operation = operationById("Sales_RejectChecklistItem");
+    const input = argsForTool("sales_reject_checklist_item", {
+      path: { saleGuid: "sale-1", transactionChecklistId: 42 },
+      body: { note: "missing document" },
+    });
+    const elicit = vi.fn(
+      async (_request: Parameters<ConfirmationElicitor["elicit"]>[0]) =>
+        ({
+          status: "accept" as const,
+          content: {
+            confirm: true,
+            saleGuid: "sale-1",
+            transactionChecklistId: 42,
+          },
+        }) satisfies ElicitationOutcome,
+    );
+
+    await enforceConfirmation({
+      operation,
+      input,
+      elicitor: { supported: true, elicit },
+    });
+    expect(elicit).toHaveBeenCalledOnce();
+    const requested = elicit.mock.calls[0]?.[0]?.requestedSchema as {
+      properties?: Record<string, { type?: string }>;
+    };
+    expect(requested.properties?.saleGuid?.type).toBe("string");
+    expect(requested.properties?.transactionChecklistId?.type).toBe("number");
   });
 
   it("accepts elicitation and only then allows an API side effect", async () => {
@@ -169,7 +273,10 @@ describe("confirmation elicitation", () => {
     const input = argsForTool("contacts_delete_contact", { path: { contactGuid: "c-1" } });
     const elicitor: ConfirmationElicitor = {
       supported: true,
-      elicit: async () => ({ status: "accept", content: input.confirmation! }),
+      elicit: async () => ({
+        status: "accept",
+        content: { confirm: true, contactGuid: "c-1" },
+      }),
     };
 
     const harness = await createBinderHarness({
@@ -228,7 +335,7 @@ describe("confirmation elicitation", () => {
       action: "accept" as const,
       content: {
         confirm: true,
-        resources: { contactGuid: "c-1" },
+        contactGuid: "c-1",
       },
     }));
     const ctx = {
@@ -244,40 +351,10 @@ describe("confirmation elicitation", () => {
       status: "accept",
       content: {
         confirm: true,
-        resources: { contactGuid: "c-1" },
+        contactGuid: "c-1",
       },
     });
     expect(elicitInput).toHaveBeenCalledOnce();
-  });
-
-  it("uses numeric elicitation fields for numeric path resources", async () => {
-    const operation = operationById("Sales_RejectChecklistItem");
-    const input = argsForTool("sales_reject_checklist_item", {
-      path: { saleGuid: "sale-1", transactionChecklistId: 42 },
-      body: { note: "missing document" },
-    });
-    const elicit = vi.fn(async (_request: Parameters<ConfirmationElicitor["elicit"]>[0]) => ({
-      status: "accept" as const,
-      content: input.confirmation!,
-    }));
-
-    await enforceConfirmation({
-      operation,
-      input,
-      elicitor: { supported: true, elicit },
-    });
-
-    expect(elicit).toHaveBeenCalledOnce();
-    const requested = elicit.mock.calls[0]![0].requestedSchema as {
-      properties?: {
-        resources?: {
-          properties?: Record<string, { type?: string }>;
-        };
-      };
-    };
-    expect(requested.properties?.resources?.properties?.transactionChecklistId?.type).toBe(
-      "number",
-    );
   });
 
   it("does not fall back to model echo when elicitation errors", async () => {

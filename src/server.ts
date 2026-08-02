@@ -13,7 +13,12 @@ import { McpServer } from "@modelcontextprotocol/server";
 import { ZodError } from "zod";
 
 import { SessionManager } from "./auth/session-manager.js";
-import { loadOperationsManifest, registerTools } from "./binder/register.js";
+import {
+  loadOperationsManifest,
+  prepareToolDefinitions,
+  registerTools,
+  type PreparedToolDefinition,
+} from "./binder/register.js";
 import { TokenBucketRateLimiter } from "./client/rate-limiter.js";
 import type { FetchLike, SleepFn } from "./client/transaction-api-client.js";
 import { TransactionApiClient } from "./client/transaction-api-client.js";
@@ -145,6 +150,13 @@ export async function createTransactionManagementServer(
 
   const version = options.version ?? readPackageVersion();
 
+  const preparedTools: readonly PreparedToolDefinition[] = await prepareToolDefinitions({
+    client,
+    policy,
+    limits,
+    manifest,
+  });
+
   const createBoundServer = async (): Promise<McpServer> => {
     const server = new McpServer({ name: SERVER_NAME, version }, { capabilities: { tools: {} } });
     await registerTools({
@@ -153,14 +165,13 @@ export async function createTransactionManagementServer(
       policy,
       limits,
       manifest,
+      preparedTools,
     });
     return server;
   };
 
   const server = await createBoundServer();
-  const registeredNames = manifest.operations
-    .map((operation) => operation.toolName)
-    .filter((toolName) => policy.selectedToolNames.has(toolName));
+  const registeredNames = preparedTools.map((definition) => definition.toolName);
 
   return {
     server,

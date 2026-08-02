@@ -179,7 +179,11 @@ export function expectedConfirmation(
     resources,
   };
   if (requiresBulkExportFilters(operation)) {
-    payload.filters = { ...(input.query ?? {}) };
+    payload.filters = Object.fromEntries(
+      Object.entries(input.query ?? {}).filter(
+        ([, value]) => value !== null && value !== undefined,
+      ),
+    );
   }
   return payload;
 }
@@ -248,8 +252,9 @@ export async function enforceConfirmation(options: EnforceConfirmationOptions): 
 
   switch (outcome.status) {
     case "accept": {
+      const reconstructed = reconstructConfirmationFromElicitContent(operation, outcome.content);
       const schema = buildConfirmationSchema(operation);
-      const accepted = schema.safeParse(outcome.content);
+      const accepted = schema.safeParse(reconstructed);
       if (!accepted.success || !deepEqual(accepted.data, expected)) {
         throw new ToolExecutionError("High-risk elicitation confirmation does not match");
       }
@@ -315,49 +320,63 @@ export function createSdkConfirmationElicitor(
 
 /**
  * Return whether client capabilities advertise form elicitation support.
+ *
+ * Legacy empty `elicitation: {}` means form. Explicit `.form` means form.
+ * URL-only capability objects do not support form elicitation.
  */
 export function clientSupportsFormElicitation(
   clientCapabilities: { elicitation?: unknown } | undefined,
 ): boolean {
-  return clientCapabilities?.elicitation !== undefined;
+  const elicitation = clientCapabilities?.elicitation;
+  if (elicitation === undefined || elicitation === null || typeof elicitation !== "object") {
+    return false;
+  }
+  const record = elicitation as Record<string, unknown>;
+  if (Object.keys(record).length === 0) {
+    return true;
+  }
+  return Object.prototype.hasOwnProperty.call(record, "form") && record.form !== undefined;
 }
 
-function confirmationToElicitSchema(
+/**
+ * Build a flat primitive form elicitation schema for MCP hosts.
+ *
+ * MCP form `requestedSchema` properties must be primitives (not nested objects).
+ * Tool input still uses nested `confirmation`; accept content is reconstructed
+ * via {@link reconstructConfirmationFromElicitContent}.
+ */
+export function confirmationToElicitSchema(
   operation: ManifestOperation,
   expected: ConfirmationPayload,
 ): ElicitRequestFormParams["requestedSchema"] {
-  const resourceProperties: Record<
+  const properties: Record<
     string,
-    { type: "string" } | { type: "number" } | { type: "boolean" }
-  > = {};
-  const resourceRequired: string[] = [];
+    { type: "string" } | { type: "number" } | { type: "boolean"; description?: string }
+  > = {
+    confirm: { type: "boolean", description: "Must be true to proceed" },
+  };
+  const required = ["confirm"];
+
   for (const key of pathResourceKeys(operation.path)) {
-    resourceProperties[key] = elicitationPrimitiveSchema(expected.resources[key]);
-    resourceRequired.push(key);
+    properties[key] = elicitationPrimitiveSchema(expected.resources[key]);
+    required.push(key);
   }
-  if (requiresImpersonationEcho(operation)) {
-    resourceProperties.userBeingImpersonated = elicitationPrimitiveSchema(
+  if (
+    requiresImpersonationEcho(operation) &&
+    Object.prototype.hasOwnProperty.call(expected.resources, "userBeingImpersonated")
+  ) {
+    properties.userBeingImpersonated = elicitationPrimitiveSchema(
       expected.resources.userBeingImpersonated,
     );
+    required.push("userBeingImpersonated");
   }
 
-  const properties: Record<string, unknown> = {
-    confirm: { type: "boolean", description: "Must be true to proceed" },
-    resources: {
-      type: "object",
-      properties: resourceProperties,
-      required: resourceRequired,
-    },
-  };
-  const required = ["confirm", "resources"];
-
   if (requiresBulkExportFilters(operation)) {
-    properties.filters = {
-      type: "object",
-      properties: {},
-      additionalProperties: true,
-    };
-    required.push("filters");
+    const filters = expected.filters ?? {};
+    for (const key of Object.keys(filters).sort((left, right) => left.localeCompare(right))) {
+      properties[key] = elicitationPrimitiveSchema(filters[key]);
+      required.push(key);
+    }
   }
 
   return {
@@ -365,6 +384,51 @@ function confirmationToElicitSchema(
     properties: properties as ElicitRequestFormParams["requestedSchema"]["properties"],
     required,
   };
+}
+
+/**
+ * Rebuild a nested confirmation object from flat elicitation accept content.
+ *
+ * Returns an untyped shape for schema validation — `confirm` is preserved as
+ * provided so false/missing values fail closed.
+ */
+export function reconstructConfirmationFromElicitContent(
+  operation: ManifestOperation,
+  content: Record<string, unknown>,
+): unknown {
+  const resources: Record<string, unknown> = {};
+  for (const key of elicitationResourceKeys(operation)) {
+    if (Object.prototype.hasOwnProperty.call(content, key)) {
+      resources[key] = content[key];
+    }
+  }
+
+  const payload: Record<string, unknown> = {
+    confirm: content.confirm,
+    resources,
+  };
+
+  if (requiresBulkExportFilters(operation)) {
+    const filters: Record<string, unknown> = {};
+    const resourceKeys = new Set(elicitationResourceKeys(operation));
+    for (const [key, value] of Object.entries(content)) {
+      if (key === "confirm" || resourceKeys.has(key)) {
+        continue;
+      }
+      filters[key] = value;
+    }
+    payload.filters = filters;
+  }
+
+  return payload;
+}
+
+function elicitationResourceKeys(operation: ManifestOperation): string[] {
+  const keys = pathResourceKeys(operation.path);
+  if (requiresImpersonationEcho(operation) && !keys.includes("userBeingImpersonated")) {
+    return [...keys, "userBeingImpersonated"].sort((left, right) => left.localeCompare(right));
+  }
+  return keys;
 }
 
 function elicitationPrimitiveSchema(

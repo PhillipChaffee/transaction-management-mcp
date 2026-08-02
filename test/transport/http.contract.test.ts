@@ -1,8 +1,9 @@
 import { request as httpRequest } from "node:http";
 
-import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
+import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import { Client, StreamableHTTPClientTransport } from "@modelcontextprotocol/client";
 
+import * as registerModule from "../../src/binder/register.ts";
 import { REMOTE_TLS_WARNING, startHttpTransport } from "../../src/transport/http-server.ts";
 import { resolveHttpTransportConfig } from "../../src/transport/http-security.ts";
 import {
@@ -21,6 +22,7 @@ beforeAll(() => {
 afterEach(() => {
   mswServer.resetHandlers();
   resetCapturedRequests();
+  vi.restoreAllMocks();
 });
 
 afterAll(() => {
@@ -170,5 +172,186 @@ describe("HTTP transport contract", () => {
         SKYSLOPE_TM_HTTP_ALLOWED_ORIGINS: "https://app.example.com",
       }),
     ).not.toThrow();
+  });
+
+  it("prepares tool definitions once across multiple HTTP MCP requests", async () => {
+    const prepareSpy = vi.spyOn(registerModule, "prepareToolDefinitions");
+    const handle = await startHttpTransport({
+      env: SYNTHETIC_CREDENTIAL_ENV,
+      credentials: SYNTHETIC_CREDENTIALS,
+      baseUrl: API_BASE_URL,
+      httpEnv: {
+        ...SYNTHETIC_CREDENTIAL_ENV,
+        SKYSLOPE_TM_HTTP_BEARER_TOKEN: SYNTHETIC_HTTP_BEARER,
+        SKYSLOPE_TM_HTTP_HOST: "127.0.0.1",
+        SKYSLOPE_TM_HTTP_PORT: "0",
+      },
+      host: "127.0.0.1",
+      port: 0,
+      log: () => undefined,
+    });
+
+    try {
+      expect(prepareSpy).toHaveBeenCalledTimes(1);
+
+      for (let i = 0; i < 2; i += 1) {
+        const transport = new StreamableHTTPClientTransport(new URL(handle.baseUrl), {
+          authProvider: {
+            token: async () => SYNTHETIC_HTTP_BEARER,
+          },
+          requestInit: {
+            headers: {
+              Origin: "http://127.0.0.1",
+            },
+          },
+        });
+        const client = new Client({ name: `http-prepare-${i}`, version: "0.0.0" });
+        await client.connect(transport);
+        try {
+          const listed = await client.listTools();
+          expect(listed.tools).toHaveLength(30);
+        } finally {
+          await client.close();
+          await transport.close();
+        }
+      }
+
+      expect(prepareSpy).toHaveBeenCalledTimes(1);
+    } finally {
+      await handle.close();
+    }
+  });
+
+  it("rejects oversize Content-Length and chunked bodies with 413", async () => {
+    const handle = await startHttpTransport({
+      env: {
+        ...SYNTHETIC_CREDENTIAL_ENV,
+        SKYSLOPE_TM_MAX_UPLOAD_BYTES: "1024",
+        SKYSLOPE_TM_MAX_OUTPUT_BYTES: "1024",
+        SKYSLOPE_TM_MAX_BINARY_BYTES: "1024",
+      },
+      credentials: SYNTHETIC_CREDENTIALS,
+      baseUrl: API_BASE_URL,
+      httpEnv: {
+        ...SYNTHETIC_CREDENTIAL_ENV,
+        SKYSLOPE_TM_HTTP_BEARER_TOKEN: SYNTHETIC_HTTP_BEARER,
+        SKYSLOPE_TM_HTTP_HOST: "127.0.0.1",
+        SKYSLOPE_TM_HTTP_PORT: "0",
+      },
+      host: "127.0.0.1",
+      port: 0,
+      log: () => undefined,
+    });
+
+    try {
+      const oversizedPayload = JSON.stringify({ pad: "x".repeat(5_000) });
+      const contentLengthStatus = await new Promise<number>((resolve, reject) => {
+        const req = httpRequest(
+          {
+            hostname: "127.0.0.1",
+            port: handle.port,
+            path: "/",
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${SYNTHETIC_HTTP_BEARER}`,
+              Origin: "http://127.0.0.1",
+              "Content-Type": "application/json",
+              "Content-Length": Buffer.byteLength(oversizedPayload),
+            },
+          },
+          (res) => {
+            res.resume();
+            resolve(res.statusCode ?? 0);
+          },
+        );
+        req.on("error", reject);
+        req.end(oversizedPayload);
+      });
+      expect(contentLengthStatus).toBe(413);
+
+      const chunkedStatus = await new Promise<number>((resolve, reject) => {
+        const req = httpRequest(
+          {
+            hostname: "127.0.0.1",
+            port: handle.port,
+            path: "/",
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${SYNTHETIC_HTTP_BEARER}`,
+              Origin: "http://127.0.0.1",
+              "Content-Type": "application/json",
+              "Transfer-Encoding": "chunked",
+            },
+          },
+          (res) => {
+            res.resume();
+            resolve(res.statusCode ?? 0);
+          },
+        );
+        req.on("error", reject);
+        req.write(oversizedPayload);
+        req.end();
+      });
+      expect(chunkedStatus).toBe(413);
+    } finally {
+      await handle.close();
+    }
+  });
+
+  it("rejects malformed JSON with 400 and accepts a valid tool call", async () => {
+    const handle = await startHttpTransport({
+      env: SYNTHETIC_CREDENTIAL_ENV,
+      credentials: SYNTHETIC_CREDENTIALS,
+      baseUrl: API_BASE_URL,
+      httpEnv: {
+        ...SYNTHETIC_CREDENTIAL_ENV,
+        SKYSLOPE_TM_HTTP_BEARER_TOKEN: SYNTHETIC_HTTP_BEARER,
+        SKYSLOPE_TM_HTTP_HOST: "127.0.0.1",
+        SKYSLOPE_TM_HTTP_PORT: "0",
+      },
+      host: "127.0.0.1",
+      port: 0,
+      log: () => undefined,
+    });
+
+    try {
+      const malformed = await fetch(handle.baseUrl, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${SYNTHETIC_HTTP_BEARER}`,
+          Origin: "http://127.0.0.1",
+          "Content-Type": "application/json",
+        },
+        body: "{not-json",
+      });
+      expect(malformed.status).toBe(400);
+
+      const transport = new StreamableHTTPClientTransport(new URL(handle.baseUrl), {
+        authProvider: {
+          token: async () => SYNTHETIC_HTTP_BEARER,
+        },
+        requestInit: {
+          headers: {
+            Origin: "http://127.0.0.1",
+          },
+        },
+      });
+      const client = new Client({ name: "http-body-client", version: "0.0.0" });
+      await client.connect(transport);
+      try {
+        const listed = await client.listTools();
+        expect(listed.tools).toHaveLength(30);
+        const result = await client.callTool({
+          name: "offices_get_offices",
+          arguments: {},
+        });
+        expect(result.isError).toBeFalsy();
+      } finally {
+        await client.close();
+        await transport.close();
+      }
+    } finally {
+      await handle.close();
+    }
   });
 });

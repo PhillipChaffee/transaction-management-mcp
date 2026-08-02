@@ -110,6 +110,50 @@ describe("SessionManager", () => {
     expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 
+  it("clears stale cache before forced login so concurrent getSession joins in-flight refresh", async () => {
+    let resolveForcedLogin: ((value: Response) => void) | undefined;
+    const forcedLoginGate = new Promise<Response>((resolve) => {
+      resolveForcedLogin = resolve;
+    });
+    let loginCalls = 0;
+    const fetchMock = vi.fn(async () => {
+      loginCalls += 1;
+      if (loginCalls === 1) {
+        return jsonResponse({
+          Session: "session-revoked",
+          Expiration: "2020-01-02T05:00:00Z",
+        });
+      }
+      return forcedLoginGate;
+    });
+    const manager = new SessionManager({
+      credentials,
+      fetch: fetchMock as unknown as typeof fetch,
+      clock: () => new Date("2020-01-02T03:00:00Z"),
+    });
+
+    expect((await manager.getSession()).session).toBe("session-revoked");
+
+    const forced = manager.forceRefresh();
+    // Allow the forced login to start and clear cache before concurrent readers join.
+    await Promise.resolve();
+    const concurrent = manager.getSession();
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+
+    resolveForcedLogin?.(
+      jsonResponse({
+        Session: "session-fresh",
+        Expiration: "2020-01-02T06:00:00Z",
+      }),
+    );
+
+    const [forcedEntry, concurrentEntry] = await Promise.all([forced, concurrent]);
+    expect(forcedEntry.session).toBe("session-fresh");
+    expect(concurrentEntry.session).toBe("session-fresh");
+    expect(concurrentEntry.session).not.toBe("session-revoked");
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
   it("single-flights concurrent refresh callers", async () => {
     let resolveLogin: ((value: Response) => void) | undefined;
     const loginGate = new Promise<Response>((resolve) => {
@@ -142,6 +186,32 @@ describe("SessionManager", () => {
       "shared-session",
     ]);
     expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("rejects oversized login bodies without leaking secret material", async () => {
+    const secret = "super-secret-login-payload";
+    const oversized = `${"x".repeat(65 * 1024)}${secret}`;
+    const fetchMock = vi.fn().mockResolvedValue(
+      new Response(oversized, {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      }),
+    );
+    const manager = new SessionManager({
+      credentials,
+      fetch: fetchMock as unknown as typeof fetch,
+      clock: () => new Date("2020-01-02T03:00:00Z"),
+    });
+
+    await expect(manager.getSession()).rejects.toBeInstanceOf(SessionAuthError);
+    try {
+      await manager.getSession();
+    } catch (error) {
+      const text = String(error);
+      expect(text).not.toContain(secret);
+      expect(text).not.toContain("client-secret");
+      expect(text).toMatch(/size limit|valid JSON/i);
+    }
   });
 
   it("returns safe auth errors with no credentials, HMAC, or session values", async () => {

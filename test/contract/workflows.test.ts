@@ -17,4 +17,15 @@ describe("GitHub Actions workflows", () => {
     expect(workflow.on).toBeTruthy();
     expect(workflow.jobs).toBeTruthy();
   });
+
+  it("pins and verifies release tooling before publishing", async () => {
+    const source = await readFile(path.join(root, ".github/workflows/release.yml"), "utf8");
+
+    expect(source).toContain("MCP_PUBLISHER_VERSION: v1.8.0");
+    expect(source).toContain("sha256sum -c -");
+    expect(source).not.toContain("/releases/latest/");
+    expect(source).toContain("npm install -g npm@11.5.1");
+    expect(source).toContain('git merge-base --is-ancestor "${GITHUB_SHA}" origin/main');
+    expect(source).toContain("npm run package:check");
+  });
 });

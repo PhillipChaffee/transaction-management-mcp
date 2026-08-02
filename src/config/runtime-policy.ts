@@ -5,16 +5,9 @@
  * for explicit test/setup values.
  */
 
-export const CAPABILITY_IDS = [
-  "destructive",
-  "financial",
-  "admin",
-  "binary-io",
-  "bulk-export",
-  "impersonation",
-] as const;
+import { CAPABILITY_IDS, type CapabilityId } from "../manifest/types.js";
 
-export type CapabilityId = (typeof CAPABILITY_IDS)[number];
+export { CAPABILITY_IDS, type CapabilityId } from "../manifest/types.js";
 
 export type ResolvedRuntimePolicy = Readonly<{
   /** Tool names (baked `manifest.toolName` values) selected for registration. */

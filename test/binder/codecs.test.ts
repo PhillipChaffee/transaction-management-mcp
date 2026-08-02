@@ -69,6 +69,12 @@ describe("codec helpers", () => {
       expect(String(error)).not.toMatch(/AAAA/);
       expect((error as Error).message).toMatch(/size limit/);
     }
+
+    // Canonical encoding of "Hello" is SGVsbG8=; SGVsbG9= is same alphabet/padding but non-canonical.
+    validateBase64Upload({ base64Content: "SGVsbG8=", fileName: "a.txt" }, 1024);
+    expect(() =>
+      validateBase64Upload({ base64Content: "SGVsbG9=", fileName: "a.txt" }, 1024),
+    ).toThrow(/not valid base64/);
   });
 
   it("normalizes empty-value wrappers", () => {

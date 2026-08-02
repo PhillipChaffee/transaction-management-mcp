@@ -1,3 +1,7 @@
+import type { CapabilityId, CodecId, RiskTier, ToolAnnotations } from "../../src/manifest/types.ts";
+
+export type { CapabilityId, CodecId, RiskTier, ToolAnnotations } from "../../src/manifest/types.ts";
+
 /** Expected Transaction Management REST census for the pinned OpenAPI digest. */
 export const EXPECTED_CENSUS = {
   total: 207,
@@ -35,31 +39,6 @@ export const HTTP_METHODS = [
 ] as const;
 
 export type HttpMethod = (typeof HTTP_METHODS)[number];
-
-export type RiskTier = "read" | "ordinary" | "destructive" | "financial" | "admin" | "binary-io";
-
-export type CapabilityId =
-  "destructive" | "financial" | "admin" | "binary-io" | "bulk-export" | "impersonation";
-
-export type CodecId =
-  | "base64-upload"
-  | "cda"
-  | "bulk-stream"
-  | "replica-timestamp"
-  | "octet-stream"
-  | "no-content"
-  | "query-write"
-  | "no-body-write"
-  | "open-body"
-  | "empty-value"
-  | "json";
-
-export interface ToolAnnotations {
-  openWorldHint: boolean;
-  readOnlyHint: boolean;
-  destructiveHint: boolean;
-  idempotentHint: boolean;
-}
 
 export interface CensusCounts {
   total: number;

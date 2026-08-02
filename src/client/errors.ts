@@ -6,6 +6,12 @@
  * session tokens, raw body dumps, or credentials.
  */
 
+import {
+  MAX_AUTH_ERROR_BODY_BYTES,
+  cancelResponseBody,
+  readJsonBodyWithCap,
+} from "./response-body.js";
+
 export type UpstreamErrorDetails = {
   httpStatus: number;
   code?: string | null;
@@ -139,27 +145,32 @@ export async function mapUpstreamError(
   try {
     const contentType = response.headers.get("content-type") ?? "";
     if (contentType.includes("application/json")) {
-      const body = (await response.json()) as VendorErrorBody;
-      const nested =
-        body.value && typeof body.value === "object" ? (body.value as VendorErrorBody) : undefined;
-      const source = nested ?? body;
-      if (typeof source.code === "string" || source.code === null) {
-        code = source.code;
+      const parsed = await readJsonBodyWithCap(response, MAX_AUTH_ERROR_BODY_BYTES);
+      if (parsed.ok && parsed.value && typeof parsed.value === "object") {
+        const body = parsed.value as VendorErrorBody;
+        const nested =
+          body.value && typeof body.value === "object"
+            ? (body.value as VendorErrorBody)
+            : undefined;
+        const source = nested ?? body;
+        if (typeof source.code === "string" || source.code === null) {
+          code = source.code;
+        }
+        message =
+          asOptionalString(source.message) ??
+          asOptionalString(source.Message) ??
+          asOptionalString(source.Error);
+        errors = asStringArray(source.errors);
+        traceId =
+          asOptionalString(source.traceId) ??
+          asOptionalString(source.TraceId) ??
+          asOptionalString(body.traceId) ??
+          asOptionalString(body.TraceId) ??
+          traceId;
       }
-      message =
-        asOptionalString(source.message) ??
-        asOptionalString(source.Message) ??
-        asOptionalString(source.Error);
-      errors = asStringArray(source.errors);
-      traceId =
-        asOptionalString(source.traceId) ??
-        asOptionalString(source.TraceId) ??
-        asOptionalString(body.traceId) ??
-        asOptionalString(body.TraceId) ??
-        traceId;
     } else {
       // Drain non-JSON bodies without retaining content in the error.
-      await response.arrayBuffer();
+      await cancelResponseBody(response);
     }
   } catch {
     // Ignore parse failures; status alone is enough for a safe error.

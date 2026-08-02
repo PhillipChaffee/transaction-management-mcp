@@ -564,6 +564,8 @@ function requireJsonObjectBody(body: unknown): Record<string, unknown> {
 
 /**
  * Validate base64Content when present. Never include the bytes in error messages.
+ *
+ * Decodes once, then performs canonical and size checks against that buffer.
  */
 export function validateBase64Upload(body: Record<string, unknown>, maxBytes: number): void {
   const raw = body.base64Content;
@@ -573,30 +575,38 @@ export function validateBase64Upload(body: Record<string, unknown>, maxBytes: nu
   if (typeof raw !== "string") {
     throw new ToolExecutionError("base64Content must be a string");
   }
-  if (!isBase64(raw)) {
+  const decoded = decodeCanonicalBase64(raw);
+  if (decoded === undefined) {
     throw new ToolExecutionError("base64Content is not valid base64");
   }
-  const decoded = Buffer.from(raw, "base64");
   if (decoded.byteLength > maxBytes) {
     throw new ToolExecutionError("Decoded upload exceeds MCP size limit");
   }
 }
 
-function isBase64(value: string): boolean {
+/**
+ * Decode a base64 string once and verify the canonical encoding matches.
+ *
+ * Returns undefined when the value is not valid canonical base64.
+ */
+function decodeCanonicalBase64(value: string): Buffer | undefined {
   if (value.length === 0) {
-    return true;
+    return Buffer.alloc(0);
   }
   if (value.length % 4 !== 0) {
-    return false;
+    return undefined;
   }
   if (!/^[A-Za-z0-9+/]*={0,2}$/.test(value)) {
-    return false;
+    return undefined;
   }
   try {
     const decoded = Buffer.from(value, "base64");
-    return decoded.toString("base64").replace(/=+$/, "") === value.replace(/=+$/, "");
+    if (decoded.toString("base64").replace(/=+$/, "") !== value.replace(/=+$/, "")) {
+      return undefined;
+    }
+    return decoded;
   } catch {
-    return false;
+    return undefined;
   }
 }
 

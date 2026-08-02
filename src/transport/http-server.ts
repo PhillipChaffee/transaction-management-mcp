@@ -16,6 +16,7 @@ import {
 
 import type { CreateTransactionManagementServerOptions } from "../server.js";
 import { createTransactionManagementServer } from "../server.js";
+import { httpRequestBodyLimitBytes, type RuntimeLimits } from "../config/runtime-limits.js";
 import {
   bearerTokenMatches,
   isLoopbackHost,
@@ -102,6 +103,7 @@ export async function startHttpTransport(
   }
 
   const handle = await createTransactionManagementServer(serverOptions);
+  const requestBodyLimitBytes = httpRequestBodyLimitBytes(handle.limits);
 
   const mcpHandler = createMcpHandler(() => handle.createBoundServer(), {
     onerror: (error) => {
@@ -125,6 +127,7 @@ export async function startHttpTransport(
       allowedOrigins: config.allowedOrigins,
       isLoopback: config.isLoopback,
       nodeHandler,
+      requestBodyLimitBytes,
       log,
     });
   });
@@ -181,6 +184,7 @@ type DispatchContext = {
   allowedOrigins: readonly string[];
   isLoopback: boolean;
   nodeHandler: NodeMcpRequestHandler;
+  requestBodyLimitBytes: number;
   log: (message: string) => void;
 };
 
@@ -191,6 +195,7 @@ async function dispatchHttpRequest(
 ): Promise<void> {
   try {
     if (!bearerTokenMatches(req.headers.authorization, context.bearerToken)) {
+      drainRequest(req);
       writeJson(res, 401, { error: "unauthorized", message: "Invalid or missing bearer token" });
       return;
     }
@@ -213,6 +218,7 @@ async function dispatchHttpRequest(
 
     const hostRejected = hostHeaderValidationResponse(webRequest, context.allowedHostnames);
     if (hostRejected) {
+      drainRequest(req);
       await writeWebResponse(res, hostRejected);
       return;
     }
@@ -220,6 +226,7 @@ async function dispatchHttpRequest(
     if (context.isLoopback) {
       const originRejected = originValidationResponse(webRequest, localhostAllowedOrigins());
       if (originRejected) {
+        drainRequest(req);
         await writeWebResponse(res, originRejected);
         return;
       }
@@ -229,6 +236,7 @@ async function dispatchHttpRequest(
         context.allowedOrigins,
       );
       if (!originResult.ok) {
+        drainRequest(req);
         writeJson(res, originResult.status, {
           error: "forbidden",
           message: originResult.message,
@@ -237,8 +245,30 @@ async function dispatchHttpRequest(
       }
     }
 
+    const method = (req.method ?? "GET").toUpperCase();
+    let parsedBody: unknown;
+    if (method !== "GET" && method !== "HEAD") {
+      const bodyResult = await readJsonRequestBody(req, context.requestBodyLimitBytes);
+      if (bodyResult.status === "too-large") {
+        drainRequest(req);
+        writeJson(res, 413, {
+          error: "payload_too_large",
+          message: "Request body exceeds size limit",
+        });
+        return;
+      }
+      if (bodyResult.status === "invalid-json") {
+        writeJson(res, 400, {
+          error: "invalid_json",
+          message: "Request body must be valid JSON",
+        });
+        return;
+      }
+      parsedBody = bodyResult.value;
+    }
+
     // Node's IncomingMessage.method is optional; the SDK handler accepts the same runtime shape.
-    await context.nodeHandler(req as never, res as never);
+    await context.nodeHandler(req as never, res as never, parsedBody);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Request failed";
     context.log(message);
@@ -246,6 +276,74 @@ async function dispatchHttpRequest(
       writeJson(res, 500, { error: "internal_error", message: "Request failed" });
     }
   }
+}
+
+type ReadBodyResult =
+  { status: "ok"; value: unknown } | { status: "too-large" } | { status: "invalid-json" };
+
+/**
+ * Read and JSON-parse an inbound MCP request body with a hard byte cap.
+ *
+ * Rejects oversized Content-Length before reading. For chunked bodies, stops
+ * once the cap is exceeded and destroys the request stream.
+ */
+export async function readJsonRequestBody(
+  req: IncomingMessage,
+  maxBytes: number,
+): Promise<ReadBodyResult> {
+  const contentLengthHeader = req.headers["content-length"];
+  if (typeof contentLengthHeader === "string" && contentLengthHeader.length > 0) {
+    const contentLength = Number(contentLengthHeader);
+    if (Number.isFinite(contentLength) && contentLength > maxBytes) {
+      return { status: "too-large" };
+    }
+  }
+
+  const chunks: Buffer[] = [];
+  let total = 0;
+  try {
+    for await (const chunk of req.iterator({ destroyOnReturn: false })) {
+      const buffer = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
+      total += buffer.byteLength;
+      if (total > maxBytes) {
+        return { status: "too-large" };
+      }
+      chunks.push(buffer);
+    }
+  } catch {
+    return { status: "invalid-json" };
+  }
+
+  if (total === 0) {
+    return { status: "ok", value: undefined };
+  }
+
+  try {
+    const raw = Buffer.concat(chunks, total).toString("utf8");
+    return { status: "ok", value: JSON.parse(raw) as unknown };
+  } catch {
+    return { status: "invalid-json" };
+  }
+}
+
+/**
+ * Drain an inbound request stream so keep-alive sockets can be reused.
+ *
+ * Uses resume only — IncomingMessage.destroy() tears down the shared socket and
+ * prevents writing the HTTP response.
+ */
+export function drainRequest(req: IncomingMessage): void {
+  if (req.readableEnded || req.destroyed) {
+    return;
+  }
+  req.resume();
+}
+
+/**
+ * Expose the body-limit helper for tests that assert HTTP sizing policy.
+ */
+export function resolveHttpRequestBodyLimit(limits: RuntimeLimits): number {
+  return httpRequestBodyLimitBytes(limits);
 }
 
 function listen(server: Server, port: number, host: string): Promise<void> {

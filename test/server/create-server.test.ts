@@ -23,6 +23,7 @@ afterAll(() => {
 
 describe("createTransactionManagementServer", () => {
   it("registers 30 tools by default and shares one policy object with the registrar", async () => {
+    const prepareSpy = vi.spyOn(registerModule, "prepareToolDefinitions");
     const registerSpy = vi.spyOn(registerModule, "registerTools");
 
     const handle = await createTransactionManagementServer({
@@ -35,10 +36,13 @@ describe("createTransactionManagementServer", () => {
     try {
       expect(handle.registeredNames).toHaveLength(30);
       expect(handle.policy.selectedToolNames.size).toBe(30);
+      expect(prepareSpy).toHaveBeenCalledTimes(1);
       expect(registerSpy).toHaveBeenCalled();
       const firstCall = registerSpy.mock.calls[0]?.[0];
       expect(firstCall?.policy).toBe(handle.policy);
       expect(firstCall?.limits).toBe(handle.limits);
+      expect(firstCall?.preparedTools).toBeDefined();
+      expect(firstCall?.preparedTools).toHaveLength(30);
 
       const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
       const client = new Client({ name: "server-factory-test", version: "0.0.0" });
@@ -50,6 +54,15 @@ describe("createTransactionManagementServer", () => {
         expect(getCapturedRequests()).toHaveLength(0);
       } finally {
         await client.close();
+      }
+
+      // Fresh bound servers reuse the same prepared definitions (no second prepare).
+      const bound = await handle.createBoundServer();
+      try {
+        expect(prepareSpy).toHaveBeenCalledTimes(1);
+        expect(registerSpy.mock.calls.at(-1)?.[0]?.preparedTools).toBe(firstCall?.preparedTools);
+      } finally {
+        await bound.close();
       }
     } finally {
       await handle.server.close();

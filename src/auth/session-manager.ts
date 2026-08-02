@@ -1,6 +1,7 @@
 import { buildLoginAuth } from "./hmac.js";
 import type { Credentials } from "../config/credentials.js";
 import { SessionAuthError } from "../client/errors.js";
+import { MAX_AUTH_ERROR_BODY_BYTES, readJsonBodyWithCap } from "../client/response-body.js";
 
 export type SessionCacheEntry = {
   session: string;
@@ -69,6 +70,9 @@ export class SessionManager {
 
   /** Return a cached session, refreshing proactively before expiration when needed. */
   async getSession(): Promise<SessionCacheEntry> {
+    if (this.#inFlight) {
+      return this.#inFlight;
+    }
     if (this.#isUsable(this.#cache)) {
       return this.#cache;
     }
@@ -77,6 +81,7 @@ export class SessionManager {
 
   /** Discard any cache and perform a login, sharing one in-flight promise with concurrent callers. */
   async forceRefresh(): Promise<SessionCacheEntry> {
+    this.#cache = undefined;
     return this.#refresh(true);
   }
 
@@ -129,22 +134,21 @@ export class SessionManager {
     }
 
     if (!response.ok) {
-      // Drain body without retaining credential-bearing content.
-      try {
-        await response.arrayBuffer();
-      } catch {
-        // ignore
-      }
+      await readJsonBodyWithCap(response, MAX_AUTH_ERROR_BODY_BYTES);
       throw new SessionAuthError("Authentication failed", response.status);
     }
 
-    let body: LoginResponseBody;
-    try {
-      body = (await response.json()) as LoginResponseBody;
-    } catch {
-      throw new SessionAuthError("Authentication response was not valid JSON", response.status);
+    const parsed = await readJsonBodyWithCap(response, MAX_AUTH_ERROR_BODY_BYTES);
+    if (!parsed.ok) {
+      throw new SessionAuthError(
+        parsed.reason === "truncated"
+          ? "Authentication response exceeded size limit"
+          : "Authentication response was not valid JSON",
+        response.status,
+      );
     }
 
+    const body = parsed.value as LoginResponseBody;
     const session = pickSession(body);
     const expirationRaw = pickExpiration(body);
     if (!session || !expirationRaw) {

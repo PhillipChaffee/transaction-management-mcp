@@ -15,6 +15,7 @@ import type { TransactionApiClient } from "../client/transaction-api-client.js";
 import type { RuntimeLimits } from "../config/runtime-limits.js";
 import type { ResolvedRuntimePolicy } from "../config/runtime-policy.js";
 import { toolSchemas } from "../generated/tool-schemas.js";
+import { TOOL_NAME_REGEX } from "../manifest/tool-names.js";
 import type { ManifestOperation } from "../manifest/types.js";
 import { executeOperation, type ToolInput, resolveOutputSchema } from "./codecs/index.js";
 import {
@@ -26,20 +27,48 @@ import {
 import { ToolExecutionError, toBinderToolError } from "./errors.js";
 import { authorizeToolCall } from "./guards.js";
 
-/** Runtime tool-name contract (baked names must already satisfy this). */
-export const TOOL_NAME_REGEX = /^[a-zA-Z0-9_-]{1,64}$/;
-
 type ManifestFile = {
   operations: ManifestOperation[];
 };
 
-export type RegisterToolsOptions = {
-  server: McpServer;
+export type ToolHandlerBinding = {
+  getClientCapabilities: () => { elicitation?: unknown } | undefined;
+  createElicitor?: (ctx: ServerContext) => ConfirmationElicitor | undefined;
+};
+
+/**
+ * Immutable tool registration definition shared across fresh McpServer instances.
+ *
+ * Schemas/annotations are built once. Handlers are bound per registration so each
+ * server can read its own client capabilities safely under concurrent HTTP requests.
+ */
+export type PreparedToolDefinition = {
+  readonly toolName: string;
+  readonly title: string;
+  readonly description: string;
+  readonly inputSchema: z.ZodType<unknown>;
+  readonly outputSchema: z.ZodTypeAny;
+  readonly annotations: ToolAnnotations;
+  readonly bindHandler: (
+    binding: ToolHandlerBinding,
+  ) => (args: unknown, ctx: ServerContext) => Promise<CallToolResult>;
+};
+
+export type PrepareToolDefinitionsOptions = {
   client: TransactionApiClient;
   policy: ResolvedRuntimePolicy;
   limits: RuntimeLimits;
   /** Optional manifest override for tests. Defaults to the generated runtime manifest. */
   manifest?: ManifestFile;
+};
+
+export type RegisterToolsOptions = PrepareToolDefinitionsOptions & {
+  server: McpServer;
+  /**
+   * Optional precomputed tool definitions. When omitted, definitions are built
+   * for this registration call (stdio / unit tests).
+   */
+  preparedTools?: readonly PreparedToolDefinition[];
   /**
    * Optional elicitation adapter factory for tests. Defaults to an SDK-backed
    * adapter derived from the handler context and client capabilities.
@@ -48,16 +77,14 @@ export type RegisterToolsOptions = {
 };
 
 /**
- * Register selected REST operations on an MCP server.
+ * Precompute immutable tool registration definitions (schemas, annotations, handler factories).
  *
- * Transport-agnostic: callers supply policy, limits, client, and server.
- * Uses baked `manifest.toolName` values only — never recomputes names.
- * High-risk tools receive augmented confirmation input schemas. Every call
- * runs authorization and confirmation guards before `executeOperation`.
- *
- * @returns Registered tool names in manifest order.
+ * HTTP transports call this once in the shared server factory and reuse the
+ * definitions across fresh per-request `McpServer` instances.
  */
-export async function registerTools(options: RegisterToolsOptions): Promise<string[]> {
+export async function prepareToolDefinitions(
+  options: PrepareToolDefinitionsOptions,
+): Promise<PreparedToolDefinition[]> {
   const manifest = options.manifest ?? (await loadOperationsManifest());
   const byToolName = new Map<string, ManifestOperation>();
   for (const operation of manifest.operations) {
@@ -79,7 +106,7 @@ export async function registerTools(options: RegisterToolsOptions): Promise<stri
     }
   }
 
-  const registered: string[] = [];
+  const prepared: PreparedToolDefinition[] = [];
   for (const operation of manifest.operations) {
     if (!options.policy.selectedToolNames.has(operation.toolName)) {
       continue;
@@ -97,59 +124,101 @@ export async function registerTools(options: RegisterToolsOptions): Promise<stri
     );
     const annotations = operation.annotations as ToolAnnotations;
 
+    prepared.push({
+      toolName: operation.toolName,
+      title: operation.description,
+      description: operation.description,
+      inputSchema,
+      outputSchema,
+      annotations,
+      bindHandler: (binding) => {
+        return async (args: unknown, ctx: ServerContext): Promise<CallToolResult> => {
+          try {
+            const input = (args ?? {}) as ToolInput & { confirmation?: unknown };
+            const elicitor =
+              binding.createElicitor?.(ctx) ??
+              createSdkConfirmationElicitor(
+                ctx,
+                clientSupportsFormElicitation(binding.getClientCapabilities()),
+              );
+
+            await authorizeToolCall({
+              operation,
+              policy: options.policy,
+              input,
+              ...(elicitor !== undefined ? { elicitor } : {}),
+            });
+
+            const toolInput: ToolInput = {};
+            if (input.path !== undefined) {
+              toolInput.path = input.path;
+            }
+            if (input.query !== undefined) {
+              toolInput.query = input.query;
+            }
+            if (input.body !== undefined) {
+              toolInput.body = input.body;
+            }
+
+            return await executeOperation({
+              operation,
+              input: toolInput,
+              client: options.client,
+              limits: options.limits,
+              outputSchema,
+            });
+          } catch (error) {
+            if (error instanceof ToolExecutionError) {
+              return toBinderToolError(error);
+            }
+            return toMcpToolError(error);
+          }
+        };
+      },
+    });
+  }
+
+  return prepared;
+}
+
+/**
+ * Register selected REST operations on an MCP server.
+ *
+ * Transport-agnostic: callers supply policy, limits, client, and server.
+ * Uses baked `manifest.toolName` values only — never recomputes names.
+ * High-risk tools receive augmented confirmation input schemas. Every call
+ * runs authorization and confirmation guards before `executeOperation`.
+ *
+ * @returns Registered tool names in manifest order.
+ */
+export async function registerTools(options: RegisterToolsOptions): Promise<string[]> {
+  const prepared =
+    options.preparedTools ??
+    (await prepareToolDefinitions({
+      client: options.client,
+      policy: options.policy,
+      limits: options.limits,
+      ...(options.manifest !== undefined ? { manifest: options.manifest } : {}),
+    }));
+
+  const registered: string[] = [];
+  for (const definition of prepared) {
+    const handler = definition.bindHandler({
+      getClientCapabilities: () => options.server.server.getClientCapabilities(),
+      ...(options.createElicitor !== undefined ? { createElicitor: options.createElicitor } : {}),
+    });
     options.server.registerTool(
-      operation.toolName,
+      definition.toolName,
       {
-        title: operation.description,
-        description: operation.description,
-        inputSchema,
-        outputSchema,
-        annotations,
+        title: definition.title,
+        description: definition.description,
+        inputSchema: definition.inputSchema,
+        outputSchema: definition.outputSchema,
+        annotations: definition.annotations,
       },
-      async (args: unknown, ctx: ServerContext): Promise<CallToolResult> => {
-        try {
-          const input = (args ?? {}) as ToolInput & { confirmation?: unknown };
-          const elicitor =
-            options.createElicitor?.(ctx) ??
-            createSdkConfirmationElicitor(
-              ctx,
-              clientSupportsFormElicitation(options.server.server.getClientCapabilities()),
-            );
-
-          await authorizeToolCall({
-            operation,
-            policy: options.policy,
-            input,
-            ...(elicitor !== undefined ? { elicitor } : {}),
-          });
-
-          const toolInput: ToolInput = {};
-          if (input.path !== undefined) {
-            toolInput.path = input.path;
-          }
-          if (input.query !== undefined) {
-            toolInput.query = input.query;
-          }
-          if (input.body !== undefined) {
-            toolInput.body = input.body;
-          }
-
-          return await executeOperation({
-            operation,
-            input: toolInput,
-            client: options.client,
-            limits: options.limits,
-            outputSchema,
-          });
-        } catch (error) {
-          if (error instanceof ToolExecutionError) {
-            return toBinderToolError(error);
-          }
-          return toMcpToolError(error);
-        }
-      },
+      handler,
     );
-    registered.push(operation.toolName);
+    registered.push(definition.toolName);
   }
 
   return registered;

@@ -1,6 +1,8 @@
 /** Generator-owned tool naming. Runtime never recomputes names. */
 
-export const TOOL_NAME_REGEX = /^[a-zA-Z0-9_-]{1,64}$/;
+import { TOOL_NAME_REGEX } from "../src/manifest/tool-names.ts";
+
+export { TOOL_NAME_REGEX } from "../src/manifest/tool-names.ts";
 
 /** Longest-first replacements applied only when the unshortened name exceeds 64 chars. */
 export const TOOL_NAME_REPLACEMENTS: ReadonlyArray<readonly [string, string]> = [

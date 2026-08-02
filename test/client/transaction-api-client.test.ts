@@ -334,6 +334,87 @@ describe("TransactionApiClient", () => {
     expect(rateLimiter.deferUntilMs).toBeGreaterThan(0);
   });
 
+  it("does not defer on successful 200 responses that include rate-reset headers", async () => {
+    let apiCalls = 0;
+    const fetchMock = vi.fn(async (input: FetchInput, init?: RequestInit) => {
+      const request = input instanceof Request ? input : new Request(input, init);
+      if (new URL(request.url).pathname === "/auth/login") {
+        return jsonResponse({
+          Session: "sess",
+          Expiration: "2020-01-02T05:00:00Z",
+        });
+      }
+      apiCalls += 1;
+      return new Response(JSON.stringify({ ok: true }), {
+        status: 200,
+        headers: {
+          "Content-Type": "application/json",
+          "x-ratelimit-reset": "3600",
+          "Retry-After": "3600",
+        },
+      });
+    });
+
+    const { client, rateLimiter, sleep } = createHarness(fetchMock as unknown as typeof fetch);
+    await client.request({ method: "GET", path: "/api/sales" });
+    expect(apiCalls).toBe(1);
+    expect(rateLimiter.deferUntilMs).toBe(0);
+
+    // Next request proceeds immediately; a mistaken defer would sleep for an hour.
+    await client.request({ method: "GET", path: "/api/sales" });
+    expect(apiCalls).toBe(2);
+    expect(sleep).not.toHaveBeenCalled();
+  });
+
+  it("cancels upstream response bodies before GET retry and 401 refresh continue", async () => {
+    let apiCalls = 0;
+    const cancelled: boolean[] = [];
+    const fetchMock = vi.fn(async (input: FetchInput, init?: RequestInit) => {
+      const request = input instanceof Request ? input : new Request(input, init);
+      if (new URL(request.url).pathname === "/auth/login") {
+        return jsonResponse({
+          Session: `sess-${cancelled.length + 1}`,
+          Expiration: "2020-01-02T05:00:00Z",
+        });
+      }
+      apiCalls += 1;
+      if (apiCalls === 1) {
+        const body = new ReadableStream({
+          start(controller) {
+            controller.enqueue(new TextEncoder().encode('{"message":"unauthorized"}'));
+            // Leave the stream open until cancel so abandon would leak the socket.
+          },
+          cancel() {
+            cancelled.push(true);
+          },
+        });
+        return new Response(body, {
+          status: 401,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+      if (apiCalls === 2) {
+        const body = new ReadableStream({
+          start(controller) {
+            controller.enqueue(new TextEncoder().encode("retry-me"));
+          },
+          cancel() {
+            cancelled.push(true);
+          },
+        });
+        return new Response(body, { status: 503 });
+      }
+      return jsonResponse({ ok: true });
+    });
+
+    const { client } = createHarness(fetchMock as unknown as typeof fetch);
+    await expect(client.request({ method: "GET", path: "/api/sales" })).resolves.toMatchObject({
+      data: { ok: true },
+    });
+    expect(apiCalls).toBe(3);
+    expect(cancelled).toEqual([true, true]);
+  });
+
   it("exposes openapi-fetch without blocking dynamic request dispatch", async () => {
     const fetchMock = vi.fn(async (input: FetchInput, init?: RequestInit) => {
       const request = input instanceof Request ? input : new Request(input, init);

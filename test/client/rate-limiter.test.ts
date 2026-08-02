@@ -75,4 +75,29 @@ describe("TokenBucketRateLimiter", () => {
     expect(now).toBe(5_000);
     expect(limiter.tokens).toBe(99);
   });
+
+  it("serializes many concurrent deferred callers through one wait path", async () => {
+    let now = 0;
+    let activeSleeps = 0;
+    let maxActiveSleeps = 0;
+    const sleep = vi.fn(async (ms: number) => {
+      activeSleeps += 1;
+      maxActiveSleeps = Math.max(maxActiveSleeps, activeSleeps);
+      now += ms;
+      activeSleeps -= 1;
+    });
+    const limiter = new TokenBucketRateLimiter({
+      capacity: 100,
+      now: () => now,
+      sleep,
+    });
+
+    limiter.deferUntil(10_000);
+    const pending = Array.from({ length: 50 }, () => limiter.acquire());
+    await Promise.all(pending);
+
+    expect(limiter.tokens).toBe(50);
+    expect(maxActiveSleeps).toBe(1);
+    expect(sleep.mock.calls.length).toBeLessThan(50);
+  });
 });

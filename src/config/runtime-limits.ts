@@ -22,8 +22,23 @@ export const DEFAULT_RUNTIME_LIMITS: RuntimeLimits = {
   maxBulkItems: 100,
 };
 
-/** Inclusive upper bound for runtime limit overrides (JS safe integer). */
-export const MAX_RUNTIME_LIMIT_VALUE = Number.MAX_SAFE_INTEGER;
+/** Absolute ceiling for structured JSON output overrides (16 MiB). */
+export const MAX_STRUCTURED_OUTPUT_BYTES_CEILING = 16 * 1024 * 1024;
+/** Absolute ceiling for binary output overrides (64 MiB). */
+export const MAX_BINARY_OUTPUT_BYTES_CEILING = 64 * 1024 * 1024;
+/** Absolute ceiling for upload overrides (64 MiB). */
+export const MAX_UPLOAD_BYTES_CEILING = 64 * 1024 * 1024;
+/** Absolute ceiling for bulk item overrides. */
+export const MAX_BULK_ITEMS_CEILING = 10_000;
+/** Absolute ceiling for inbound HTTP MCP request bodies (96 MiB). */
+export const MAX_HTTP_REQUEST_BODY_BYTES_CEILING = 96 * 1024 * 1024;
+
+const LIMIT_CEILINGS: Readonly<Record<keyof RuntimeLimits, number>> = {
+  maxStructuredOutputBytes: MAX_STRUCTURED_OUTPUT_BYTES_CEILING,
+  maxBinaryOutputBytes: MAX_BINARY_OUTPUT_BYTES_CEILING,
+  maxUploadBytes: MAX_UPLOAD_BYTES_CEILING,
+  maxBulkItems: MAX_BULK_ITEMS_CEILING,
+};
 
 /**
  * Return an immutable limits object, filling omitted fields from defaults.
@@ -37,37 +52,58 @@ export function createRuntimeLimits(overrides: Partial<RuntimeLimits> = {}): Run
     maxUploadBytes: overrides.maxUploadBytes ?? DEFAULT_RUNTIME_LIMITS.maxUploadBytes,
     maxBulkItems: overrides.maxBulkItems ?? DEFAULT_RUNTIME_LIMITS.maxBulkItems,
   };
-  for (const [name, value] of Object.entries(limits)) {
-    assertPositiveSafeInteger(value, name);
+  for (const name of Object.keys(limits) as Array<keyof RuntimeLimits>) {
+    assertPositiveLimit(limits[name], name, LIMIT_CEILINGS[name]);
   }
   return limits;
 }
 
 /**
- * Parse a positive safe integer limit override from an environment string.
+ * Compute a safe inbound HTTP MCP request body byte limit from runtime limits.
+ *
+ * Allows headroom for JSON envelopes and base64 expansion, capped by an absolute ceiling.
+ */
+export function httpRequestBodyLimitBytes(limits: RuntimeLimits): number {
+  const encodedUploadWithEnvelope =
+    Math.ceil((limits.maxUploadBytes * 4) / 3) + limits.maxStructuredOutputBytes;
+  const configured = Math.max(
+    encodedUploadWithEnvelope,
+    limits.maxStructuredOutputBytes,
+    limits.maxBinaryOutputBytes,
+  );
+  return Math.min(configured, MAX_HTTP_REQUEST_BODY_BYTES_CEILING);
+}
+
+/**
+ * Parse a positive integer limit override from an environment string.
  *
  * Args:
  *   raw: Environment value to parse.
  *   name: Environment variable name used in validation errors.
+ *   ceiling: Inclusive absolute maximum for this field.
  *
  * Returns:
  *   The parsed positive integer.
  *
  * Raises:
- *   Error: If the value is missing, non-integer, non-positive, or unsafe.
+ *   Error: If the value is missing, non-integer, non-positive, or above the ceiling.
  */
-export function parsePositiveSafeIntegerLimit(raw: string, name: string): number {
+export function parsePositiveSafeIntegerLimit(
+  raw: string,
+  name: string,
+  ceiling: number = Number.MAX_SAFE_INTEGER,
+): number {
   const trimmed = raw.trim();
   if (!/^[1-9]\d*$/.test(trimmed)) {
     throw new Error(`${name} must be a positive integer`);
   }
   const value = Number(trimmed);
-  assertPositiveSafeInteger(value, name);
+  assertPositiveLimit(value, name, ceiling);
   return value;
 }
 
-function assertPositiveSafeInteger(value: number, name: string): void {
-  if (!Number.isSafeInteger(value) || value < 1 || value > MAX_RUNTIME_LIMIT_VALUE) {
-    throw new Error(`${name} must be a positive safe integer at most ${MAX_RUNTIME_LIMIT_VALUE}`);
+function assertPositiveLimit(value: number, name: string, ceiling: number): void {
+  if (!Number.isSafeInteger(value) || value < 1 || value > ceiling) {
+    throw new Error(`${name} must be a positive safe integer at most ${ceiling}`);
   }
 }
