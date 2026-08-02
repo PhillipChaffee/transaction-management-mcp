@@ -1,5 +1,5 @@
 import { setupServer } from "msw/node";
 
-import { binderHandlers } from "./handlers.ts";
+import { allHandlers } from "./handlers.ts";
 
-export const mswServer = setupServer(...binderHandlers);
+export const mswServer = setupServer(...allHandlers);

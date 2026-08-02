@@ -43,7 +43,8 @@
     "verify:manifest": "tsx scripts/verify-manifest.ts",
     "openapi:pin": "tsx scripts/fetch-openapi.ts --pin",
     "openapi:generate": "tsx scripts/fetch-openapi.ts --generate",
-    "package:check": "npm pack --dry-run"
+    "package:check": "npm pack --dry-run",
+    "inspector:smoke": "npm run build && node scripts/inspector-smoke.mjs"
   },
   "dependencies": {
     "@modelcontextprotocol/node": "^2.0.0",
