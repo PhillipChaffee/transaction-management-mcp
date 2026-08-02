@@ -3,7 +3,6 @@ import { http, HttpResponse } from "msw";
 
 import {
   executeOperation,
-  type ManifestOperation,
   normalizeEmptyValue,
   parseBulkItems,
   prepareRequest,
@@ -18,10 +17,9 @@ import {
 import { ToolExecutionError } from "../../src/binder/errors.ts";
 import { createRuntimeLimits } from "../../src/config/runtime-limits.ts";
 import { toolSchemas } from "../../src/generated/tool-schemas.ts";
-import operationsManifest from "../../src/generated/operations.manifest.json" with { type: "json" };
 import { API_BASE_URL } from "../msw/handlers.ts";
 import { mswServer } from "../msw/server.ts";
-import { createBinderHarness } from "./harness.ts";
+import { argsForTool, createBinderHarness, operationById } from "./harness.ts";
 
 beforeAll(() => {
   mswServer.listen({ onUnhandledRequest: "error" });
@@ -34,16 +32,6 @@ afterEach(() => {
 afterAll(() => {
   mswServer.close();
 });
-
-function operationById(operationId: string): ManifestOperation {
-  const operation = operationsManifest.operations.find(
-    (entry) => entry.operationId === operationId,
-  );
-  if (!operation) {
-    throw new Error(`Missing operation ${operationId}`);
-  }
-  return operation as ManifestOperation;
-}
 
 describe("codec helpers", () => {
   it("substitutes all path placeholders and fails when missing", () => {
@@ -187,7 +175,9 @@ describe("codec execution via MCP", () => {
 
       const deleted = await harness.client.callTool({
         name: "contacts_delete_contact",
-        arguments: { path: { contactGuid: "c-1" } },
+        arguments: argsForTool("contacts_delete_contact", {
+          path: { contactGuid: "c-1" },
+        }),
       });
       expect(deleted.isError).toBeFalsy();
       expect(deleted.structuredContent).toEqual({ success: true, status: 204 });
@@ -249,10 +239,10 @@ describe("codec execution via MCP", () => {
       const payload = Buffer.from("synthetic-file-bytes").toString("base64");
       const result = await harness.client.callTool({
         name: "documents_add_document_to_listing",
-        arguments: {
+        arguments: argsForTool("documents_add_document_to_listing", {
           path: { listingGuid: "listing-1" },
           body: { base64Content: payload, fileName: "offer.pdf" },
-        },
+        }),
       });
       expect(result.isError).toBeFalsy();
       const serialized = JSON.stringify(result);
@@ -276,7 +266,9 @@ describe("codec execution via MCP", () => {
     try {
       const got = await harness.client.callTool({
         name: "cda_document_data_get_cda_document_data",
-        arguments: { path: { saleGuid: "sale-1" } },
+        arguments: argsForTool("cda_document_data_get_cda_document_data", {
+          path: { saleGuid: "sale-1" },
+        }),
       });
       expect(got.isError).toBeFalsy();
       expect(got.structuredContent).toMatchObject({
@@ -285,10 +277,10 @@ describe("codec execution via MCP", () => {
 
       const set = await harness.client.callTool({
         name: "cda_document_data_set_cda_document_data",
-        arguments: {
+        arguments: argsForTool("cda_document_data_set_cda_document_data", {
           path: { saleGuid: "sale-1" },
           body: { formsFileId: 3, documentData: null },
-        },
+        }),
       });
       expect(set.isError).toBeFalsy();
       expect(set.structuredContent).toMatchObject({
@@ -307,7 +299,7 @@ describe("codec execution via MCP", () => {
     try {
       const result = await harness.client.callTool({
         name: "bulk_export_get_bulk_export",
-        arguments: { query: {} },
+        arguments: argsForTool("bulk_export_get_bulk_export", { query: { status: "all" } }),
       });
       expect(result.isError).toBeFalsy();
       expect(result.structuredContent).toMatchObject({
@@ -335,7 +327,9 @@ describe("codec execution via MCP", () => {
     try {
       const result = await harness.client.callTool({
         name: "bulk_export_get_bulk_export",
-        arguments: { query: { status: "comma-newline" } },
+        arguments: argsForTool("bulk_export_get_bulk_export", {
+          query: { status: "comma-newline" },
+        }),
       });
       expect(result.isError).toBeFalsy();
       expect(result.structuredContent).toMatchObject({
@@ -354,7 +348,7 @@ describe("codec execution via MCP", () => {
     try {
       const result = await harness.client.callTool({
         name: "bulk_export_get_replica_timestamp",
-        arguments: {},
+        arguments: argsForTool("bulk_export_get_replica_timestamp", {}),
       });
       expect(result.isError).toBeFalsy();
       expect(result.structuredContent).toEqual({
@@ -373,7 +367,9 @@ describe("codec execution via MCP", () => {
     try {
       const result = await harness.client.callTool({
         name: "sales_get_sales",
-        arguments: { query: { userBeingImpersonated: 42 } },
+        arguments: argsForTool("sales_get_sales", {
+          query: { userBeingImpersonated: 42 },
+        }),
       });
       expect(result.isError).toBeFalsy();
       expect(result.structuredContent).toEqual({
@@ -490,6 +486,9 @@ describe("codec execution via MCP", () => {
       toolName: "synthetic_empty_value",
       method: "get",
       path: "/api/synthetic/empty-value",
+      primaryToolset: "reference",
+      riskTier: "read" as const,
+      capabilities: [] as const,
       inputCodec: "json" as const,
       outputCodec: "empty-value" as const,
       description: "Synthetic empty value",

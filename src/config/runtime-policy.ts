@@ -1,8 +1,8 @@
 /**
  * Immutable startup authorization snapshot consumed by the registrar and guards.
  *
- * Policy resolution (argv/env) is owned by Commit 5. This module only defines the
- * shape and a small factory for constructing values explicitly.
+ * Construct via `resolveRuntimeConfig` (argv/env) or `createResolvedRuntimePolicy`
+ * for explicit test/setup values.
  */
 
 export const CAPABILITY_IDS = [

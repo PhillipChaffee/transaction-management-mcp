@@ -1,12 +1,16 @@
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
+import { http, HttpResponse } from "msw";
 
+import type { ManifestOperation } from "../../src/binder/codecs/index.ts";
 import { allManifestToolNames, registerTools } from "../../src/binder/register.ts";
 import { createRuntimeLimits } from "../../src/config/runtime-limits.ts";
+import { resolveRuntimeConfig } from "../../src/config/resolve.ts";
 import { createResolvedRuntimePolicy } from "../../src/config/runtime-policy.ts";
-import { toolSchemas } from "../../src/generated/tool-schemas.ts";
 import operationsManifest from "../../src/generated/operations.manifest.json" with { type: "json" };
-import { createBinderHarness } from "./harness.ts";
+import { toolSchemas } from "../../src/generated/tool-schemas.ts";
+import { API_BASE_URL } from "../msw/handlers.ts";
 import { mswServer } from "../msw/server.ts";
+import { argsForTool, createBinderHarness } from "./harness.ts";
 
 beforeAll(() => {
   mswServer.listen({ onUnhandledRequest: "error" });
@@ -97,6 +101,90 @@ describe("registerTools", () => {
   it("has generated schemas for every manifest operation", () => {
     for (const operation of operationsManifest.operations) {
       expect(toolSchemas[operation.operationId as keyof typeof toolSchemas]).toBeDefined();
+    }
+  });
+
+  it("preserves manifest annotations exactly on registered tools", async () => {
+    const samples = operationsManifest.operations.filter((operation) =>
+      [
+        "Contacts_GetContacts",
+        "Contacts_DeleteContact",
+        "Contacts_CreateContact",
+        "BulkExport_GetBulkExport",
+      ].includes(operation.operationId),
+    );
+    const harness = await createBinderHarness({
+      selectedToolNames: samples.map((operation) => operation.toolName),
+    });
+    try {
+      const listed = await harness.client.listTools();
+      for (const operation of samples) {
+        const tool = listed.tools.find((entry) => entry.name === operation.toolName);
+        expect(tool?.annotations).toEqual(operation.annotations);
+      }
+    } finally {
+      await harness.close();
+    }
+  });
+
+  it("registers only the resolved selected tool set", async () => {
+    const resolved = resolveRuntimeConfig({
+      operations: operationsManifest.operations as ManifestOperation[],
+      argv: [],
+      env: {},
+    });
+    const harness = await createBinderHarness({
+      policy: resolved.policy,
+      selectedToolNames: resolved.policy.selectedToolNames,
+    });
+    try {
+      expect(harness.registeredNames).toHaveLength(30);
+      const listed = await harness.client.listTools();
+      expect(listed.tools).toHaveLength(30);
+    } finally {
+      await harness.close();
+    }
+  });
+
+  it("does not automatically retry writes through the registered binder path", async () => {
+    let hits = 0;
+    mswServer.use(
+      http.post(`${API_BASE_URL}/api/contacts`, () => {
+        hits += 1;
+        return HttpResponse.json({ message: "busy" }, { status: 503 });
+      }),
+    );
+
+    const harness = await createBinderHarness({
+      selectedToolNames: ["contacts_create_contact"],
+    });
+    try {
+      const result = await harness.client.callTool({
+        name: "contacts_create_contact",
+        arguments: {
+          body: { firstName: "Ada", lastName: "Lovelace", email: "ada@example.com" },
+        },
+      });
+      expect(result.isError).toBe(true);
+      expect(hits).toBe(1);
+    } finally {
+      await harness.close();
+    }
+  });
+
+  it("blocks guessed tool names that are not registered", async () => {
+    const harness = await createBinderHarness({
+      selectedToolNames: ["contacts_get_contacts"],
+    });
+    try {
+      await expect(
+        harness.client.callTool({
+          name: "contacts_delete_contact",
+          arguments: argsForTool("contacts_delete_contact", { path: { contactGuid: "c-1" } }),
+        }),
+      ).rejects.toThrow();
+    } finally {
+      await harness.close();
     }
   });
 });

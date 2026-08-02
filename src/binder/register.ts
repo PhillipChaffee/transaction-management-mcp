@@ -2,7 +2,13 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import type { CallToolResult, McpServer, ToolAnnotations } from "@modelcontextprotocol/server";
+import type {
+  CallToolResult,
+  McpServer,
+  ServerContext,
+  ToolAnnotations,
+} from "@modelcontextprotocol/server";
+import type { z } from "zod";
 
 import { toMcpToolError } from "../client/errors.js";
 import type { TransactionApiClient } from "../client/transaction-api-client.js";
@@ -15,7 +21,14 @@ import {
   type ToolInput,
   resolveOutputSchema,
 } from "./codecs/index.js";
+import {
+  augmentInputSchemaWithConfirmation,
+  clientSupportsFormElicitation,
+  createSdkConfirmationElicitor,
+  type ConfirmationElicitor,
+} from "./confirmation.js";
 import { ToolExecutionError, toBinderToolError } from "./errors.js";
+import { authorizeToolCall } from "./guards.js";
 
 /** Runtime tool-name contract (baked names must already satisfy this). */
 export const TOOL_NAME_REGEX = /^[a-zA-Z0-9_-]{1,64}$/;
@@ -31,6 +44,11 @@ export type RegisterToolsOptions = {
   limits: RuntimeLimits;
   /** Optional manifest override for tests. Defaults to the generated runtime manifest. */
   manifest?: ManifestFile;
+  /**
+   * Optional elicitation adapter factory for tests. Defaults to an SDK-backed
+   * adapter derived from the handler context and client capabilities.
+   */
+  createElicitor?: (ctx: ServerContext) => ConfirmationElicitor | undefined;
 };
 
 /**
@@ -38,6 +56,8 @@ export type RegisterToolsOptions = {
  *
  * Transport-agnostic: callers supply policy, limits, client, and server.
  * Uses baked `manifest.toolName` values only — never recomputes names.
+ * High-risk tools receive augmented confirmation input schemas. Every call
+ * runs authorization and confirmation guards before `executeOperation`.
  *
  * @returns Registered tool names in manifest order.
  */
@@ -75,6 +95,10 @@ export async function registerTools(options: RegisterToolsOptions): Promise<stri
     }
 
     const outputSchema = resolveOutputSchema(operation, schemas.output);
+    const inputSchema = augmentInputSchemaWithConfirmation(
+      operation,
+      schemas.input as z.ZodType<unknown>,
+    );
     const annotations = operation.annotations as ToolAnnotations;
 
     options.server.registerTool(
@@ -82,15 +106,41 @@ export async function registerTools(options: RegisterToolsOptions): Promise<stri
       {
         title: operation.description,
         description: operation.description,
-        inputSchema: schemas.input,
+        inputSchema,
         outputSchema,
         annotations,
       },
-      async (args: unknown): Promise<CallToolResult> => {
+      async (args: unknown, ctx: ServerContext): Promise<CallToolResult> => {
         try {
+          const input = (args ?? {}) as ToolInput & { confirmation?: unknown };
+          const elicitor =
+            options.createElicitor?.(ctx) ??
+            createSdkConfirmationElicitor(
+              ctx,
+              clientSupportsFormElicitation(options.server.server.getClientCapabilities()),
+            );
+
+          await authorizeToolCall({
+            operation,
+            policy: options.policy,
+            input,
+            ...(elicitor !== undefined ? { elicitor } : {}),
+          });
+
+          const toolInput: ToolInput = {};
+          if (input.path !== undefined) {
+            toolInput.path = input.path;
+          }
+          if (input.query !== undefined) {
+            toolInput.query = input.query;
+          }
+          if (input.body !== undefined) {
+            toolInput.body = input.body;
+          }
+
           return await executeOperation({
             operation,
-            input: (args ?? {}) as ToolInput,
+            input: toolInput,
             client: options.client,
             limits: options.limits,
             outputSchema,

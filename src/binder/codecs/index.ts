@@ -24,11 +24,16 @@ export type CodecId =
   | "empty-value"
   | "json";
 
+export type RiskTier = "read" | "ordinary" | "destructive" | "financial" | "admin" | "binary-io";
+
 export type ManifestOperation = {
   operationId: string;
   toolName: string;
   method: string;
   path: string;
+  primaryToolset: string;
+  riskTier: RiskTier;
+  capabilities: readonly string[];
   inputCodec: CodecId;
   outputCodec: CodecId;
   description: string;
