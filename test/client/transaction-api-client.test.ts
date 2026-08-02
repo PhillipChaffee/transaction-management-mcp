@@ -283,6 +283,44 @@ describe("TransactionApiClient", () => {
     });
   });
 
+  it("treats caller AbortSignal as cancellation without GET retries", async () => {
+    let apiCalls = 0;
+    const fetchMock = vi.fn(async (input: FetchInput, init?: RequestInit) => {
+      const request = input instanceof Request ? input : new Request(input, init);
+      if (new URL(request.url).pathname === "/auth/login") {
+        return jsonResponse({
+          Session: "sess",
+          Expiration: "2020-01-02T05:00:00Z",
+        });
+      }
+      apiCalls += 1;
+      const error = new Error("Aborted");
+      error.name = "AbortError";
+      throw error;
+    });
+
+    const { client } = createHarness(fetchMock as unknown as typeof fetch);
+    const controller = new AbortController();
+    controller.abort();
+
+    await expect(
+      client.dispatch(
+        new Request("https://api.skyslope.com/api/sales", {
+          method: "GET",
+          signal: controller.signal,
+        }),
+      ),
+    ).rejects.toSatisfy((error: unknown) => {
+      expect(error).toBeInstanceOf(NetworkRequestError);
+      expect(String(error)).toMatch(/cancelled/i);
+      expect(String(error)).not.toMatch(/timed out/i);
+      expect((error as NetworkRequestError).retryable).toBe(false);
+      expect((error as NetworkRequestError).ambiguous).toBe(false);
+      return true;
+    });
+    expect(apiCalls).toBe(1);
+  });
+
   it("exhausts GET network retries then fails safely", async () => {
     let apiCalls = 0;
     const fetchMock = vi.fn(async (input: FetchInput, init?: RequestInit) => {

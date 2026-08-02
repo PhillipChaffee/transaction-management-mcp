@@ -1,5 +1,6 @@
 import type { z } from "zod";
 
+import { cancelResponseBody } from "../../client/response-body.js";
 import type { TransactionApiClient } from "../../client/transaction-api-client.js";
 import type { RuntimeLimits } from "../../config/runtime-limits.js";
 import type { ManifestOperation } from "../../manifest/types.js";
@@ -272,8 +273,14 @@ async function decodeResponse(options: {
   const { operation, response, limits } = options;
 
   switch (operation.outputCodec) {
-    case "no-content":
+    case "no-content": {
+      // Do not await — some test transports hang on a drained cancel promise.
+      void cancelResponseBody(response);
+      if (response.status !== 204) {
+        throw new ToolExecutionError(`Expected 204 No Content, received ${response.status}`);
+      }
       return { success: true as const, status: 204 as const };
+    }
     case "octet-stream":
       return decodeOctetStream(response, limits.maxBinaryOutputBytes);
     case "bulk-stream":
@@ -365,8 +372,8 @@ async function decodeBulkStream(
 }
 
 /**
- * Parse vendor bulk payloads: a JSON array, or comma/newline-separated JSON values.
- * Stops after maxItems complete values.
+ * Parse vendor bulk payloads: a JSON array, `{value:[...],links}` envelope, or
+ * comma/newline-separated JSON values. Stops after maxItems complete values.
  */
 export function parseBulkItems(
   text: string,
@@ -381,7 +388,61 @@ export function parseBulkItems(
     return parseJsonArrayPrefix(trimmed, maxItems);
   }
 
+  if (trimmed.startsWith("{")) {
+    const valueArrayStart = findEnvelopeValueArrayStart(trimmed);
+    if (valueArrayStart !== undefined) {
+      return parseJsonArrayPrefix(trimmed.slice(valueArrayStart), maxItems);
+    }
+  }
+
   return parseCommaNewlineValues(trimmed, maxItems);
+}
+
+/**
+ * Locate the `[` of a documented bulk envelope `value` array.
+ *
+ * Only accepts top-level keys `value` and/or `links`. Any other key means this is
+ * not the envelope shape (e.g. a bare comma-newline object that also starts with `{`).
+ * Returns the array offset even when the stream is truncated mid-array.
+ */
+function findEnvelopeValueArrayStart(text: string): number | undefined {
+  let i = 1; // skip '{'
+  while (i < text.length) {
+    while (i < text.length && /[\s,]/.test(text[i]!)) {
+      i += 1;
+    }
+    if (i >= text.length || text[i] === "}" || text[i] !== '"') {
+      return undefined;
+    }
+    const parsedKey = readJsonValueAt(text, i);
+    if (!parsedKey || typeof parsedKey.value !== "string") {
+      return undefined;
+    }
+    i = parsedKey.end;
+    while (i < text.length && /\s/.test(text[i]!)) {
+      i += 1;
+    }
+    if (text[i] !== ":") {
+      return undefined;
+    }
+    i += 1;
+    while (i < text.length && /\s/.test(text[i]!)) {
+      i += 1;
+    }
+    if (parsedKey.value === "value") {
+      return text[i] === "[" ? i : undefined;
+    }
+    if (parsedKey.value === "links") {
+      const linksEnd = findJsonValueEnd(text, i);
+      if (linksEnd === undefined) {
+        return undefined;
+      }
+      i = linksEnd;
+      continue;
+    }
+    return undefined;
+  }
+  return undefined;
 }
 
 function parseJsonArrayPrefix(

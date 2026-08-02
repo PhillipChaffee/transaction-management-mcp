@@ -174,6 +174,20 @@ export class TransactionApiClient {
         });
         response = await this.#fetch(outbound);
       } catch (error) {
+        // Caller abort must not burn GET retries or be reported as a timeout.
+        if (callerSignal?.aborted) {
+          const message = "Request cancelled";
+          if (!isGet) {
+            throw new AmbiguousCompletionError(
+              `${message}; write completion is ambiguous — read the current resource state before retrying`,
+            );
+          }
+          throw new NetworkRequestError(message, {
+            retryable: false,
+            ambiguous: false,
+          });
+        }
+
         const timedOut = isAbortError(error);
         const message = timedOut ? "Request timed out" : "Network request failed";
 

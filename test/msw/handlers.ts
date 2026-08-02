@@ -220,6 +220,12 @@ export const explicitHandlers: HttpHandler[] = [
       saleGuid: `sale-${index}`,
       createdOn: "2020-01-01T00:00:00Z",
     }));
+    if (mode === "envelope") {
+      return new HttpResponse(JSON.stringify({ value: items, links: [] }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
     return new HttpResponse(JSON.stringify(items), {
       status: 200,
       headers: { "Content-Type": "application/json" },

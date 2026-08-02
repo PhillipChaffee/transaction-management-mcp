@@ -30,13 +30,7 @@ describe("verify-manifest (full policy)", () => {
   it("accepts the pinned generated policy manifest", async () => {
     const pinPath = path.join(root, "openapi.sha256");
     const manifestPath = path.join(root, "src/generated/operations.manifest.json");
-    let pin: string;
-    try {
-      pin = (await readFile(pinPath, "utf8")).trim();
-      await readFile(manifestPath, "utf8");
-    } catch {
-      return;
-    }
+    const pin = (await readFile(pinPath, "utf8")).trim();
     const manifest = await verifyManifest(manifestPath, pinPath);
     expect(manifest.openapiSha256).toBe(pin);
     expect(manifest.census).toEqual(EXPECTED_CENSUS);

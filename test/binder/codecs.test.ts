@@ -111,6 +111,24 @@ describe("codec helpers", () => {
     });
   });
 
+  it("parses documented bulk envelope value arrays with caps", () => {
+    const envelope = JSON.stringify({
+      value: [{ id: 1 }, { id: 2 }, { id: 3 }],
+      links: [{ rel: "self" }],
+    });
+    expect(parseBulkItems(envelope, 2)).toEqual({
+      items: [{ id: 1 }, { id: 2 }],
+      truncated: true,
+    });
+
+    // Truncated mid-second-element: keep the complete first item.
+    const truncatedPrefix = '{"value":[{"id":1},{"id":2';
+    expect(parseBulkItems(truncatedPrefix, 10)).toEqual({
+      items: [{ id: 1 }],
+      truncated: true,
+    });
+  });
+
   it("attaches codec-specific output schemas only where needed", () => {
     const bulk = operationById("BulkExport_GetBulkExport");
     expect(resolveOutputSchema(bulk, toolSchemas.BulkExport_GetBulkExport.output)).toBe(
@@ -313,7 +331,7 @@ describe("codec execution via MCP", () => {
     try {
       const result = await harness.client.callTool({
         name: "bulk_export_get_bulk_export",
-        arguments: argsForTool("bulk_export_get_bulk_export", { query: { status: "all" } }),
+        arguments: argsForTool("bulk_export_get_bulk_export", { query: { status: "envelope" } }),
       });
       expect(result.isError).toBeFalsy();
       expect(result.structuredContent).toMatchObject({
@@ -410,6 +428,35 @@ describe("codec execution via MCP", () => {
       });
       expect(result.isError).toBeFalsy();
       expect(result.structuredContent).toEqual({ success: true, status: 204 });
+    } finally {
+      await harness.close();
+    }
+  });
+
+  it("no-content tools reject non-204 responses", async () => {
+    mswServer.use(
+      http.put(`${API_BASE_URL}/api/files/listings/:listingGuid/reviewer`, async ({ request }) => {
+        await request.json().catch(() => undefined);
+        return HttpResponse.json({ value: { leaked: true } }, { status: 200 });
+      }),
+    );
+
+    const harness = await createBinderHarness({
+      selectedToolNames: ["listings_update_reviewer"],
+    });
+    try {
+      const result = await harness.client.callTool({
+        name: "listings_update_reviewer",
+        arguments: {
+          path: { listingGuid: "listing-1" },
+          body: { reviewerGuid: "user-1" },
+        },
+      });
+      expect(result.isError).toBe(true);
+      expect(result.structuredContent).toMatchObject({
+        message: expect.stringMatching(/Expected 204 No Content, received 200/),
+      });
+      expect(result.structuredContent).not.toMatchObject({ success: true, status: 204 });
     } finally {
       await harness.close();
     }
