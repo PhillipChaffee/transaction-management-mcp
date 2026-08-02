@@ -1,13 +1,13 @@
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 import { http, HttpResponse } from "msw";
 
-import type { ManifestOperation } from "../../src/binder/codecs/index.ts";
 import { allManifestToolNames, registerTools } from "../../src/binder/register.ts";
 import { createRuntimeLimits } from "../../src/config/runtime-limits.ts";
 import { resolveRuntimeConfig } from "../../src/config/resolve.ts";
 import { createResolvedRuntimePolicy } from "../../src/config/runtime-policy.ts";
 import operationsManifest from "../../src/generated/operations.manifest.json" with { type: "json" };
 import { toolSchemas } from "../../src/generated/tool-schemas.ts";
+import type { ManifestOperation } from "../../src/manifest/types.ts";
 import { API_BASE_URL } from "../msw/handlers.ts";
 import { mswServer } from "../msw/server.ts";
 import { argsForTool, createBinderHarness } from "./harness.ts";

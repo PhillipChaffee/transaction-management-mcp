@@ -6,7 +6,7 @@
  * the result and must not re-parse configuration.
  */
 
-import type { ManifestOperation } from "../binder/codecs/index.js";
+import type { ManifestOperation } from "../manifest/types.js";
 import {
   createRuntimeLimits,
   parsePositiveSafeIntegerLimit,

@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
 
-import type { ManifestOperation } from "../../src/binder/codecs/index.ts";
 import { isReadOperation, resolveRuntimeConfig } from "../../src/config/resolve.ts";
 import { createRuntimeLimits, DEFAULT_RUNTIME_LIMITS } from "../../src/config/runtime-limits.ts";
 import operationsManifest from "../../src/generated/operations.manifest.json" with { type: "json" };
+import type { ManifestOperation } from "../../src/manifest/types.ts";
 
 const operations = operationsManifest.operations as ManifestOperation[];
 

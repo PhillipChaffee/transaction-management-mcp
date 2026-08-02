@@ -15,12 +15,8 @@ import type { TransactionApiClient } from "../client/transaction-api-client.js";
 import type { RuntimeLimits } from "../config/runtime-limits.js";
 import type { ResolvedRuntimePolicy } from "../config/runtime-policy.js";
 import { toolSchemas } from "../generated/tool-schemas.js";
-import {
-  executeOperation,
-  type ManifestOperation,
-  type ToolInput,
-  resolveOutputSchema,
-} from "./codecs/index.js";
+import type { ManifestOperation } from "../manifest/types.js";
+import { executeOperation, type ToolInput, resolveOutputSchema } from "./codecs/index.js";
 import {
   augmentInputSchemaWithConfirmation,
   clientSupportsFormElicitation,

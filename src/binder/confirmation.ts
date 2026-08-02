@@ -15,7 +15,8 @@ import type {
 import { z } from "zod";
 
 import type { CapabilityId } from "../config/runtime-policy.js";
-import type { ManifestOperation, ToolInput } from "./codecs/index.js";
+import type { ManifestOperation } from "../manifest/types.js";
+import type { ToolInput } from "./codecs/index.js";
 import { ToolExecutionError } from "./errors.js";
 
 const HIGH_RISK_TIERS = new Set(["destructive", "financial", "admin", "binary-io"]);

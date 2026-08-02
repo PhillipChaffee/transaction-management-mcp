@@ -3,7 +3,7 @@ import type { ServerContext } from "@modelcontextprotocol/server";
 import { McpServer } from "@modelcontextprotocol/server";
 
 import { SessionManager } from "../../src/auth/session-manager.ts";
-import type { ManifestOperation, ToolInput } from "../../src/binder/codecs/index.ts";
+import type { ToolInput } from "../../src/binder/codecs/index.ts";
 import {
   expectedConfirmation,
   isHighRiskOperation,
@@ -20,6 +20,7 @@ import {
   type ResolvedRuntimePolicy,
 } from "../../src/config/runtime-policy.ts";
 import operationsManifest from "../../src/generated/operations.manifest.json" with { type: "json" };
+import type { ManifestOperation } from "../../src/manifest/types.ts";
 import { API_BASE_URL } from "../msw/handlers.ts";
 
 export const syntheticCredentials: Credentials = {

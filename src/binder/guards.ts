@@ -7,7 +7,8 @@
 
 import type { ResolvedRuntimePolicy } from "../config/runtime-policy.js";
 import { isCapabilityId, type CapabilityId } from "../config/runtime-policy.js";
-import type { ManifestOperation, ToolInput } from "./codecs/index.js";
+import type { ManifestOperation } from "../manifest/types.js";
+import type { ToolInput } from "./codecs/index.js";
 import {
   type ConfirmationElicitor,
   enforceConfirmation,
