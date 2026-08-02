@@ -1,0 +1,13 @@
+# Generator-only known-operation exceptions.
+# May annotate riskTier / capabilities / codecs / description / annotations.
+# Must never add or remove operations, and must never change GET versus write.
+
+operations:
+  # Research classified escrow contact as financial/compliance (EMD-adjacent
+  # money-handling contact). Tag is Sale Contacts (ordinary by default);
+  # without this override the pinned write census is 69 ordinary / 27 financial.
+  SaleContacts_AddEscrowContact:
+    riskTier: financial
+    reason: >-
+      Escrow contact mutates money-handling party data on a sale; treat as
+      financial/compliance alongside EMD and commission writes.

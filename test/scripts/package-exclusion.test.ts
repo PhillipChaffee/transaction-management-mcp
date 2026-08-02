@@ -33,9 +33,14 @@ describe("package exclusion", () => {
       ".tmp_ss_probe/openapi.json",
       ".env",
       "src/generated/tool-name-abbreviations.json",
+      "dist/generated/tool-name-abbreviations.json",
+      "overrides/classification-rules.yaml",
+      "overrides/operations.yaml",
     ]) {
       expect(files.has(forbidden)).toBe(false);
     }
+
+    expect([...files].some((file) => file.endsWith("tool-name-abbreviations.json"))).toBe(false);
 
     // Runtime-derived artifacts are allowed once present.
     for (const allowedPrefix of ["dist/", "README.md", "LICENSE", "NOTICE", "openapi.sha256"]) {

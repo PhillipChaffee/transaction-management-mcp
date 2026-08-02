@@ -8,1452 +8,4458 @@
   "operations": [
     {
       "operationId": "Checklists_GetChecklistTypesSingleOffice",
+      "toolName": "checklists_get_checklist_types_single_office",
       "method": "get",
       "path": "/api/checklistTypes",
       "apiVersion": "v1",
-      "tag": "Checklists"
+      "twinOperationId": null,
+      "tag": "Checklists",
+      "primaryToolset": "checklists",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "List checklist types"
     },
     {
       "operationId": "Contacts_GetContacts",
+      "toolName": "contacts_get_contacts",
       "method": "get",
       "path": "/api/contacts",
       "apiVersion": "v1",
-      "tag": "Contacts"
+      "twinOperationId": null,
+      "tag": "Contacts",
+      "primaryToolset": "contacts",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get contacts"
     },
     {
       "operationId": "Contacts_CreateContact",
+      "toolName": "contacts_create_contact",
       "method": "post",
       "path": "/api/contacts",
       "apiVersion": "v1",
-      "tag": "Contacts"
+      "twinOperationId": null,
+      "tag": "Contacts",
+      "primaryToolset": "contacts",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Create contact"
     },
     {
       "operationId": "Contacts_DeleteContact",
+      "toolName": "contacts_delete_contact",
       "method": "delete",
       "path": "/api/contacts/{contactGuid}",
       "apiVersion": "v1",
-      "tag": "Contacts"
+      "twinOperationId": null,
+      "tag": "Contacts",
+      "primaryToolset": "contacts",
+      "riskTier": "destructive",
+      "capabilities": [
+        "destructive"
+      ],
+      "inputCodec": "no-body-write",
+      "outputCodec": "no-content",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false
+      },
+      "description": "Delete contact"
     },
     {
       "operationId": "Contacts_UpdateContacts",
+      "toolName": "contacts_update_contacts",
       "method": "patch",
       "path": "/api/contacts/{contactGuid}",
       "apiVersion": "v1",
-      "tag": "Contacts"
+      "twinOperationId": null,
+      "tag": "Contacts",
+      "primaryToolset": "contacts",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "query-write",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Update contact"
     },
     {
       "operationId": "BulkExport_GetBulkExport",
+      "toolName": "bulk_export_get_bulk_export",
       "method": "get",
       "path": "/api/files",
       "apiVersion": "v1",
-      "tag": "Bulk Export"
+      "twinOperationId": null,
+      "tag": "Bulk Export",
+      "primaryToolset": "bulk_export",
+      "riskTier": "read",
+      "capabilities": [
+        "bulk-export"
+      ],
+      "inputCodec": "json",
+      "outputCodec": "bulk-stream",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Stream all sales & listings"
     },
     {
       "operationId": "Listings_GetListingForm",
+      "toolName": "listings_get_listing_form",
       "method": "get",
       "path": "/api/files/listingForm",
       "apiVersion": "v1",
-      "tag": "Listings"
+      "twinOperationId": "V2Listings_GetListingForm",
+      "tag": "Listings",
+      "primaryToolset": "listings",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get create form"
     },
     {
       "operationId": "Listings_GetListings",
+      "toolName": "listings_get_listings",
       "method": "get",
       "path": "/api/files/listings",
       "apiVersion": "v1",
-      "tag": "Listings"
+      "twinOperationId": null,
+      "tag": "Listings",
+      "primaryToolset": "listings",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "List listings"
     },
     {
       "operationId": "Listings_CreateListing",
+      "toolName": "listings_create_listing",
       "method": "post",
       "path": "/api/files/listings",
       "apiVersion": "v1",
-      "tag": "Listings"
+      "twinOperationId": "V2Listings_CreateListing",
+      "tag": "Listings",
+      "primaryToolset": "listings",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Create listing"
     },
     {
       "operationId": "Listings_GetListing",
+      "toolName": "listings_get_listing",
       "method": "get",
       "path": "/api/files/listings/{listingGuid}",
       "apiVersion": "v1",
-      "tag": "Listings"
+      "twinOperationId": null,
+      "tag": "Listings",
+      "primaryToolset": "listings",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get listing"
     },
     {
       "operationId": "Listings_UpdateListings",
+      "toolName": "listings_update_listings",
       "method": "put",
       "path": "/api/files/listings/{listingGuid}",
       "apiVersion": "v1",
-      "tag": "Listings"
+      "twinOperationId": "V2Listings_UpdateListing",
+      "tag": "Listings",
+      "primaryToolset": "listings",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Update listing"
     },
     {
       "operationId": "ListingCommissions_GetListingCommissionForm",
+      "toolName": "listing_commissions_get_listing_commission_form",
       "method": "get",
       "path": "/api/files/listings/{listingGuid}/addCommissionsToListingForm",
       "apiVersion": "v1",
-      "tag": "Listing Commissions"
+      "twinOperationId": "V2ListingCommissions_GetListingCommissionForm",
+      "tag": "Listing Commissions",
+      "primaryToolset": "listing_commissions",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get add commissions form"
     },
     {
       "operationId": "Documents_GetAddDocumentToListingForm",
+      "toolName": "documents_get_add_document_to_listing_form",
       "method": "get",
       "path": "/api/files/listings/{listingGuid}/addDocumentsToListingForm",
       "apiVersion": "v1",
-      "tag": "Listing Documents"
+      "twinOperationId": null,
+      "tag": "Listing Documents",
+      "primaryToolset": "listing_documents",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get add document form"
     },
     {
       "operationId": "ListingContacts_GetAddHomeWarrantyContactToListingForm",
+      "toolName": "listing_contacts_get_add_home_warranty_contact_to_listing_form",
       "method": "get",
       "path": "/api/files/listings/{listingGuid}/addHomeWarrantyContactToListingForm",
       "apiVersion": "v1",
-      "tag": "Listing Contacts"
+      "twinOperationId": null,
+      "tag": "Listing Contacts",
+      "primaryToolset": "listing_contacts",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get add home warranty contact form"
     },
     {
       "operationId": "ListingContacts_GetAddMiscellaneousContactToListingForm",
+      "toolName": "listing_contacts_get_add_miscellaneous_contact_to_listing_form",
       "method": "get",
       "path": "/api/files/listings/{listingGuid}/addMiscellaneousContactToListingForm",
       "apiVersion": "v1",
-      "tag": "Listing Contacts"
+      "twinOperationId": null,
+      "tag": "Listing Contacts",
+      "primaryToolset": "listing_contacts",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get add miscellaneous contact form"
     },
     {
       "operationId": "ListingReferringAgents_GetAddReferringAgentToListingForm",
+      "toolName": "listing_referring_agents_get_add_referring_agent_to_listing_form",
       "method": "get",
       "path": "/api/files/listings/{listingGuid}/addReferringAgentToListingForm",
       "apiVersion": "v1",
-      "tag": "Listing Referring Agents"
+      "twinOperationId": "V2ListingReferringAgent_GetAddReferringAgentToListingForm",
+      "tag": "Listing Referring Agents",
+      "primaryToolset": "listing_parties",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get add referring agent form"
     },
     {
       "operationId": "ListingContacts_GetAddSellerContactToListingForm",
+      "toolName": "listing_contacts_get_add_seller_contact_to_listing_form",
       "method": "get",
       "path": "/api/files/listings/{listingGuid}/addSellerContactToListingForm",
       "apiVersion": "v1",
-      "tag": "Listing Contacts"
+      "twinOperationId": "V2ListingContacts_GetAddSellerContactToListingForm",
+      "tag": "Listing Contacts",
+      "primaryToolset": "listing_contacts",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get add seller contact form"
     },
     {
       "operationId": "ListingAgents_UpdateListingAgent",
+      "toolName": "listing_agents_update_listing_agent",
       "method": "put",
       "path": "/api/files/listings/{listingGuid}/agent",
       "apiVersion": "v1",
-      "tag": "Listing Agents"
+      "twinOperationId": null,
+      "tag": "Listing Agents",
+      "primaryToolset": "listings",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Update agent"
     },
     {
       "operationId": "Listings_GetListingAuditLogs",
+      "toolName": "listings_get_listing_audit_logs",
       "method": "get",
       "path": "/api/files/listings/{listingGuid}/auditLogs",
       "apiVersion": "v1",
-      "tag": "Listings"
+      "twinOperationId": null,
+      "tag": "Listings",
+      "primaryToolset": "listings",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get audit logs for a listing"
     },
     {
       "operationId": "Listings_AssignDocumentToChecklistItem",
+      "toolName": "listings_assign_document_to_checklist_item",
       "method": "post",
       "path": "/api/files/listings/{listingGuid}/checklist-items/{checklistItemId}",
       "apiVersion": "v1",
-      "tag": "Listings"
+      "twinOperationId": null,
+      "tag": "Listings",
+      "primaryToolset": "listings",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Assign a document to a checklist item.\nThe document must already exist on this listing (..."
     },
     {
       "operationId": "Listings_AddNoteToChecklistItem",
+      "toolName": "listings_add_note_to_checklist_item",
       "method": "post",
       "path": "/api/files/listings/{listingGuid}/checklist-items/{checklistItemId}/notes",
       "apiVersion": "v1",
-      "tag": "Listings"
+      "twinOperationId": null,
+      "tag": "Listings",
+      "primaryToolset": "listings",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Add a note to a checklist item"
     },
     {
       "operationId": "Listings_UnassignDocumentFromChecklistItem",
+      "toolName": "listings_unassign_document_from_checklist_item",
       "method": "post",
       "path": "/api/files/listings/{listingGuid}/checklist-items/{checklistItemId}/unassign",
       "apiVersion": "v1",
-      "tag": "Listings"
+      "twinOperationId": null,
+      "tag": "Listings",
+      "primaryToolset": "listings",
+      "riskTier": "destructive",
+      "capabilities": [
+        "destructive"
+      ],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false
+      },
+      "description": "Unassign a document from a checklist item.\nThe document remains on the listing but is no longer linked to the checklist item; the checklist item returns to an unfulfilled state."
     },
     {
       "operationId": "Listings_AcceptChecklistItem",
+      "toolName": "listings_accept_checklist_item",
       "method": "post",
       "path": "/api/files/listings/{listingGuid}/checklist-items/{listingChecklistItemId}/accept",
       "apiVersion": "v1",
-      "tag": "Listings"
+      "twinOperationId": null,
+      "tag": "Listings",
+      "primaryToolset": "listings",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "no-body-write",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Accept a listing checklist item"
     },
     {
       "operationId": "Listings_RejectChecklistItem",
+      "toolName": "listings_reject_checklist_item",
       "method": "post",
       "path": "/api/files/listings/{listingGuid}/checklist-items/{listingChecklistItemId}/reject",
       "apiVersion": "v1",
-      "tag": "Listings"
+      "twinOperationId": null,
+      "tag": "Listings",
+      "primaryToolset": "listings",
+      "riskTier": "destructive",
+      "capabilities": [
+        "destructive"
+      ],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false
+      },
+      "description": "Reject a listing checklist item"
     },
     {
       "operationId": "Listings_UnAcceptChecklistItem",
+      "toolName": "listings_un_accept_checklist_item",
       "method": "post",
       "path": "/api/files/listings/{listingGuid}/checklist-items/{listingChecklistItemId}/unaccept",
       "apiVersion": "v1",
-      "tag": "Listings"
+      "twinOperationId": null,
+      "tag": "Listings",
+      "primaryToolset": "listings",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "no-body-write",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Unaccept a listing checklist item"
     },
     {
       "operationId": "Listings_UnRejectChecklistItem",
+      "toolName": "listings_un_reject_checklist_item",
       "method": "post",
       "path": "/api/files/listings/{listingGuid}/checklist-items/{listingChecklistItemId}/unreject",
       "apiVersion": "v1",
-      "tag": "Listings"
+      "twinOperationId": null,
+      "tag": "Listings",
+      "primaryToolset": "listings",
+      "riskTier": "destructive",
+      "capabilities": [
+        "destructive"
+      ],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false
+      },
+      "description": "Unreject a listing checklist item"
     },
     {
       "operationId": "ListingChecklistType_UpdateListingChecklistType",
+      "toolName": "listing_checklist_type_update_listing_checklist_type",
       "method": "put",
       "path": "/api/files/listings/{listingGuid}/checklistType",
       "apiVersion": "v1",
-      "tag": "Listing Checklist Types"
+      "twinOperationId": null,
+      "tag": "Listing Checklist Types",
+      "primaryToolset": "listings",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Update checklist type"
     },
     {
       "operationId": "ListingCoAgents_UpdateListingCoAgents",
+      "toolName": "listing_co_agents_update_listing_co_agents",
       "method": "put",
       "path": "/api/files/listings/{listingGuid}/coAgents",
       "apiVersion": "v1",
-      "tag": "Listing Co Agents"
+      "twinOperationId": null,
+      "tag": "Listing Co Agents",
+      "primaryToolset": "listings",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Update co agents"
     },
     {
       "operationId": "ListingCommissionReferral_PatchCommissionToListing",
+      "toolName": "listing_commission_referral_patch_commission_to_listing",
       "method": "patch",
       "path": "/api/files/listings/{listingGuid}/commissionReferral",
       "apiVersion": "v1",
-      "tag": "Listing Commission Referral"
+      "twinOperationId": null,
+      "tag": "Listing Commission Referral",
+      "primaryToolset": "listing_commissions",
+      "riskTier": "financial",
+      "capabilities": [
+        "financial"
+      ],
+      "inputCodec": "query-write",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false
+      },
+      "description": "Update commission referral"
     },
     {
       "operationId": "ListingCommissionReferral_AddCommissionToListingPOST",
+      "toolName": "listing_commission_referral_add_commission_to_listing_post",
       "method": "post",
       "path": "/api/files/listings/{listingGuid}/commissionReferral",
       "apiVersion": "v1",
-      "tag": "Listing Commission Referral"
+      "twinOperationId": null,
+      "tag": "Listing Commission Referral",
+      "primaryToolset": "listing_commissions",
+      "riskTier": "financial",
+      "capabilities": [
+        "financial"
+      ],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false
+      },
+      "description": "Add commission referral"
     },
     {
       "operationId": "ListingCommissionReferral_AddCommissionToListingGET",
+      "toolName": "listing_commission_referral_add_commission_to_listing_get",
       "method": "get",
       "path": "/api/files/listings/{listingGuid}/commissionReferralForm",
       "apiVersion": "v1",
-      "tag": "Listing Commission Referral"
+      "twinOperationId": null,
+      "tag": "Listing Commission Referral",
+      "primaryToolset": "listing_commissions",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get form"
     },
     {
       "operationId": "ListingCommissions_AddCommissionToListing",
+      "toolName": "listing_commissions_add_commission_to_listing",
       "method": "post",
       "path": "/api/files/listings/{listingGuid}/commissions",
       "apiVersion": "v1",
-      "tag": "Listing Commissions"
+      "twinOperationId": "V2ListingCommissions_AddCommissionToListing",
+      "tag": "Listing Commissions",
+      "primaryToolset": "listing_commissions",
+      "riskTier": "financial",
+      "capabilities": [
+        "financial"
+      ],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false
+      },
+      "description": "Add commissions"
     },
     {
       "operationId": "ListingCommissions_UpdateListingCommission",
+      "toolName": "listing_commissions_update_listing_commission",
       "method": "put",
       "path": "/api/files/listings/{listingGuid}/commissions",
       "apiVersion": "v1",
-      "tag": "Listing Commissions"
+      "twinOperationId": "V2ListingCommissions_UpdateListingCommission",
+      "tag": "Listing Commissions",
+      "primaryToolset": "listing_commissions",
+      "riskTier": "financial",
+      "capabilities": [
+        "financial"
+      ],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false
+      },
+      "description": "Update commissions"
     },
     {
       "operationId": "ListingContacts_UpdateListingContact",
+      "toolName": "listing_contacts_update_listing_contact",
       "method": "put",
       "path": "/api/files/listings/{listingGuid}/contact/{contactGuid}",
       "apiVersion": "v1",
-      "tag": "Listing Contacts"
+      "twinOperationId": "V2ListingContacts_UpdateListingContact",
+      "tag": "Listing Contacts",
+      "primaryToolset": "listing_contacts",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "open-body",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Update contact"
     },
     {
       "operationId": "ListingContacts_GetUpdateListingContactForm",
+      "toolName": "listing_contacts_get_update_listing_contact_form",
       "method": "get",
       "path": "/api/files/listings/{listingGuid}/contacts/{contactGuid}/updateListingContactForm",
       "apiVersion": "v1",
-      "tag": "Listing Contacts"
+      "twinOperationId": "V2ListingContacts_GetUpdateListingContactForm",
+      "tag": "Listing Contacts",
+      "primaryToolset": "listing_contacts",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get update contact form"
     },
     {
       "operationId": "Listings_ConvertListingToSale",
+      "toolName": "listings_convert_listing_to_sale",
       "method": "post",
       "path": "/api/files/listings/{listingGuid}/convert-to-sale",
       "apiVersion": "v1",
-      "tag": "Listings"
+      "twinOperationId": null,
+      "tag": "Listings",
+      "primaryToolset": "listings",
+      "riskTier": "destructive",
+      "capabilities": [
+        "destructive"
+      ],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false
+      },
+      "description": "Convert listing to sale"
     },
     {
       "operationId": "ListingCustomFields_UpdateFields",
+      "toolName": "listing_custom_fields_update_fields",
       "method": "put",
       "path": "/api/files/listings/{listingGuid}/customFields",
       "apiVersion": "v1",
-      "tag": "Listing custom fields"
+      "twinOperationId": null,
+      "tag": "Listing custom fields",
+      "primaryToolset": "listings",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Update custom fields"
     },
     {
       "operationId": "ListingDocuments_GetListingDocuments",
+      "toolName": "listing_documents_get_listing_documents",
       "method": "get",
       "path": "/api/files/listings/{listingGuid}/documents",
       "apiVersion": "v1",
-      "tag": "Listing Documents"
+      "twinOperationId": null,
+      "tag": "Listing Documents",
+      "primaryToolset": "listing_documents",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "List listing documents"
     },
     {
       "operationId": "Documents_AddDocumentToListing",
+      "toolName": "documents_add_document_to_listing",
       "method": "post",
       "path": "/api/files/listings/{listingGuid}/documents",
       "apiVersion": "v1",
-      "tag": "Listing Documents"
+      "twinOperationId": null,
+      "tag": "Listing Documents",
+      "primaryToolset": "listing_documents",
+      "riskTier": "binary-io",
+      "capabilities": [
+        "binary-io"
+      ],
+      "inputCodec": "base64-upload",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Add document"
     },
     {
       "operationId": "ListingDocuments_GetListingDocument",
+      "toolName": "listing_documents_get_listing_document",
       "method": "get",
       "path": "/api/files/listings/{listingGuid}/documents/{documentGuid}",
       "apiVersion": "v1",
-      "tag": "Listing Documents"
+      "twinOperationId": null,
+      "tag": "Listing Documents",
+      "primaryToolset": "listing_documents",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get listing document"
     },
     {
       "operationId": "ListingDocuments_PatchListingDocument",
+      "toolName": "listing_documents_patch_listing_document",
       "method": "patch",
       "path": "/api/files/listings/{listingGuid}/documents/{documentGuid}",
       "apiVersion": "v1",
-      "tag": "Listing Documents"
+      "twinOperationId": null,
+      "tag": "Listing Documents",
+      "primaryToolset": "listing_documents",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "query-write",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Update listing document"
     },
     {
       "operationId": "ListingContacts_AddHomeWarrantyContacts",
+      "toolName": "listing_contacts_add_home_warranty_contacts",
       "method": "post",
       "path": "/api/files/listings/{listingGuid}/homeWarrantyContact",
       "apiVersion": "v1",
-      "tag": "Listing Contacts"
+      "twinOperationId": null,
+      "tag": "Listing Contacts",
+      "primaryToolset": "listing_contacts",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Add home warranty contact"
     },
     {
       "operationId": "ListingContacts_AddMiscellaneousContacts",
+      "toolName": "listing_contacts_add_miscellaneous_contacts",
       "method": "post",
       "path": "/api/files/listings/{listingGuid}/miscellaneousContact",
       "apiVersion": "v1",
-      "tag": "Listing Contacts"
+      "twinOperationId": null,
+      "tag": "Listing Contacts",
+      "primaryToolset": "listing_contacts",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Add miscellaneous contact"
     },
     {
       "operationId": "ListingOffice_UpdateListingOffice",
+      "toolName": "listing_office_update_listing_office",
       "method": "put",
       "path": "/api/files/listings/{listingGuid}/office",
       "apiVersion": "v1",
-      "tag": "Listing Offices"
+      "twinOperationId": null,
+      "tag": "Listing Offices",
+      "primaryToolset": "listings",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Update office"
     },
     {
       "operationId": "ListingProperties_UpdateListingProperty",
+      "toolName": "listing_properties_update_listing_property",
       "method": "put",
       "path": "/api/files/listings/{listingGuid}/property",
       "apiVersion": "v1",
-      "tag": "Listing Properties"
+      "twinOperationId": "V2ListingProperties_UpdateListingProperty",
+      "tag": "Listing Properties",
+      "primaryToolset": "listings",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Update property"
     },
     {
       "operationId": "ListingReferringAgents_GetListingReferringAgent",
+      "toolName": "listing_referring_agents_get_listing_referring_agent",
       "method": "get",
       "path": "/api/files/listings/{listingGuid}/referringagent",
       "apiVersion": "v1",
-      "tag": "Listing Referring Agents"
+      "twinOperationId": null,
+      "tag": "Listing Referring Agents",
+      "primaryToolset": "listing_parties",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get referring agent"
     },
     {
       "operationId": "ListingReferringAgents_AddReferringAgentToListing",
+      "toolName": "listing_referring_agents_add_referring_agent_to_listing",
       "method": "post",
       "path": "/api/files/listings/{listingGuid}/referringagent",
       "apiVersion": "v1",
-      "tag": "Listing Referring Agents"
+      "twinOperationId": "V2ListingReferringAgent_AddReferringAgentToListing",
+      "tag": "Listing Referring Agents",
+      "primaryToolset": "listing_parties",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Add referring agent"
     },
     {
       "operationId": "ListingReferringAgents_UpdateListingReferringAgent",
+      "toolName": "listing_referring_agents_update_listing_referring_agent",
       "method": "put",
       "path": "/api/files/listings/{listingGuid}/referringagent",
       "apiVersion": "v1",
-      "tag": "Listing Referring Agents"
+      "twinOperationId": "V2ListingReferringAgent_UpdateListingReferringAgent",
+      "tag": "Listing Referring Agents",
+      "primaryToolset": "listing_parties",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Update referring agent"
     },
     {
       "operationId": "Listings_UpdateReviewer",
+      "toolName": "listings_update_reviewer",
       "method": "put",
       "path": "/api/files/listings/{listingGuid}/reviewer",
       "apiVersion": "v1",
-      "tag": "Listings"
+      "twinOperationId": null,
+      "tag": "Listings",
+      "primaryToolset": "listings",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "no-content",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Update listing reviewer"
     },
     {
       "operationId": "ListingContacts_AddSellerContacts",
+      "toolName": "listing_contacts_add_seller_contacts",
       "method": "post",
       "path": "/api/files/listings/{listingGuid}/sellerContact",
       "apiVersion": "v1",
-      "tag": "Listing Contacts"
+      "twinOperationId": "V2ListingContacts_AddSellerContact",
+      "tag": "Listing Contacts",
+      "primaryToolset": "listing_contacts",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Add seller contact"
     },
     {
       "operationId": "ListingTieredCommissions_GetListingTieredCommissions",
+      "toolName": "listing_tiered_commissions_get_listing_tiered_commissions",
       "method": "get",
       "path": "/api/files/listings/{listingGuid}/tieredCommissions",
       "apiVersion": "v1",
-      "tag": "Listing Tiered Commissions"
+      "twinOperationId": "V2ListingTieredCommissions_GetListingTieredCommissions",
+      "tag": "Listing Tiered Commissions",
+      "primaryToolset": "listing_commissions",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get tiered commissions"
     },
     {
       "operationId": "ListingTieredCommissions_AddListingTieredCommissions",
+      "toolName": "listing_tiered_commissions_add_listing_tiered_commissions",
       "method": "post",
       "path": "/api/files/listings/{listingGuid}/tieredCommissions",
       "apiVersion": "v1",
-      "tag": "Listing Tiered Commissions"
+      "twinOperationId": "V2ListingTieredCommissions_AddListingTieredCommissions",
+      "tag": "Listing Tiered Commissions",
+      "primaryToolset": "listing_commissions",
+      "riskTier": "financial",
+      "capabilities": [
+        "financial"
+      ],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false
+      },
+      "description": "Add tiered commissions"
     },
     {
       "operationId": "ListingTieredCommissions_UpdateListingTieredCommissions",
+      "toolName": "listing_tiered_commissions_update_listing_tiered_commissions",
       "method": "put",
       "path": "/api/files/listings/{listingGuid}/tieredCommissions",
       "apiVersion": "v1",
-      "tag": "Listing Tiered Commissions"
+      "twinOperationId": "V2ListingTieredCommissions_UpdateListingTieredCommissions",
+      "tag": "Listing Tiered Commissions",
+      "primaryToolset": "listing_commissions",
+      "riskTier": "financial",
+      "capabilities": [
+        "financial"
+      ],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false
+      },
+      "description": "Update tiered commissions"
     },
     {
       "operationId": "ListingTransactionCoordinators_GetListingTransactionCoordinators",
+      "toolName": "listing_tx_coords_get_listing_tx_coords",
       "method": "get",
       "path": "/api/files/listings/{listingGuid}/transactionCoordinators",
       "apiVersion": "v1",
-      "tag": "Listing Transaction Coordinators"
+      "twinOperationId": null,
+      "tag": "Listing Transaction Coordinators",
+      "primaryToolset": "listing_parties",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get transaction coordinators"
     },
     {
       "operationId": "ListingTransactionCoordinators_AddListingTransactionCoordinator",
+      "toolName": "listing_tx_coords_add_listing_transaction_coordinator",
       "method": "post",
       "path": "/api/files/listings/{listingGuid}/transactionCoordinators",
       "apiVersion": "v1",
-      "tag": "Listing Transaction Coordinators"
+      "twinOperationId": null,
+      "tag": "Listing Transaction Coordinators",
+      "primaryToolset": "listing_parties",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Add transaction coordinator"
     },
     {
       "operationId": "ListingTransactionCoordinators_RemoveListingTransactionCoordinator",
+      "toolName": "listing_tx_coords_remove_listing_transaction_coordinator",
       "method": "delete",
       "path": "/api/files/listings/{listingGuid}/transactionCoordinators/{contactGuid}",
       "apiVersion": "v1",
-      "tag": "Listing Transaction Coordinators"
+      "twinOperationId": null,
+      "tag": "Listing Transaction Coordinators",
+      "primaryToolset": "listing_parties",
+      "riskTier": "destructive",
+      "capabilities": [
+        "destructive"
+      ],
+      "inputCodec": "no-body-write",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false
+      },
+      "description": "Remove transaction coordinator"
     },
     {
       "operationId": "ListingCoAgents_GetUpdateListingCoAgentsForm",
+      "toolName": "listing_co_agents_get_update_listing_co_agents_form",
       "method": "get",
       "path": "/api/files/listings/{listingGuid}/updateListingCoAgentsForm",
       "apiVersion": "v1",
-      "tag": "Listing Co Agents"
+      "twinOperationId": null,
+      "tag": "Listing Co Agents",
+      "primaryToolset": "listings",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get update co agents form"
     },
     {
       "operationId": "ListingCommissions_GetUpdateListingForm",
+      "toolName": "listing_commissions_get_update_listing_form",
       "method": "get",
       "path": "/api/files/listings/{listingGuid}/updateListingCommissionsForm",
       "apiVersion": "v1",
-      "tag": "Listing Commissions"
+      "twinOperationId": "V2ListingCommissions_GetUpdateListingCommissionsForm",
+      "tag": "Listing Commissions",
+      "primaryToolset": "listing_commissions",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get update commissions form"
     },
     {
       "operationId": "Listings_GetUpdateListingForm",
+      "toolName": "listings_get_update_listing_form",
       "method": "get",
       "path": "/api/files/listings/{listingGuid}/updateListingForm",
       "apiVersion": "v1",
-      "tag": "Listings"
+      "twinOperationId": "V2Listings_GetUpdateListingForm",
+      "tag": "Listings",
+      "primaryToolset": "listings",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get update listing form"
     },
     {
       "operationId": "ListingProperties_GetUpdateListingForm",
+      "toolName": "listing_properties_get_update_listing_form",
       "method": "get",
       "path": "/api/files/listings/{listingGuid}/updateListingPropertyForm",
       "apiVersion": "v1",
-      "tag": "Listing Properties"
+      "twinOperationId": "V2ListingProperties_GetUpdateListingPropertyForm",
+      "tag": "Listing Properties",
+      "primaryToolset": "listings",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get update property form"
     },
     {
       "operationId": "ListingReferringAgents_GetUpdateListingReferringAgentForm",
+      "toolName": "listing_referring_agents_get_update_listing_referring_agent_form",
       "method": "get",
       "path": "/api/files/listings/{listingGuid}/updateListingReferringAgentForm",
       "apiVersion": "v1",
-      "tag": "Listing Referring Agents"
+      "twinOperationId": "V2ListingReferringAgent_GetUpdateListingReferringAgentForm",
+      "tag": "Listing Referring Agents",
+      "primaryToolset": "listing_parties",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get update referring agent form"
     },
     {
       "operationId": "BulkExport_GetReplicaTimestamp",
+      "toolName": "bulk_export_get_replica_timestamp",
       "method": "get",
       "path": "/api/files/replica-timestamp",
       "apiVersion": "v1",
-      "tag": "Bulk Export"
+      "twinOperationId": null,
+      "tag": "Bulk Export",
+      "primaryToolset": "bulk_export",
+      "riskTier": "read",
+      "capabilities": [
+        "bulk-export"
+      ],
+      "inputCodec": "json",
+      "outputCodec": "replica-timestamp",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get replica timestamp"
     },
     {
       "operationId": "Sales_GetSaleForm",
+      "toolName": "sales_get_sale_form",
       "method": "get",
       "path": "/api/files/saleForm",
       "apiVersion": "v1",
-      "tag": "Sales"
+      "twinOperationId": "V2Sales_GetSaleForm",
+      "tag": "Sales",
+      "primaryToolset": "sales",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get create form"
     },
     {
       "operationId": "Sales_GetSales2",
+      "toolName": "sales_get_sales2",
       "method": "get",
       "path": "/api/files/sales",
       "apiVersion": "v1",
-      "tag": "Sales"
+      "twinOperationId": null,
+      "tag": "Sales",
+      "primaryToolset": "sales",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "List sales"
     },
     {
       "operationId": "Sales_CreateSale",
+      "toolName": "sales_create_sale",
       "method": "post",
       "path": "/api/files/sales",
       "apiVersion": "v1",
-      "tag": "Sales"
+      "twinOperationId": "V2Sales_CreateSale",
+      "tag": "Sales",
+      "primaryToolset": "sales",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Create sale"
     },
     {
       "operationId": "Sales_GetSale",
+      "toolName": "sales_get_sale",
       "method": "get",
       "path": "/api/files/sales/{saleGuid}",
       "apiVersion": "v1",
-      "tag": "Sales"
+      "twinOperationId": null,
+      "tag": "Sales",
+      "primaryToolset": "sales",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get sale"
     },
     {
       "operationId": "Sales_UpdateSale",
+      "toolName": "sales_update_sale",
       "method": "put",
       "path": "/api/files/sales/{saleGuid}",
       "apiVersion": "v1",
-      "tag": "Sales"
+      "twinOperationId": "V2Sales_UpdateSale",
+      "tag": "Sales",
+      "primaryToolset": "sales",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Update sale"
     },
     {
       "operationId": "SaleContacts_GetAddAttorneyContactForm",
+      "toolName": "sale_contacts_get_add_attorney_contact_form",
       "method": "get",
       "path": "/api/files/sales/{saleGuid}/addAttorneyContactToSaleForm",
       "apiVersion": "v1",
-      "tag": "Sale Contacts"
+      "twinOperationId": null,
+      "tag": "Sale Contacts",
+      "primaryToolset": "sale_contacts",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get add attorney contact form"
     },
     {
       "operationId": "SaleContacts_GetAddBuyerContactForm",
+      "toolName": "sale_contacts_get_add_buyer_contact_form",
       "method": "get",
       "path": "/api/files/sales/{saleGuid}/addBuyerContactToSaleForm",
       "apiVersion": "v1",
-      "tag": "Sale Contacts"
+      "twinOperationId": null,
+      "tag": "Sale Contacts",
+      "primaryToolset": "sale_contacts",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get add buyer contact form"
     },
     {
       "operationId": "SaleCommissions_GetAddCommissionsToSaleForm",
+      "toolName": "sale_commissions_get_add_commissions_to_sale_form",
       "method": "get",
       "path": "/api/files/sales/{saleGuid}/addCommissionsToSaleForm",
       "apiVersion": "v1",
-      "tag": "Sale Commissions"
+      "twinOperationId": "V2SaleCommissions_GetAddCommissionsToSaleForm",
+      "tag": "Sale Commissions",
+      "primaryToolset": "sale_commissions",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get add commissions form"
     },
     {
       "operationId": "Documents_GetAddDocumentToSaleForm",
+      "toolName": "documents_get_add_document_to_sale_form",
       "method": "get",
       "path": "/api/files/sales/{saleGuid}/addDocumentsToSaleForm",
       "apiVersion": "v1",
-      "tag": "Sale documents"
+      "twinOperationId": null,
+      "tag": "Sale documents",
+      "primaryToolset": "sale_documents",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get add document form"
     },
     {
       "operationId": "SaleContacts_GetAddEscrowContactForm",
+      "toolName": "sale_contacts_get_add_escrow_contact_form",
       "method": "get",
       "path": "/api/files/sales/{saleGuid}/addEscrowContactToSaleForm",
       "apiVersion": "v1",
-      "tag": "Sale Contacts"
+      "twinOperationId": null,
+      "tag": "Sale Contacts",
+      "primaryToolset": "sale_contacts",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get add escrow contact form"
     },
     {
       "operationId": "SaleContacts_GetAddHomeWarrantyContactForm",
+      "toolName": "sale_contacts_get_add_home_warranty_contact_form",
       "method": "get",
       "path": "/api/files/sales/{saleGuid}/addHomeWarrantyContactToSaleForm",
       "apiVersion": "v1",
-      "tag": "Sale Contacts"
+      "twinOperationId": null,
+      "tag": "Sale Contacts",
+      "primaryToolset": "sale_contacts",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get add home warranty contact form"
     },
     {
       "operationId": "SaleContacts_GetAddLenderContactForm",
+      "toolName": "sale_contacts_get_add_lender_contact_form",
       "method": "get",
       "path": "/api/files/sales/{saleGuid}/addLenderContactToSaleForm",
       "apiVersion": "v1",
-      "tag": "Sale Contacts"
+      "twinOperationId": null,
+      "tag": "Sale Contacts",
+      "primaryToolset": "sale_contacts",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get add lender contact form"
     },
     {
       "operationId": "SaleContacts_GetAddMiscellaneousContactForm",
+      "toolName": "sale_contacts_get_add_miscellaneous_contact_form",
       "method": "get",
       "path": "/api/files/sales/{saleGuid}/addMiscellaneousContactToSaleForm",
       "apiVersion": "v1",
-      "tag": "Sale Contacts"
+      "twinOperationId": null,
+      "tag": "Sale Contacts",
+      "primaryToolset": "sale_contacts",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get add miscellaneous contact form"
     },
     {
       "operationId": "SaleContacts_GetAddOtherSideAgentContactForm",
+      "toolName": "sale_contacts_get_add_other_side_agent_contact_form",
       "method": "get",
       "path": "/api/files/sales/{saleGuid}/addOtherSideAgentContactToSaleForm",
       "apiVersion": "v1",
-      "tag": "Sale Contacts"
+      "twinOperationId": null,
+      "tag": "Sale Contacts",
+      "primaryToolset": "sale_contacts",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get add other side agent contact form"
     },
     {
       "operationId": "SaleReferringAgent_GetAddReferringAgentToSaleForm",
+      "toolName": "sale_referring_agent_get_add_referring_agent_to_sale_form",
       "method": "get",
       "path": "/api/files/sales/{saleGuid}/addReferringAgentToSaleForm",
       "apiVersion": "v1",
-      "tag": "Sale Referring Agents"
+      "twinOperationId": "V2SaleReferringAgent_GetAddReferringAgentToSaleForm",
+      "tag": "Sale Referring Agents",
+      "primaryToolset": "sale_parties",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get add referring agent form"
     },
     {
       "operationId": "SaleContacts_GetAddSellerContactForm",
+      "toolName": "sale_contacts_get_add_seller_contact_form",
       "method": "get",
       "path": "/api/files/sales/{saleGuid}/addSellerContactToSaleForm",
       "apiVersion": "v1",
-      "tag": "Sale Contacts"
+      "twinOperationId": null,
+      "tag": "Sale Contacts",
+      "primaryToolset": "sale_contacts",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get add seller contact form"
     },
     {
       "operationId": "SaleContacts_GetAddTitleContactForm",
+      "toolName": "sale_contacts_get_add_title_contact_form",
       "method": "get",
       "path": "/api/files/sales/{saleGuid}/addTitleContactToSaleForm",
       "apiVersion": "v1",
-      "tag": "Sale Contacts"
+      "twinOperationId": null,
+      "tag": "Sale Contacts",
+      "primaryToolset": "sale_contacts",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get add title contact form"
     },
     {
       "operationId": "SaleAgents_UpdateSaleAgent",
+      "toolName": "sale_agents_update_sale_agent",
       "method": "put",
       "path": "/api/files/sales/{saleGuid}/agent",
       "apiVersion": "v1",
-      "tag": "Sale Agents"
+      "twinOperationId": null,
+      "tag": "Sale Agents",
+      "primaryToolset": "sales",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Update sale agent"
     },
     {
       "operationId": "SaleContacts_AddAttorneyContact",
+      "toolName": "sale_contacts_add_attorney_contact",
       "method": "post",
       "path": "/api/files/sales/{saleGuid}/attorneyContact",
       "apiVersion": "v1",
-      "tag": "Sale Contacts"
+      "twinOperationId": null,
+      "tag": "Sale Contacts",
+      "primaryToolset": "sale_contacts",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "open-body",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Add attorney contact"
     },
     {
       "operationId": "Sales_GetSaleAuditLogs",
+      "toolName": "sales_get_sale_audit_logs",
       "method": "get",
       "path": "/api/files/sales/{saleGuid}/auditLogs",
       "apiVersion": "v1",
-      "tag": "Sales"
+      "twinOperationId": null,
+      "tag": "Sales",
+      "primaryToolset": "sales",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get audit logs for a sale"
     },
     {
       "operationId": "SaleContacts_AddBuyerContact",
+      "toolName": "sale_contacts_add_buyer_contact",
       "method": "post",
       "path": "/api/files/sales/{saleGuid}/buyerContact",
       "apiVersion": "v1",
-      "tag": "Sale Contacts"
+      "twinOperationId": null,
+      "tag": "Sale Contacts",
+      "primaryToolset": "sale_contacts",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "open-body",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Add buyer contact"
     },
     {
       "operationId": "CdaDocumentData_GetCdaDocumentData",
+      "toolName": "cda_document_data_get_cda_document_data",
       "method": "get",
       "path": "/api/files/sales/{saleGuid}/cdaDocumentData",
       "apiVersion": "v1",
-      "tag": "Sale CDA document data"
+      "twinOperationId": null,
+      "tag": "Sale CDA document data",
+      "primaryToolset": "sale_documents",
+      "riskTier": "read",
+      "capabilities": [
+        "binary-io"
+      ],
+      "inputCodec": "cda",
+      "outputCodec": "cda",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get CDA document data"
     },
     {
       "operationId": "CdaDocumentData_SetCdaDocumentData",
+      "toolName": "cda_document_data_set_cda_document_data",
       "method": "put",
       "path": "/api/files/sales/{saleGuid}/cdaDocumentData",
       "apiVersion": "v1",
-      "tag": "Sale CDA document data"
+      "twinOperationId": null,
+      "tag": "Sale CDA document data",
+      "primaryToolset": "sale_documents",
+      "riskTier": "financial",
+      "capabilities": [
+        "financial",
+        "binary-io"
+      ],
+      "inputCodec": "cda",
+      "outputCodec": "cda",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false
+      },
+      "description": "Update CDA document data"
     },
     {
       "operationId": "Sales_AssignDocumentToChecklistItem",
+      "toolName": "sales_assign_document_to_checklist_item",
       "method": "post",
       "path": "/api/files/sales/{saleGuid}/checklist-items/{checklistItemId}",
       "apiVersion": "v1",
-      "tag": "Sales"
+      "twinOperationId": null,
+      "tag": "Sales",
+      "primaryToolset": "sales",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Assign a document to a checklist item.\nThe document must already exist on this sale (upl..."
     },
     {
       "operationId": "Sales_AddNoteToChecklistItem",
+      "toolName": "sales_add_note_to_checklist_item",
       "method": "post",
       "path": "/api/files/sales/{saleGuid}/checklist-items/{checklistItemId}/notes",
       "apiVersion": "v1",
-      "tag": "Sales"
+      "twinOperationId": null,
+      "tag": "Sales",
+      "primaryToolset": "sales",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Add a note to a checklist item.\nNotes are visible to all users with access to the sale."
     },
     {
       "operationId": "Sales_UnassignDocumentFromChecklistItem",
+      "toolName": "sales_unassign_document_from_checklist_item",
       "method": "post",
       "path": "/api/files/sales/{saleGuid}/checklist-items/{checklistItemId}/unassign",
       "apiVersion": "v1",
-      "tag": "Sales"
+      "twinOperationId": null,
+      "tag": "Sales",
+      "primaryToolset": "sales",
+      "riskTier": "destructive",
+      "capabilities": [
+        "destructive"
+      ],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false
+      },
+      "description": "Unassign a document from a checklist item.\nThe document remains on the sale but is no longer linked to the checklist item; the checklist item returns to an unfulfilled state."
     },
     {
       "operationId": "Sales_AcceptChecklistItem",
+      "toolName": "sales_accept_checklist_item",
       "method": "post",
       "path": "/api/files/sales/{saleGuid}/checklist-items/{transactionChecklistId}/accept",
       "apiVersion": "v1",
-      "tag": "Sales"
+      "twinOperationId": null,
+      "tag": "Sales",
+      "primaryToolset": "sales",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "no-body-write",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Accept checklist item"
     },
     {
       "operationId": "Sales_RejectChecklistItem",
+      "toolName": "sales_reject_checklist_item",
       "method": "post",
       "path": "/api/files/sales/{saleGuid}/checklist-items/{transactionChecklistId}/reject",
       "apiVersion": "v1",
-      "tag": "Sales"
+      "twinOperationId": null,
+      "tag": "Sales",
+      "primaryToolset": "sales",
+      "riskTier": "destructive",
+      "capabilities": [
+        "destructive"
+      ],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false
+      },
+      "description": "Reject checklist item"
     },
     {
       "operationId": "Sales_UnAcceptChecklistItem",
+      "toolName": "sales_un_accept_checklist_item",
       "method": "post",
       "path": "/api/files/sales/{saleGuid}/checklist-items/{transactionChecklistId}/unaccept",
       "apiVersion": "v1",
-      "tag": "Sales"
+      "twinOperationId": null,
+      "tag": "Sales",
+      "primaryToolset": "sales",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "no-body-write",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Unaccept checklist item"
     },
     {
       "operationId": "Sales_UnRejectChecklistItem",
+      "toolName": "sales_un_reject_checklist_item",
       "method": "post",
       "path": "/api/files/sales/{saleGuid}/checklist-items/{transactionChecklistId}/unreject",
       "apiVersion": "v1",
-      "tag": "Sales"
+      "twinOperationId": null,
+      "tag": "Sales",
+      "primaryToolset": "sales",
+      "riskTier": "destructive",
+      "capabilities": [
+        "destructive"
+      ],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false
+      },
+      "description": "Unreject checklist item"
     },
     {
       "operationId": "SaleChecklistTypes_UpdateChecklistType",
+      "toolName": "sale_checklist_types_update_checklist_type",
       "method": "put",
       "path": "/api/files/sales/{saleGuid}/checklistType",
       "apiVersion": "v1",
-      "tag": "Sale Checklist Types"
+      "twinOperationId": null,
+      "tag": "Sale Checklist Types",
+      "primaryToolset": "sales",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Update checklist type"
     },
     {
       "operationId": "Sales_CloseSale",
+      "toolName": "sales_close_sale",
       "method": "put",
       "path": "/api/files/sales/{saleGuid}/close",
       "apiVersion": "v1",
-      "tag": "Sales"
+      "twinOperationId": null,
+      "tag": "Sales",
+      "primaryToolset": "sales",
+      "riskTier": "destructive",
+      "capabilities": [
+        "destructive"
+      ],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false
+      },
+      "description": "Close sale"
     },
     {
       "operationId": "SaleCoAgents_UpdateSaleCoAgents",
+      "toolName": "sale_co_agents_update_sale_co_agents",
       "method": "put",
       "path": "/api/files/sales/{saleGuid}/coAgents",
       "apiVersion": "v1",
-      "tag": "Sale Co Agents"
+      "twinOperationId": null,
+      "tag": "Sale Co Agents",
+      "primaryToolset": "sales",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Update co agents"
     },
     {
       "operationId": "SaleCommissionBreakdowns_UpdateSaleCommissionBreakdown",
+      "toolName": "sale_commission_breakdowns_update_sale_commission_breakdown",
       "method": "put",
       "path": "/api/files/sales/{saleGuid}/commissionBreakdown",
       "apiVersion": "v1",
-      "tag": "Sale Commission Breakdowns"
+      "twinOperationId": null,
+      "tag": "Sale Commission Breakdowns",
+      "primaryToolset": "sale_commissions",
+      "riskTier": "financial",
+      "capabilities": [
+        "financial"
+      ],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false
+      },
+      "description": "Update commission breakdown"
     },
     {
       "operationId": "SaleCommissionInformationLog_GetSaleCommissionLog",
+      "toolName": "sale_commission_information_log_get_sale_commission_log",
       "method": "get",
       "path": "/api/files/sales/{saleGuid}/commissionLog",
       "apiVersion": "v1",
-      "tag": "Sale Additional Commissions Information Log"
+      "twinOperationId": null,
+      "tag": "Sale Additional Commissions Information Log",
+      "primaryToolset": "sale_commissions",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get commission log"
     },
     {
       "operationId": "SaleCommissionInformationLog_AddSaleCommissionsLogEntry",
+      "toolName": "sale_commission_information_log_add_sale_commissions_log_entry",
       "method": "post",
       "path": "/api/files/sales/{saleGuid}/commissionLog",
       "apiVersion": "v1",
-      "tag": "Sale Additional Commissions Information Log"
+      "twinOperationId": null,
+      "tag": "Sale Additional Commissions Information Log",
+      "primaryToolset": "sale_commissions",
+      "riskTier": "financial",
+      "capabilities": [
+        "financial"
+      ],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false
+      },
+      "description": "Add commission log entry"
     },
     {
       "operationId": "SaleCommissionInformationLog_DeleteSaleCommissionLogEntry",
+      "toolName": "sale_commission_information_log_delete_sale_commission_log_entry",
       "method": "delete",
       "path": "/api/files/sales/{saleGuid}/commissionLog/{commentId}",
       "apiVersion": "v1",
-      "tag": "Sale Additional Commissions Information Log"
+      "twinOperationId": null,
+      "tag": "Sale Additional Commissions Information Log",
+      "primaryToolset": "sale_commissions",
+      "riskTier": "financial",
+      "capabilities": [
+        "financial"
+      ],
+      "inputCodec": "no-body-write",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false
+      },
+      "description": "Delete commission log entry"
     },
     {
       "operationId": "SaleCommissionInformationLog_EditSaleCommissionLogEntry",
+      "toolName": "sale_commission_information_log_edit_sale_commission_log_entry",
       "method": "patch",
       "path": "/api/files/sales/{saleGuid}/commissionLog/{commentId}",
       "apiVersion": "v1",
-      "tag": "Sale Additional Commissions Information Log"
+      "twinOperationId": null,
+      "tag": "Sale Additional Commissions Information Log",
+      "primaryToolset": "sale_commissions",
+      "riskTier": "financial",
+      "capabilities": [
+        "financial"
+      ],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false
+      },
+      "description": "Edit commission log entry"
     },
     {
       "operationId": "SaleCommissionReferral_PatchCommissionToListing",
+      "toolName": "sale_commission_referral_patch_commission_to_listing",
       "method": "patch",
       "path": "/api/files/sales/{saleGuid}/commissionReferral",
       "apiVersion": "v1",
-      "tag": "Sale Commission Referral"
+      "twinOperationId": null,
+      "tag": "Sale Commission Referral",
+      "primaryToolset": "sale_commissions",
+      "riskTier": "financial",
+      "capabilities": [
+        "financial"
+      ],
+      "inputCodec": "query-write",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false
+      },
+      "description": "Update commission referral"
     },
     {
       "operationId": "SaleCommissionReferral_AddCommissionToSale",
+      "toolName": "sale_commission_referral_add_commission_to_sale",
       "method": "post",
       "path": "/api/files/sales/{saleGuid}/commissionReferral",
       "apiVersion": "v1",
-      "tag": "Sale Commission Referral"
+      "twinOperationId": null,
+      "tag": "Sale Commission Referral",
+      "primaryToolset": "sale_commissions",
+      "riskTier": "financial",
+      "capabilities": [
+        "financial"
+      ],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false
+      },
+      "description": "Add commission referral"
     },
     {
       "operationId": "SaleCommissionReferral_GetForm",
+      "toolName": "sale_commission_referral_get_form",
       "method": "get",
       "path": "/api/files/sales/{saleGuid}/commissionReferralForm",
       "apiVersion": "v1",
-      "tag": "Sale Commission Referral"
+      "twinOperationId": null,
+      "tag": "Sale Commission Referral",
+      "primaryToolset": "sale_commissions",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get commission referral form"
     },
     {
       "operationId": "SaleCommissions_AddCommissionsToSale",
+      "toolName": "sale_commissions_add_commissions_to_sale",
       "method": "post",
       "path": "/api/files/sales/{saleGuid}/commissions",
       "apiVersion": "v1",
-      "tag": "Sale Commissions"
+      "twinOperationId": "V2SaleCommissions_AddCommissionsToSale",
+      "tag": "Sale Commissions",
+      "primaryToolset": "sale_commissions",
+      "riskTier": "financial",
+      "capabilities": [
+        "financial"
+      ],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false
+      },
+      "description": "Add commissions"
     },
     {
       "operationId": "SaleCommissions_UpdateSaleCommissions",
+      "toolName": "sale_commissions_update_sale_commissions",
       "method": "put",
       "path": "/api/files/sales/{saleGuid}/commissions",
       "apiVersion": "v1",
-      "tag": "Sale Commissions"
+      "twinOperationId": "V2SaleCommissions_UpdateSaleCommissions",
+      "tag": "Sale Commissions",
+      "primaryToolset": "sale_commissions",
+      "riskTier": "financial",
+      "capabilities": [
+        "financial"
+      ],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false
+      },
+      "description": "Update commissions"
     },
     {
       "operationId": "SaleCommissionSplits_UpdateSaleCommissionSplit",
+      "toolName": "sale_commission_splits_update_sale_commission_split",
       "method": "put",
       "path": "/api/files/sales/{saleGuid}/commissionSplit",
       "apiVersion": "v1",
-      "tag": "Sale Commission Splits"
+      "twinOperationId": null,
+      "tag": "Sale Commission Splits",
+      "primaryToolset": "sale_commissions",
+      "riskTier": "financial",
+      "capabilities": [
+        "financial"
+      ],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false
+      },
+      "description": "Update commission split"
     },
     {
       "operationId": "SaleContacts_UpdateSaleContact",
+      "toolName": "sale_contacts_update_sale_contact",
       "method": "put",
       "path": "/api/files/sales/{saleGuid}/contacts/{contactGuid}",
       "apiVersion": "v1",
-      "tag": "Sale Contacts"
+      "twinOperationId": "V2SaleContacts_UpdateSaleContact",
+      "tag": "Sale Contacts",
+      "primaryToolset": "sale_contacts",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "open-body",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Update contact"
     },
     {
       "operationId": "SaleContacts_GetUpdateSaleContactForm",
+      "toolName": "sale_contacts_get_update_sale_contact_form",
       "method": "get",
       "path": "/api/files/sales/{saleGuid}/contacts/{contactGuid}/updateSaleContactForm",
       "apiVersion": "v1",
-      "tag": "Sale Contacts"
+      "twinOperationId": "V2SaleContacts_GetUpdateSaleContactForm",
+      "tag": "Sale Contacts",
+      "primaryToolset": "sale_contacts",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get update contact form"
     },
     {
       "operationId": "Sales_ConvertSaleToUnderContract",
+      "toolName": "sales_convert_sale_to_under_contract",
       "method": "put",
       "path": "/api/files/sales/{saleGuid}/convert/under-contract",
       "apiVersion": "v1",
-      "tag": "Sales"
+      "twinOperationId": "V2Sales_ConvertSaleToUnderContract",
+      "tag": "Sales",
+      "primaryToolset": "sales",
+      "riskTier": "destructive",
+      "capabilities": [
+        "destructive"
+      ],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false
+      },
+      "description": "Convert sale to under contract"
     },
     {
       "operationId": "SalesCustomFields_UpdateFields",
+      "toolName": "sales_custom_fields_update_fields",
       "method": "put",
       "path": "/api/files/sales/{saleGuid}/customFields",
       "apiVersion": "v1",
-      "tag": "Sale custom fields"
+      "twinOperationId": null,
+      "tag": "Sale custom fields",
+      "primaryToolset": "sales",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Update custom fields"
     },
     {
       "operationId": "SalesDocuments_GetSaleDocuments",
+      "toolName": "sales_documents_get_sale_documents",
       "method": "get",
       "path": "/api/files/sales/{saleGuid}/documents",
       "apiVersion": "v1",
-      "tag": "Sale Documents"
+      "twinOperationId": null,
+      "tag": "Sale Documents",
+      "primaryToolset": "sale_documents",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "List sale documents"
     },
     {
       "operationId": "Documents_AddDocumentToSale",
+      "toolName": "documents_add_document_to_sale",
       "method": "post",
       "path": "/api/files/sales/{saleGuid}/documents",
       "apiVersion": "v1",
-      "tag": "Sale documents"
+      "twinOperationId": null,
+      "tag": "Sale documents",
+      "primaryToolset": "sale_documents",
+      "riskTier": "binary-io",
+      "capabilities": [
+        "binary-io"
+      ],
+      "inputCodec": "base64-upload",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Add document"
     },
     {
       "operationId": "SalesDocuments_GetSaleDocument",
+      "toolName": "sales_documents_get_sale_document",
       "method": "get",
       "path": "/api/files/sales/{saleGuid}/documents/{documentGuid}",
       "apiVersion": "v1",
-      "tag": "Sale Documents"
+      "twinOperationId": null,
+      "tag": "Sale Documents",
+      "primaryToolset": "sale_documents",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get sale document"
     },
     {
       "operationId": "Documents_PatchSaleDocument",
+      "toolName": "documents_patch_sale_document",
       "method": "patch",
       "path": "/api/files/sales/{saleGuid}/documents/{documentGuid}",
       "apiVersion": "v1",
-      "tag": "Sale documents"
+      "twinOperationId": null,
+      "tag": "Sale documents",
+      "primaryToolset": "sale_documents",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "query-write",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Update document"
     },
     {
       "operationId": "EarnestMoneyDeposit_GetUpdateSaleContactForm",
+      "toolName": "earnest_money_deposit_get_update_sale_contact_form",
       "method": "patch",
       "path": "/api/files/sales/{saleGuid}/earnestMoneyDeposit",
       "apiVersion": "v1",
-      "tag": "Earnest money deposit"
+      "twinOperationId": null,
+      "tag": "Earnest money deposit",
+      "primaryToolset": "sale_commissions",
+      "riskTier": "financial",
+      "capabilities": [
+        "financial"
+      ],
+      "inputCodec": "query-write",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false
+      },
+      "description": "Update earnest money deposit"
     },
     {
       "operationId": "SaleContacts_AddEscrowContact",
+      "toolName": "sale_contacts_add_escrow_contact",
       "method": "post",
       "path": "/api/files/sales/{saleGuid}/escrowContact",
       "apiVersion": "v1",
-      "tag": "Sale Contacts"
+      "twinOperationId": null,
+      "tag": "Sale Contacts",
+      "primaryToolset": "sale_contacts",
+      "riskTier": "financial",
+      "capabilities": [
+        "financial"
+      ],
+      "inputCodec": "open-body",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false
+      },
+      "description": "Add escrow contact"
     },
     {
       "operationId": "SaleContacts_AddHomeWarrantyContact",
+      "toolName": "sale_contacts_add_home_warranty_contact",
       "method": "post",
       "path": "/api/files/sales/{saleGuid}/homeWarrantyContact",
       "apiVersion": "v1",
-      "tag": "Sale Contacts"
+      "twinOperationId": null,
+      "tag": "Sale Contacts",
+      "primaryToolset": "sale_contacts",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "open-body",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Add home warranty contact"
     },
     {
       "operationId": "SaleContacts_AddLenderContact",
+      "toolName": "sale_contacts_add_lender_contact",
       "method": "post",
       "path": "/api/files/sales/{saleGuid}/lenderContact",
       "apiVersion": "v1",
-      "tag": "Sale Contacts"
+      "twinOperationId": null,
+      "tag": "Sale Contacts",
+      "primaryToolset": "sale_contacts",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "open-body",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Add lender contact"
     },
     {
       "operationId": "SaleContacts_AddMiscellaneousContact",
+      "toolName": "sale_contacts_add_miscellaneous_contact",
       "method": "post",
       "path": "/api/files/sales/{saleGuid}/miscellaneousContact",
       "apiVersion": "v1",
-      "tag": "Sale Contacts"
+      "twinOperationId": null,
+      "tag": "Sale Contacts",
+      "primaryToolset": "sale_contacts",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "open-body",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Add miscellaneous contact"
     },
     {
       "operationId": "SaleOffices_UpdateSaleOffice",
+      "toolName": "sale_offices_update_sale_office",
       "method": "put",
       "path": "/api/files/sales/{saleGuid}/office",
       "apiVersion": "v1",
-      "tag": "Sale Offices"
+      "twinOperationId": null,
+      "tag": "Sale Offices",
+      "primaryToolset": "sales",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Update office"
     },
     {
       "operationId": "SaleContacts_AddOtherSideAgentContact",
+      "toolName": "sale_contacts_add_other_side_agent_contact",
       "method": "post",
       "path": "/api/files/sales/{saleGuid}/otherSideAgentContact",
       "apiVersion": "v1",
-      "tag": "Sale Contacts"
+      "twinOperationId": null,
+      "tag": "Sale Contacts",
+      "primaryToolset": "sale_contacts",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "open-body",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Add other side agent contact"
     },
     {
       "operationId": "SaleProperties_UpdateSaleProperty",
+      "toolName": "sale_properties_update_sale_property",
       "method": "put",
       "path": "/api/files/sales/{saleGuid}/property",
       "apiVersion": "v1",
-      "tag": "Sale Properties"
+      "twinOperationId": "V2SaleProperties_UpdateSaleProperty",
+      "tag": "Sale Properties",
+      "primaryToolset": "sales",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Update property"
     },
     {
       "operationId": "SaleReferringAgent_GetSaleReferringAgent",
+      "toolName": "sale_referring_agent_get_sale_referring_agent",
       "method": "get",
       "path": "/api/files/sales/{saleGuid}/referringagent",
       "apiVersion": "v1",
-      "tag": "Sale Referring Agents"
+      "twinOperationId": null,
+      "tag": "Sale Referring Agents",
+      "primaryToolset": "sale_parties",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get referring agent"
     },
     {
       "operationId": "SaleReferringAgent_AddReferringAgentToSale",
+      "toolName": "sale_referring_agent_add_referring_agent_to_sale",
       "method": "post",
       "path": "/api/files/sales/{saleGuid}/referringagent",
       "apiVersion": "v1",
-      "tag": "Sale Referring Agents"
+      "twinOperationId": "V2SaleReferringAgent_AddReferringAgentToSale",
+      "tag": "Sale Referring Agents",
+      "primaryToolset": "sale_parties",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Add referring agent"
     },
     {
       "operationId": "SaleReferringAgent_UpdateSaleReferringAgent",
+      "toolName": "sale_referring_agent_update_sale_referring_agent",
       "method": "put",
       "path": "/api/files/sales/{saleGuid}/referringagent",
       "apiVersion": "v1",
-      "tag": "Sale Referring Agents"
+      "twinOperationId": "V2SaleReferringAgent_UpdateSaleReferringAgent",
+      "tag": "Sale Referring Agents",
+      "primaryToolset": "sale_parties",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Update referring agent"
     },
     {
       "operationId": "Sales_UpdateReviewer",
+      "toolName": "sales_update_reviewer",
       "method": "put",
       "path": "/api/files/sales/{saleGuid}/reviewer",
       "apiVersion": "v1",
-      "tag": "Sales"
+      "twinOperationId": null,
+      "tag": "Sales",
+      "primaryToolset": "sales",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "no-content",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Update sale reviewer"
     },
     {
       "operationId": "SaleContacts_AddSellerContact",
+      "toolName": "sale_contacts_add_seller_contact",
       "method": "post",
       "path": "/api/files/sales/{saleGuid}/sellerContact",
       "apiVersion": "v1",
-      "tag": "Sale Contacts"
+      "twinOperationId": null,
+      "tag": "Sale Contacts",
+      "primaryToolset": "sale_contacts",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "open-body",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Add seller contact"
     },
     {
       "operationId": "SaleTieredCommissions_GetSaleTieredCommissions",
+      "toolName": "sale_tiered_commissions_get_sale_tiered_commissions",
       "method": "get",
       "path": "/api/files/sales/{saleGuid}/tieredCommissions",
       "apiVersion": "v1",
-      "tag": "Sale Tiered Commissions"
+      "twinOperationId": "V2SaleTieredCommissions_GetSaleTieredCommissions",
+      "tag": "Sale Tiered Commissions",
+      "primaryToolset": "sale_commissions",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get tiered commissions"
     },
     {
       "operationId": "SaleTieredCommissions_AddSaleTieredCommissions",
+      "toolName": "sale_tiered_commissions_add_sale_tiered_commissions",
       "method": "post",
       "path": "/api/files/sales/{saleGuid}/tieredCommissions",
       "apiVersion": "v1",
-      "tag": "Sale Tiered Commissions"
+      "twinOperationId": "V2SaleTieredCommissions_AddSaleTieredCommissions",
+      "tag": "Sale Tiered Commissions",
+      "primaryToolset": "sale_commissions",
+      "riskTier": "financial",
+      "capabilities": [
+        "financial"
+      ],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false
+      },
+      "description": "Add tiered commissions"
     },
     {
       "operationId": "SaleTieredCommissions_UpdateSaleTieredCommissions",
+      "toolName": "sale_tiered_commissions_update_sale_tiered_commissions",
       "method": "put",
       "path": "/api/files/sales/{saleGuid}/tieredCommissions",
       "apiVersion": "v1",
-      "tag": "Sale Tiered Commissions"
+      "twinOperationId": "V2SaleTieredCommissions_UpdateSaleTieredCommissions",
+      "tag": "Sale Tiered Commissions",
+      "primaryToolset": "sale_commissions",
+      "riskTier": "financial",
+      "capabilities": [
+        "financial"
+      ],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false
+      },
+      "description": "Update tiered commissions"
     },
     {
       "operationId": "SaleContacts_AddTitleContact",
+      "toolName": "sale_contacts_add_title_contact",
       "method": "post",
       "path": "/api/files/sales/{saleGuid}/titleContact",
       "apiVersion": "v1",
-      "tag": "Sale Contacts"
+      "twinOperationId": null,
+      "tag": "Sale Contacts",
+      "primaryToolset": "sale_contacts",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "open-body",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Add title contact"
     },
     {
       "operationId": "SaleTransactionCoordinators_GetSaleTransactionCoordinators",
+      "toolName": "sale_transaction_coordinators_get_sale_transaction_coordinators",
       "method": "get",
       "path": "/api/files/sales/{saleGuid}/transactionCoordinators",
       "apiVersion": "v1",
-      "tag": "Sale Transaction Coordinators"
+      "twinOperationId": null,
+      "tag": "Sale Transaction Coordinators",
+      "primaryToolset": "sale_parties",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get transaction coordinators"
     },
     {
       "operationId": "SaleTransactionCoordinators_AddSaleTransactionCoordinator",
+      "toolName": "sale_transaction_coordinators_add_sale_transaction_coordinator",
       "method": "post",
       "path": "/api/files/sales/{saleGuid}/transactionCoordinators",
       "apiVersion": "v1",
-      "tag": "Sale Transaction Coordinators"
+      "twinOperationId": null,
+      "tag": "Sale Transaction Coordinators",
+      "primaryToolset": "sale_parties",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Add transaction coordinator"
     },
     {
       "operationId": "SaleTransactionCoordinators_RemoveSaleTransactionCoordinator",
+      "toolName": "sale_tx_coords_remove_sale_transaction_coordinator",
       "method": "delete",
       "path": "/api/files/sales/{saleGuid}/transactionCoordinators/{contactGuid}",
       "apiVersion": "v1",
-      "tag": "Sale Transaction Coordinators"
+      "twinOperationId": null,
+      "tag": "Sale Transaction Coordinators",
+      "primaryToolset": "sale_parties",
+      "riskTier": "destructive",
+      "capabilities": [
+        "destructive"
+      ],
+      "inputCodec": "no-body-write",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false
+      },
+      "description": "Remove transaction coordinator"
     },
     {
       "operationId": "SaleCommissionBreakdowns_GetUpdateSaleCommissionBreakdownsForm",
+      "toolName": "sale_comm_bd_get_update_sale_comm_bd_form",
       "method": "get",
       "path": "/api/files/sales/{saleGuid}/updateCommissionBreakdownsForm",
       "apiVersion": "v1",
-      "tag": "Sale Commission Breakdowns"
+      "twinOperationId": null,
+      "tag": "Sale Commission Breakdowns",
+      "primaryToolset": "sale_commissions",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get update commission breakdowns form"
     },
     {
       "operationId": "SaleCommissionSplits_GetUpdateSaleChecklistTypeForm",
+      "toolName": "sale_commission_splits_get_update_sale_checklist_type_form",
       "method": "get",
       "path": "/api/files/sales/{saleGuid}/updateCommissionSplitForm",
       "apiVersion": "v1",
-      "tag": "Sale Commission Splits"
+      "twinOperationId": null,
+      "tag": "Sale Commission Splits",
+      "primaryToolset": "sale_commissions",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get update commission split form"
     },
     {
       "operationId": "SaleCoAgents_GetUpdateSaleCoAgentsForm",
+      "toolName": "sale_co_agents_get_update_sale_co_agents_form",
       "method": "get",
       "path": "/api/files/sales/{saleGuid}/updateSaleCoAgentsForm",
       "apiVersion": "v1",
-      "tag": "Sale Co Agents"
+      "twinOperationId": null,
+      "tag": "Sale Co Agents",
+      "primaryToolset": "sales",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get update co agents form"
     },
     {
       "operationId": "SaleCommissions_GetUpdateSaleCommissionForm",
+      "toolName": "sale_commissions_get_update_sale_commission_form",
       "method": "get",
       "path": "/api/files/sales/{saleGuid}/updateSaleCommissionsForm",
       "apiVersion": "v1",
-      "tag": "Sale Commissions"
+      "twinOperationId": "V2SaleCommissions_GetUpdateSaleCommissionForm",
+      "tag": "Sale Commissions",
+      "primaryToolset": "sale_commissions",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get update commissions form"
     },
     {
       "operationId": "Sales_GetUpdateSaleForm",
+      "toolName": "sales_get_update_sale_form",
       "method": "get",
       "path": "/api/files/sales/{saleGuid}/updateSaleForm",
       "apiVersion": "v1",
-      "tag": "Sales"
+      "twinOperationId": "V2Sales_GetUpdateSaleForm",
+      "tag": "Sales",
+      "primaryToolset": "sales",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get update sale form"
     },
     {
       "operationId": "SaleProperties_GetUpdateSaleForm",
+      "toolName": "sale_properties_get_update_sale_form",
       "method": "get",
       "path": "/api/files/sales/{saleGuid}/updateSalePropertyForm",
       "apiVersion": "v1",
-      "tag": "Sale Properties"
+      "twinOperationId": "V2SaleProperties_GetUpdateSalePropertyForm",
+      "tag": "Sale Properties",
+      "primaryToolset": "sales",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get update sale property form"
     },
     {
       "operationId": "SaleReferringAgent_GetUpdateSaleReferringAgentForm",
+      "toolName": "sale_referring_agent_get_update_sale_referring_agent_form",
       "method": "get",
       "path": "/api/files/sales/{saleGuid}/updateSaleReferringAgentForm",
       "apiVersion": "v1",
-      "tag": "Sale Referring Agents"
+      "twinOperationId": "V2SaleReferringAgent_GetUpdateSaleReferringAgentForm",
+      "tag": "Sale Referring Agents",
+      "primaryToolset": "sale_parties",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get update referring agent form"
     },
     {
       "operationId": "Sales_GetSales",
+      "toolName": "sales_get_sales",
       "method": "get",
       "path": "/api/files/sales/fields",
       "apiVersion": "v1",
-      "tag": "Sales"
+      "twinOperationId": "V2Sales_GetSaleFields",
+      "tag": "Sales",
+      "primaryToolset": "sales",
+      "riskTier": "read",
+      "capabilities": [
+        "binary-io",
+        "impersonation"
+      ],
+      "inputCodec": "json",
+      "outputCodec": "octet-stream",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "List sales"
     },
     {
       "operationId": "ListingStage_ChangeListingStage",
+      "toolName": "listing_stage_change_listing_stage",
       "method": "patch",
       "path": "/api/listings/{listingGuid}/stage",
       "apiVersion": "v1",
-      "tag": "Listing Stage"
+      "twinOperationId": null,
+      "tag": "Listing Stage",
+      "primaryToolset": "listings",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "query-write",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Update listing stage"
     },
     {
       "operationId": "Offices_GetOffices",
+      "toolName": "offices_get_offices",
       "method": "get",
       "path": "/api/offices",
       "apiVersion": "v1",
-      "tag": "Offices"
+      "twinOperationId": null,
+      "tag": "Offices",
+      "primaryToolset": "offices",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "List offices"
     },
     {
       "operationId": "Offices_CreateOffice",
+      "toolName": "offices_create_office",
       "method": "post",
       "path": "/api/offices",
       "apiVersion": "v1",
-      "tag": "Offices"
+      "twinOperationId": null,
+      "tag": "Offices",
+      "primaryToolset": "offices",
+      "riskTier": "admin",
+      "capabilities": [
+        "admin"
+      ],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Create office"
     },
     {
       "operationId": "Offices_DeactivateOffice",
+      "toolName": "offices_deactivate_office",
       "method": "delete",
       "path": "/api/offices/{officeGuid}",
       "apiVersion": "v1",
-      "tag": "Offices"
+      "twinOperationId": null,
+      "tag": "Offices",
+      "primaryToolset": "offices",
+      "riskTier": "admin",
+      "capabilities": [
+        "admin"
+      ],
+      "inputCodec": "no-body-write",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Deactivate office"
     },
     {
       "operationId": "Offices_GetOffice",
+      "toolName": "offices_get_office",
       "method": "get",
       "path": "/api/offices/{officeGuid}",
       "apiVersion": "v1",
-      "tag": "Offices"
+      "twinOperationId": null,
+      "tag": "Offices",
+      "primaryToolset": "offices",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get office"
     },
     {
       "operationId": "Offices_PatchOffice",
+      "toolName": "offices_patch_office",
       "method": "patch",
       "path": "/api/offices/{officeGuid}",
       "apiVersion": "v1",
-      "tag": "Offices"
+      "twinOperationId": null,
+      "tag": "Offices",
+      "primaryToolset": "offices",
+      "riskTier": "admin",
+      "capabilities": [
+        "admin"
+      ],
+      "inputCodec": "query-write",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Patch office"
     },
     {
       "operationId": "Offices_UpdateOffice",
+      "toolName": "offices_update_office",
       "method": "put",
       "path": "/api/offices/{officeGuid}",
       "apiVersion": "v1",
-      "tag": "Offices"
+      "twinOperationId": null,
+      "tag": "Offices",
+      "primaryToolset": "offices",
+      "riskTier": "admin",
+      "capabilities": [
+        "admin"
+      ],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Update office"
     },
     {
       "operationId": "Checklists_GetChecklistTypes",
+      "toolName": "checklists_get_checklist_types",
       "method": "get",
       "path": "/api/offices/{officeGuid}/checklistTypes",
       "apiVersion": "v1",
-      "tag": "Checklists"
+      "twinOperationId": null,
+      "tag": "Checklists",
+      "primaryToolset": "checklists",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "List checklist types"
     },
     {
       "operationId": "Checklists_CopyChecklists",
+      "toolName": "checklists_copy_checklists",
       "method": "post",
       "path": "/api/offices/{sourceOfficeGuid}/checklists/copy",
       "apiVersion": "v1",
-      "tag": "Checklists"
+      "twinOperationId": null,
+      "tag": "Checklists",
+      "primaryToolset": "checklists",
+      "riskTier": "admin",
+      "capabilities": [
+        "admin"
+      ],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Copy checklists"
     },
     {
       "operationId": "PropertyTypes_GetSubtypes",
+      "toolName": "property_types_get_subtypes",
       "method": "get",
       "path": "/api/propertySubtypes/{parentTypeId}",
       "apiVersion": "v1",
-      "tag": "PropertyTypes"
+      "twinOperationId": null,
+      "tag": "PropertyTypes",
+      "primaryToolset": "reference",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "List property subtypes"
     },
     {
       "operationId": "PropertyTypes_GetPropertyTypes",
+      "toolName": "property_types_get_property_types",
       "method": "get",
       "path": "/api/propertyTypes",
       "apiVersion": "v1",
-      "tag": "PropertyTypes"
+      "twinOperationId": null,
+      "tag": "PropertyTypes",
+      "primaryToolset": "reference",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "List property types"
     },
     {
       "operationId": "SaleStage_ChangeSaleStage",
+      "toolName": "sale_stage_change_sale_stage",
       "method": "patch",
       "path": "/api/sales/{saleGuid}/stage",
       "apiVersion": "v1",
-      "tag": "Sale Stage"
+      "twinOperationId": null,
+      "tag": "Sale Stage",
+      "primaryToolset": "sales",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "query-write",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Update sale stage"
     },
     {
       "operationId": "Stages_GetStages",
+      "toolName": "stages_get_stages",
       "method": "get",
       "path": "/api/stages",
       "apiVersion": "v1",
-      "tag": "Stages"
+      "twinOperationId": null,
+      "tag": "Stages",
+      "primaryToolset": "stages",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "List stages"
     },
     {
       "operationId": "Stages_UpdateStage",
+      "toolName": "stages_update_stage",
       "method": "patch",
       "path": "/api/stages",
       "apiVersion": "v1",
-      "tag": "Stages"
+      "twinOperationId": null,
+      "tag": "Stages",
+      "primaryToolset": "stages",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Update stage"
     },
     {
       "operationId": "Stages_CreateStage",
+      "toolName": "stages_create_stage",
       "method": "post",
       "path": "/api/stages",
       "apiVersion": "v1",
-      "tag": "Stages"
+      "twinOperationId": null,
+      "tag": "Stages",
+      "primaryToolset": "stages",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Create stage"
     },
     {
       "operationId": "Subscribers_GetRootResources",
+      "toolName": "subscribers_get_root_resources",
       "method": "get",
       "path": "/api/subscribers",
       "apiVersion": "v1",
-      "tag": "Subscriber Resources"
+      "twinOperationId": null,
+      "tag": "Subscriber Resources",
+      "primaryToolset": "reference",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get subscriber resources"
     },
     {
       "operationId": "Terminology_GetContactTypes",
+      "toolName": "terminology_get_contact_types",
       "method": "get",
       "path": "/api/terminology/contact-types",
       "apiVersion": "v1",
-      "tag": "Terminology"
+      "twinOperationId": null,
+      "tag": "Terminology",
+      "primaryToolset": "reference",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get contact-type terminology"
     },
     {
       "operationId": "Users_GetUsers",
+      "toolName": "users_get_users",
       "method": "get",
       "path": "/api/users",
       "apiVersion": "v1",
-      "tag": "Users"
+      "twinOperationId": null,
+      "tag": "Users",
+      "primaryToolset": "users",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "List users"
     },
     {
       "operationId": "Users_GetUser",
+      "toolName": "users_get_user",
       "method": "get",
       "path": "/api/users/{userGuid}",
       "apiVersion": "v1",
-      "tag": "Users"
+      "twinOperationId": null,
+      "tag": "Users",
+      "primaryToolset": "users",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get a single user object"
     },
     {
       "operationId": "V2Listings_GetListingForm",
+      "toolName": "v2_listings_get_listing_form",
       "method": "get",
       "path": "/api/v2/files/listingForm",
       "apiVersion": "v2",
-      "tag": "V2 Listings"
+      "twinOperationId": "Listings_GetListingForm",
+      "tag": "V2 Listings",
+      "primaryToolset": "v2_listings",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get create form (V2)"
     },
     {
       "operationId": "V2Listings_CreateListing",
+      "toolName": "v2_listings_create_listing",
       "method": "post",
       "path": "/api/v2/files/listings",
       "apiVersion": "v2",
-      "tag": "V2 Listings"
+      "twinOperationId": "Listings_CreateListing",
+      "tag": "V2 Listings",
+      "primaryToolset": "v2_listings",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Create listing (V2)"
     },
     {
       "operationId": "V2Listings_UpdateListing",
+      "toolName": "v2_listings_update_listing",
       "method": "put",
       "path": "/api/v2/files/listings/{listingGuid}",
       "apiVersion": "v2",
-      "tag": "V2 Listings"
+      "twinOperationId": "Listings_UpdateListings",
+      "tag": "V2 Listings",
+      "primaryToolset": "v2_listings",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Update listing (V2)"
     },
     {
       "operationId": "V2ListingCommissions_GetListingCommissionForm",
+      "toolName": "v2_listing_commissions_get_listing_commission_form",
       "method": "get",
       "path": "/api/v2/files/listings/{listingGuid}/addCommissionsToListingForm",
       "apiVersion": "v2",
-      "tag": "V2 Listing Commissions"
+      "twinOperationId": "ListingCommissions_GetListingCommissionForm",
+      "tag": "V2 Listing Commissions",
+      "primaryToolset": "v2_listings",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get add commissions form (V2)"
     },
     {
       "operationId": "V2ListingContacts_GetAddContactsToListingForm",
+      "toolName": "v2_listing_contacts_get_add_contacts_to_listing_form",
       "method": "get",
       "path": "/api/v2/files/listings/{listingGuid}/addContactsToListingForm",
       "apiVersion": "v2",
-      "tag": "V2 Listing Contacts"
+      "twinOperationId": null,
+      "tag": "V2 Listing Contacts",
+      "primaryToolset": "v2_listings",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get add contacts form (V2)"
     },
     {
       "operationId": "V2ListingReferringAgent_GetAddReferringAgentToListingForm",
+      "toolName": "v2_listing_ref_agent_get_add_ref_agent_to_listing_form",
       "method": "get",
       "path": "/api/v2/files/listings/{listingGuid}/addReferringAgentToListingForm",
       "apiVersion": "v2",
-      "tag": "V2 Listing Referring Agents"
+      "twinOperationId": "ListingReferringAgents_GetAddReferringAgentToListingForm",
+      "tag": "V2 Listing Referring Agents",
+      "primaryToolset": "v2_listings",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get add referring agent form (V2)"
     },
     {
       "operationId": "V2ListingContacts_GetAddSellerContactToListingForm",
+      "toolName": "v2_listing_contacts_get_add_seller_contact_to_listing_form",
       "method": "get",
       "path": "/api/v2/files/listings/{listingGuid}/addSellerContactToListingForm",
       "apiVersion": "v2",
-      "tag": "V2 Listing Contacts"
+      "twinOperationId": "ListingContacts_GetAddSellerContactToListingForm",
+      "tag": "V2 Listing Contacts",
+      "primaryToolset": "v2_listings",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get add seller contact form (V2)"
     },
     {
       "operationId": "V2ListingCommissions_AddCommissionToListing",
+      "toolName": "v2_listing_commissions_add_commission_to_listing",
       "method": "post",
       "path": "/api/v2/files/listings/{listingGuid}/commissions",
       "apiVersion": "v2",
-      "tag": "V2 Listing Commissions"
+      "twinOperationId": "ListingCommissions_AddCommissionToListing",
+      "tag": "V2 Listing Commissions",
+      "primaryToolset": "v2_listings",
+      "riskTier": "financial",
+      "capabilities": [
+        "financial"
+      ],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false
+      },
+      "description": "Add commissions (V2)"
     },
     {
       "operationId": "V2ListingCommissions_UpdateListingCommission",
+      "toolName": "v2_listing_commissions_update_listing_commission",
       "method": "put",
       "path": "/api/v2/files/listings/{listingGuid}/commissions",
       "apiVersion": "v2",
-      "tag": "V2 Listing Commissions"
+      "twinOperationId": "ListingCommissions_UpdateListingCommission",
+      "tag": "V2 Listing Commissions",
+      "primaryToolset": "v2_listings",
+      "riskTier": "financial",
+      "capabilities": [
+        "financial"
+      ],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false
+      },
+      "description": "Update commissions (V2)"
     },
     {
       "operationId": "V2ListingContacts_UpdateListingContact",
+      "toolName": "v2_listing_contacts_update_listing_contact",
       "method": "put",
       "path": "/api/v2/files/listings/{listingGuid}/contact/{contactGuid}",
       "apiVersion": "v2",
-      "tag": "V2 Listing Contacts"
+      "twinOperationId": "ListingContacts_UpdateListingContact",
+      "tag": "V2 Listing Contacts",
+      "primaryToolset": "v2_listings",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "open-body",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Update contact (V2)"
     },
     {
       "operationId": "V2ListingContacts_AddContacts",
+      "toolName": "v2_listing_contacts_add_contacts",
       "method": "post",
       "path": "/api/v2/files/listings/{listingGuid}/contacts",
       "apiVersion": "v2",
-      "tag": "V2 Listing Contacts"
+      "twinOperationId": null,
+      "tag": "V2 Listing Contacts",
+      "primaryToolset": "v2_listings",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Add contacts (V2)"
     },
     {
       "operationId": "V2ListingContacts_GetUpdateListingContactForm",
+      "toolName": "v2_listing_contacts_get_update_listing_contact_form",
       "method": "get",
       "path": "/api/v2/files/listings/{listingGuid}/contacts/{contactGuid}/updateListingContactForm",
       "apiVersion": "v2",
-      "tag": "V2 Listing Contacts"
+      "twinOperationId": "ListingContacts_GetUpdateListingContactForm",
+      "tag": "V2 Listing Contacts",
+      "primaryToolset": "v2_listings",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get update contact form (V2)"
     },
     {
       "operationId": "V2ListingProperties_UpdateListingProperty",
+      "toolName": "v2_listing_properties_update_listing_property",
       "method": "put",
       "path": "/api/v2/files/listings/{listingGuid}/property",
       "apiVersion": "v2",
-      "tag": "V2 Listing Properties"
+      "twinOperationId": "ListingProperties_UpdateListingProperty",
+      "tag": "V2 Listing Properties",
+      "primaryToolset": "v2_listings",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Update property (V2)"
     },
     {
       "operationId": "V2ListingReferringAgent_AddReferringAgentToListing",
+      "toolName": "v2_listing_referring_agent_add_referring_agent_to_listing",
       "method": "post",
       "path": "/api/v2/files/listings/{listingGuid}/referringagent",
       "apiVersion": "v2",
-      "tag": "V2 Listing Referring Agents"
+      "twinOperationId": "ListingReferringAgents_AddReferringAgentToListing",
+      "tag": "V2 Listing Referring Agents",
+      "primaryToolset": "v2_listings",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Add referring agent (V2)"
     },
     {
       "operationId": "V2ListingReferringAgent_UpdateListingReferringAgent",
+      "toolName": "v2_listing_referring_agent_update_listing_referring_agent",
       "method": "put",
       "path": "/api/v2/files/listings/{listingGuid}/referringagent",
       "apiVersion": "v2",
-      "tag": "V2 Listing Referring Agents"
+      "twinOperationId": "ListingReferringAgents_UpdateListingReferringAgent",
+      "tag": "V2 Listing Referring Agents",
+      "primaryToolset": "v2_listings",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Update referring agent (V2)"
     },
     {
       "operationId": "V2ListingContacts_AddSellerContact",
+      "toolName": "v2_listing_contacts_add_seller_contact",
       "method": "post",
       "path": "/api/v2/files/listings/{listingGuid}/sellerContact",
       "apiVersion": "v2",
-      "tag": "V2 Listing Contacts"
+      "twinOperationId": "ListingContacts_AddSellerContacts",
+      "tag": "V2 Listing Contacts",
+      "primaryToolset": "v2_listings",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Add seller contact (V2)"
     },
     {
       "operationId": "V2ListingTieredCommissions_GetListingTieredCommissions",
+      "toolName": "v2_listing_tiered_commissions_get_listing_tiered_commissions",
       "method": "get",
       "path": "/api/v2/files/listings/{listingGuid}/tieredCommissions",
       "apiVersion": "v2",
-      "tag": "V2 Listing Tiered Commissions"
+      "twinOperationId": "ListingTieredCommissions_GetListingTieredCommissions",
+      "tag": "V2 Listing Tiered Commissions",
+      "primaryToolset": "v2_listings",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get tiered commissions (V2)"
     },
     {
       "operationId": "V2ListingTieredCommissions_AddListingTieredCommissions",
+      "toolName": "v2_listing_tiered_commissions_add_listing_tiered_commissions",
       "method": "post",
       "path": "/api/v2/files/listings/{listingGuid}/tieredCommissions",
       "apiVersion": "v2",
-      "tag": "V2 Listing Tiered Commissions"
+      "twinOperationId": "ListingTieredCommissions_AddListingTieredCommissions",
+      "tag": "V2 Listing Tiered Commissions",
+      "primaryToolset": "v2_listings",
+      "riskTier": "financial",
+      "capabilities": [
+        "financial"
+      ],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false
+      },
+      "description": "Add tiered commissions (V2)"
     },
     {
       "operationId": "V2ListingTieredCommissions_UpdateListingTieredCommissions",
+      "toolName": "v2_listing_tiered_commissions_update_listing_tiered_commissions",
       "method": "put",
       "path": "/api/v2/files/listings/{listingGuid}/tieredCommissions",
       "apiVersion": "v2",
-      "tag": "V2 Listing Tiered Commissions"
+      "twinOperationId": "ListingTieredCommissions_UpdateListingTieredCommissions",
+      "tag": "V2 Listing Tiered Commissions",
+      "primaryToolset": "v2_listings",
+      "riskTier": "financial",
+      "capabilities": [
+        "financial"
+      ],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false
+      },
+      "description": "Update tiered commissions (V2)"
     },
     {
       "operationId": "V2ListingCommissions_GetUpdateListingCommissionsForm",
+      "toolName": "v2_listing_commissions_get_update_listing_commissions_form",
       "method": "get",
       "path": "/api/v2/files/listings/{listingGuid}/updateListingCommissionsForm",
       "apiVersion": "v2",
-      "tag": "V2 Listing Commissions"
+      "twinOperationId": "ListingCommissions_GetUpdateListingForm",
+      "tag": "V2 Listing Commissions",
+      "primaryToolset": "v2_listings",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get update commissions form (V2)"
     },
     {
       "operationId": "V2Listings_GetUpdateListingForm",
+      "toolName": "v2_listings_get_update_listing_form",
       "method": "get",
       "path": "/api/v2/files/listings/{listingGuid}/updateListingForm",
       "apiVersion": "v2",
-      "tag": "V2 Listings"
+      "twinOperationId": "Listings_GetUpdateListingForm",
+      "tag": "V2 Listings",
+      "primaryToolset": "v2_listings",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get update listing form (V2)"
     },
     {
       "operationId": "V2ListingProperties_GetUpdateListingPropertyForm",
+      "toolName": "v2_listing_properties_get_update_listing_property_form",
       "method": "get",
       "path": "/api/v2/files/listings/{listingGuid}/updateListingPropertyForm",
       "apiVersion": "v2",
-      "tag": "V2 Listing Properties"
+      "twinOperationId": "ListingProperties_GetUpdateListingForm",
+      "tag": "V2 Listing Properties",
+      "primaryToolset": "v2_listings",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get update property form (V2)"
     },
     {
       "operationId": "V2ListingReferringAgent_GetUpdateListingReferringAgentForm",
+      "toolName": "v2_listing_ref_agent_get_update_listing_ref_agent_form",
       "method": "get",
       "path": "/api/v2/files/listings/{listingGuid}/updateListingReferringAgentForm",
       "apiVersion": "v2",
-      "tag": "V2 Listing Referring Agents"
+      "twinOperationId": "ListingReferringAgents_GetUpdateListingReferringAgentForm",
+      "tag": "V2 Listing Referring Agents",
+      "primaryToolset": "v2_listings",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get update referring agent form (V2)"
     },
     {
       "operationId": "V2Sales_GetSaleForm",
+      "toolName": "v2_sales_get_sale_form",
       "method": "get",
       "path": "/api/v2/files/saleForm",
       "apiVersion": "v2",
-      "tag": "V2 Sales"
+      "twinOperationId": "Sales_GetSaleForm",
+      "tag": "V2 Sales",
+      "primaryToolset": "v2_sales",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get create form (V2)"
     },
     {
       "operationId": "V2Sales_CreateSale",
+      "toolName": "v2_sales_create_sale",
       "method": "post",
       "path": "/api/v2/files/sales",
       "apiVersion": "v2",
-      "tag": "V2 Sales"
+      "twinOperationId": "Sales_CreateSale",
+      "tag": "V2 Sales",
+      "primaryToolset": "v2_sales",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Create sale (V2)"
     },
     {
       "operationId": "V2Sales_UpdateSale",
+      "toolName": "v2_sales_update_sale",
       "method": "put",
       "path": "/api/v2/files/sales/{saleGuid}",
       "apiVersion": "v2",
-      "tag": "V2 Sales"
+      "twinOperationId": "Sales_UpdateSale",
+      "tag": "V2 Sales",
+      "primaryToolset": "v2_sales",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Update sale (V2)"
     },
     {
       "operationId": "V2SaleCommissions_GetAddCommissionsToSaleForm",
+      "toolName": "v2_sale_commissions_get_add_commissions_to_sale_form",
       "method": "get",
       "path": "/api/v2/files/sales/{saleGuid}/addCommissionsToSaleForm",
       "apiVersion": "v2",
-      "tag": "V2 Sale Commissions"
+      "twinOperationId": "SaleCommissions_GetAddCommissionsToSaleForm",
+      "tag": "V2 Sale Commissions",
+      "primaryToolset": "v2_sales",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get add commissions form (V2)"
     },
     {
       "operationId": "V2SaleContacts_GetAddContactsToSaleForm",
+      "toolName": "v2_sale_contacts_get_add_contacts_to_sale_form",
       "method": "get",
       "path": "/api/v2/files/sales/{saleGuid}/addContactsToSaleForm",
       "apiVersion": "v2",
-      "tag": "V2 Sale Contacts"
+      "twinOperationId": null,
+      "tag": "V2 Sale Contacts",
+      "primaryToolset": "v2_sales",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get add contacts form (V2)"
     },
     {
       "operationId": "V2SaleReferringAgent_GetAddReferringAgentToSaleForm",
+      "toolName": "v2_sale_referring_agent_get_add_referring_agent_to_sale_form",
       "method": "get",
       "path": "/api/v2/files/sales/{saleGuid}/addReferringAgentToSaleForm",
       "apiVersion": "v2",
-      "tag": "V2 Sale Referring Agents"
+      "twinOperationId": "SaleReferringAgent_GetAddReferringAgentToSaleForm",
+      "tag": "V2 Sale Referring Agents",
+      "primaryToolset": "v2_sales",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get add referring agent form (V2)"
     },
     {
       "operationId": "V2SaleCommissions_AddCommissionsToSale",
+      "toolName": "v2_sale_commissions_add_commissions_to_sale",
       "method": "post",
       "path": "/api/v2/files/sales/{saleGuid}/commissions",
       "apiVersion": "v2",
-      "tag": "V2 Sale Commissions"
+      "twinOperationId": "SaleCommissions_AddCommissionsToSale",
+      "tag": "V2 Sale Commissions",
+      "primaryToolset": "v2_sales",
+      "riskTier": "financial",
+      "capabilities": [
+        "financial"
+      ],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false
+      },
+      "description": "Add commissions (V2)"
     },
     {
       "operationId": "V2SaleCommissions_UpdateSaleCommissions",
+      "toolName": "v2_sale_commissions_update_sale_commissions",
       "method": "put",
       "path": "/api/v2/files/sales/{saleGuid}/commissions",
       "apiVersion": "v2",
-      "tag": "V2 Sale Commissions"
+      "twinOperationId": "SaleCommissions_UpdateSaleCommissions",
+      "tag": "V2 Sale Commissions",
+      "primaryToolset": "v2_sales",
+      "riskTier": "financial",
+      "capabilities": [
+        "financial"
+      ],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false
+      },
+      "description": "Update commissions (V2)"
     },
     {
       "operationId": "V2SaleContacts_AddSaleContacts",
+      "toolName": "v2_sale_contacts_add_sale_contacts",
       "method": "post",
       "path": "/api/v2/files/sales/{saleGuid}/contacts",
       "apiVersion": "v2",
-      "tag": "V2 Sale Contacts"
+      "twinOperationId": null,
+      "tag": "V2 Sale Contacts",
+      "primaryToolset": "v2_sales",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Add contacts (V2)"
     },
     {
       "operationId": "V2SaleContacts_UpdateSaleContact",
+      "toolName": "v2_sale_contacts_update_sale_contact",
       "method": "put",
       "path": "/api/v2/files/sales/{saleGuid}/contacts/{contactGuid}",
       "apiVersion": "v2",
-      "tag": "V2 Sale Contacts"
+      "twinOperationId": "SaleContacts_UpdateSaleContact",
+      "tag": "V2 Sale Contacts",
+      "primaryToolset": "v2_sales",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "open-body",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Update contact (V2)"
     },
     {
       "operationId": "V2SaleContacts_GetUpdateSaleContactForm",
+      "toolName": "v2_sale_contacts_get_update_sale_contact_form",
       "method": "get",
       "path": "/api/v2/files/sales/{saleGuid}/contacts/{contactGuid}/updateSaleContactForm",
       "apiVersion": "v2",
-      "tag": "V2 Sale Contacts"
+      "twinOperationId": "SaleContacts_GetUpdateSaleContactForm",
+      "tag": "V2 Sale Contacts",
+      "primaryToolset": "v2_sales",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get update contact form (V2)"
     },
     {
       "operationId": "V2Sales_ConvertSaleToUnderContract",
+      "toolName": "v2_sales_convert_sale_to_under_contract",
       "method": "put",
       "path": "/api/v2/files/sales/{saleGuid}/convert/under-contract",
       "apiVersion": "v2",
-      "tag": "V2 Sales"
+      "twinOperationId": "Sales_ConvertSaleToUnderContract",
+      "tag": "V2 Sales",
+      "primaryToolset": "v2_sales",
+      "riskTier": "destructive",
+      "capabilities": [
+        "destructive"
+      ],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false
+      },
+      "description": "Convert sale to under contract (V2)"
     },
     {
       "operationId": "V2SaleProperties_UpdateSaleProperty",
+      "toolName": "v2_sale_properties_update_sale_property",
       "method": "put",
       "path": "/api/v2/files/sales/{saleGuid}/property",
       "apiVersion": "v2",
-      "tag": "V2 Sale Properties"
+      "twinOperationId": "SaleProperties_UpdateSaleProperty",
+      "tag": "V2 Sale Properties",
+      "primaryToolset": "v2_sales",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Update property (V2)"
     },
     {
       "operationId": "V2SaleReferringAgent_AddReferringAgentToSale",
+      "toolName": "v2_sale_referring_agent_add_referring_agent_to_sale",
       "method": "post",
       "path": "/api/v2/files/sales/{saleGuid}/referringagent",
       "apiVersion": "v2",
-      "tag": "V2 Sale Referring Agents"
+      "twinOperationId": "SaleReferringAgent_AddReferringAgentToSale",
+      "tag": "V2 Sale Referring Agents",
+      "primaryToolset": "v2_sales",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Add referring agent (V2)"
     },
     {
       "operationId": "V2SaleReferringAgent_UpdateSaleReferringAgent",
+      "toolName": "v2_sale_referring_agent_update_sale_referring_agent",
       "method": "put",
       "path": "/api/v2/files/sales/{saleGuid}/referringagent",
       "apiVersion": "v2",
-      "tag": "V2 Sale Referring Agents"
+      "twinOperationId": "SaleReferringAgent_UpdateSaleReferringAgent",
+      "tag": "V2 Sale Referring Agents",
+      "primaryToolset": "v2_sales",
+      "riskTier": "ordinary",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "description": "Update referring agent (V2)"
     },
     {
       "operationId": "V2SaleTieredCommissions_GetSaleTieredCommissions",
+      "toolName": "v2_sale_tiered_commissions_get_sale_tiered_commissions",
       "method": "get",
       "path": "/api/v2/files/sales/{saleGuid}/tieredCommissions",
       "apiVersion": "v2",
-      "tag": "V2 Sale Tiered Commissions"
+      "twinOperationId": "SaleTieredCommissions_GetSaleTieredCommissions",
+      "tag": "V2 Sale Tiered Commissions",
+      "primaryToolset": "v2_sales",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get tiered commissions (V2)"
     },
     {
       "operationId": "V2SaleTieredCommissions_AddSaleTieredCommissions",
+      "toolName": "v2_sale_tiered_commissions_add_sale_tiered_commissions",
       "method": "post",
       "path": "/api/v2/files/sales/{saleGuid}/tieredCommissions",
       "apiVersion": "v2",
-      "tag": "V2 Sale Tiered Commissions"
+      "twinOperationId": "SaleTieredCommissions_AddSaleTieredCommissions",
+      "tag": "V2 Sale Tiered Commissions",
+      "primaryToolset": "v2_sales",
+      "riskTier": "financial",
+      "capabilities": [
+        "financial"
+      ],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false
+      },
+      "description": "Add tiered commissions (V2)"
     },
     {
       "operationId": "V2SaleTieredCommissions_UpdateSaleTieredCommissions",
+      "toolName": "v2_sale_tiered_commissions_update_sale_tiered_commissions",
       "method": "put",
       "path": "/api/v2/files/sales/{saleGuid}/tieredCommissions",
       "apiVersion": "v2",
-      "tag": "V2 Sale Tiered Commissions"
+      "twinOperationId": "SaleTieredCommissions_UpdateSaleTieredCommissions",
+      "tag": "V2 Sale Tiered Commissions",
+      "primaryToolset": "v2_sales",
+      "riskTier": "financial",
+      "capabilities": [
+        "financial"
+      ],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false
+      },
+      "description": "Update tiered commissions (V2)"
     },
     {
       "operationId": "V2SaleCommissions_GetUpdateSaleCommissionForm",
+      "toolName": "v2_sale_commissions_get_update_sale_commission_form",
       "method": "get",
       "path": "/api/v2/files/sales/{saleGuid}/updateSaleCommissionsForm",
       "apiVersion": "v2",
-      "tag": "V2 Sale Commissions"
+      "twinOperationId": "SaleCommissions_GetUpdateSaleCommissionForm",
+      "tag": "V2 Sale Commissions",
+      "primaryToolset": "v2_sales",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get update commissions form (V2)"
     },
     {
       "operationId": "V2Sales_GetUpdateSaleForm",
+      "toolName": "v2_sales_get_update_sale_form",
       "method": "get",
       "path": "/api/v2/files/sales/{saleGuid}/updateSaleForm",
       "apiVersion": "v2",
-      "tag": "V2 Sales"
+      "twinOperationId": "Sales_GetUpdateSaleForm",
+      "tag": "V2 Sales",
+      "primaryToolset": "v2_sales",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get update sale form (V2)"
     },
     {
       "operationId": "V2SaleProperties_GetUpdateSalePropertyForm",
+      "toolName": "v2_sale_properties_get_update_sale_property_form",
       "method": "get",
       "path": "/api/v2/files/sales/{saleGuid}/updateSalePropertyForm",
       "apiVersion": "v2",
-      "tag": "V2 Sale Properties"
+      "twinOperationId": "SaleProperties_GetUpdateSaleForm",
+      "tag": "V2 Sale Properties",
+      "primaryToolset": "v2_sales",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get update sale property form (V2)"
     },
     {
       "operationId": "V2SaleReferringAgent_GetUpdateSaleReferringAgentForm",
+      "toolName": "v2_sale_referring_agent_get_update_sale_referring_agent_form",
       "method": "get",
       "path": "/api/v2/files/sales/{saleGuid}/updateSaleReferringAgentForm",
       "apiVersion": "v2",
-      "tag": "V2 Sale Referring Agents"
+      "twinOperationId": "SaleReferringAgent_GetUpdateSaleReferringAgentForm",
+      "tag": "V2 Sale Referring Agents",
+      "primaryToolset": "v2_sales",
+      "riskTier": "read",
+      "capabilities": [],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get update referring agent form (V2)"
     },
     {
       "operationId": "V2Sales_GetSaleFields",
+      "toolName": "v2_sales_get_sale_fields",
       "method": "get",
       "path": "/api/v2/files/sales/fields",
       "apiVersion": "v2",
-      "tag": "V2 Sales"
+      "twinOperationId": "Sales_GetSales",
+      "tag": "V2 Sales",
+      "primaryToolset": "v2_sales",
+      "riskTier": "read",
+      "capabilities": [
+        "impersonation"
+      ],
+      "inputCodec": "json",
+      "outputCodec": "json",
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "description": "Get sale field metadata (V2)"
     }
   ]
 }

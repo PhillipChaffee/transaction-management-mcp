@@ -8,6 +8,7 @@ const targetDir = path.join(root, "dist/generated");
 
 await mkdir(targetDir, { recursive: true });
 
+// Runtime policy + types only. tool-name-abbreviations.json is generation/verification-only.
 for (const fileName of ["operations.manifest.json", "openapi.d.ts"]) {
   await cp(path.join(sourceDir, fileName), path.join(targetDir, fileName));
 }

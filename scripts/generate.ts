@@ -5,7 +5,8 @@ import { fileURLToPath } from "node:url";
 
 import openapiTS, { astToString } from "openapi-typescript";
 
-import type { OperationRecord, OperationsManifest } from "./lib/census.ts";
+import { classifyOperations } from "./lib/classification.ts";
+import type { OperationsManifest } from "./lib/census.ts";
 import { countCensus } from "./lib/census.ts";
 import type {
   OpenAPIDocument,
@@ -17,13 +18,18 @@ import type {
 import {
   collectParameters,
   deref,
-  deriveApiVersion,
   isReferenceObject,
   listOperations,
-  primaryTag,
   successStatusCodes,
 } from "./lib/openapi-document.ts";
+import {
+  loadClassificationRules,
+  loadOperationsOverrides,
+  type ClassificationRules,
+  type OperationOverride,
+} from "./lib/overrides.ts";
 import { ZodEmitter } from "./lib/zod-emitter.ts";
+import { assignToolNames, type AbbreviationRecord } from "./naming.ts";
 
 export const GENERATOR_ID = "deterministic-zod-emitter";
 export const GENERATOR_LOCK =
@@ -48,11 +54,16 @@ export interface GenerateOptions {
   specPath: string;
   outDir: string;
   openapiSha256?: string;
+  classificationRulesPath?: string;
+  operationsOverridesPath?: string;
+  classificationRules?: ClassificationRules;
+  operationsOverrides?: Record<string, OperationOverride>;
 }
 
 export interface GenerateResult {
   openapiSha256: string;
   manifest: OperationsManifest;
+  abbreviations: AbbreviationRecord[];
   files: string[];
 }
 
@@ -119,7 +130,6 @@ function requestBodySchema(
     "multipart/form-data",
   ]);
   if (!schema) {
-    // Empty content / empty body schema → open JSON object.
     return { expr: emitter.emitEmptyBody(), required: resolved.required === true, empty: true };
   }
   if (isReferenceObject(schema)) {
@@ -232,22 +242,40 @@ function emitToolSchemas(document: OpenAPIDocument, operations = listOperations(
   return `${chunks.join("\n")}`;
 }
 
-export function buildManifest(
+export async function buildManifest(
   document: OpenAPIDocument,
   openapiSha256: string,
-  operations = listOperations(document),
-): OperationsManifest {
-  const records: OperationRecord[] = operations.map((operation) => ({
-    operationId: operation.operationId,
-    method: operation.method,
-    path: operation.path,
-    apiVersion: deriveApiVersion(operation.path, operation.tags),
-    tag: primaryTag(operation.tags),
-  }));
+  options: {
+    classificationRules?: ClassificationRules;
+    operationsOverrides?: Record<string, OperationOverride>;
+    classificationRulesPath?: string;
+    operationsOverridesPath?: string;
+  } = {},
+): Promise<{ manifest: OperationsManifest; abbreviations: AbbreviationRecord[] }> {
+  const operations = listOperations(document);
+  const rules =
+    options.classificationRules ?? (await loadClassificationRules(options.classificationRulesPath));
+  const overridesFile =
+    options.operationsOverrides !== undefined
+      ? { operations: options.operationsOverrides }
+      : await loadOperationsOverrides(options.operationsOverridesPath);
+
+  const naming = assignToolNames(operations.map((operation) => operation.operationId));
+  const classified = classifyOperations({
+    document,
+    operations,
+    rules,
+    overrides: overridesFile.operations,
+    toolNames: naming.toolNames,
+  });
+
   return {
-    openapiSha256,
-    census: countCensus(records),
-    operations: records,
+    manifest: {
+      openapiSha256,
+      census: countCensus(classified.records),
+      operations: classified.records,
+    },
+    abbreviations: naming.abbreviations,
   };
 }
 
@@ -270,14 +298,36 @@ export async function generateFromSpec(options: GenerateOptions): Promise<Genera
   const toolSchemasPath = path.join(outDir, "tool-schemas.ts");
   await writeFile(toolSchemasPath, toolSchemas, "utf8");
 
-  const manifest = buildManifest(document, openapiSha256, operations);
+  const manifestOptions: {
+    classificationRules?: ClassificationRules;
+    operationsOverrides?: Record<string, OperationOverride>;
+    classificationRulesPath?: string;
+    operationsOverridesPath?: string;
+  } = {};
+  if (options.classificationRules !== undefined) {
+    manifestOptions.classificationRules = options.classificationRules;
+  }
+  if (options.operationsOverrides !== undefined) {
+    manifestOptions.operationsOverrides = options.operationsOverrides;
+  }
+  if (options.classificationRulesPath !== undefined) {
+    manifestOptions.classificationRulesPath = options.classificationRulesPath;
+  }
+  if (options.operationsOverridesPath !== undefined) {
+    manifestOptions.operationsOverridesPath = options.operationsOverridesPath;
+  }
+  const { manifest, abbreviations } = await buildManifest(document, openapiSha256, manifestOptions);
   const manifestPath = path.join(outDir, "operations.manifest.json");
   await writeFile(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
+
+  const abbreviationsPath = path.join(outDir, "tool-name-abbreviations.json");
+  await writeFile(abbreviationsPath, `${JSON.stringify(abbreviations, null, 2)}\n`, "utf8");
 
   return {
     openapiSha256,
     manifest,
-    files: [openapiDtsPath, toolSchemasPath, manifestPath],
+    abbreviations,
+    files: [openapiDtsPath, toolSchemasPath, manifestPath, abbreviationsPath],
   };
 }
 

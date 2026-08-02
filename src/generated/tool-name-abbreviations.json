@@ -1,0 +1,58 @@
+[
+  {
+    "operationId": "ListingTransactionCoordinators_AddListingTransactionCoordinator",
+    "unshortened": "listing_transaction_coordinators_add_listing_transaction_coordinator",
+    "toolName": "listing_tx_coords_add_listing_transaction_coordinator",
+    "replacements": [
+      "transaction_coordinators→tx_coords"
+    ]
+  },
+  {
+    "operationId": "ListingTransactionCoordinators_GetListingTransactionCoordinators",
+    "unshortened": "listing_transaction_coordinators_get_listing_transaction_coordinators",
+    "toolName": "listing_tx_coords_get_listing_tx_coords",
+    "replacements": [
+      "transaction_coordinators→tx_coords"
+    ]
+  },
+  {
+    "operationId": "ListingTransactionCoordinators_RemoveListingTransactionCoordinator",
+    "unshortened": "listing_transaction_coordinators_remove_listing_transaction_coordinator",
+    "toolName": "listing_tx_coords_remove_listing_transaction_coordinator",
+    "replacements": [
+      "transaction_coordinators→tx_coords"
+    ]
+  },
+  {
+    "operationId": "SaleCommissionBreakdowns_GetUpdateSaleCommissionBreakdownsForm",
+    "unshortened": "sale_commission_breakdowns_get_update_sale_commission_breakdowns_form",
+    "toolName": "sale_comm_bd_get_update_sale_comm_bd_form",
+    "replacements": [
+      "commission_breakdowns→comm_bd"
+    ]
+  },
+  {
+    "operationId": "SaleTransactionCoordinators_RemoveSaleTransactionCoordinator",
+    "unshortened": "sale_transaction_coordinators_remove_sale_transaction_coordinator",
+    "toolName": "sale_tx_coords_remove_sale_transaction_coordinator",
+    "replacements": [
+      "transaction_coordinators→tx_coords"
+    ]
+  },
+  {
+    "operationId": "V2ListingReferringAgent_GetAddReferringAgentToListingForm",
+    "unshortened": "v2_listing_referring_agent_get_add_referring_agent_to_listing_form",
+    "toolName": "v2_listing_ref_agent_get_add_ref_agent_to_listing_form",
+    "replacements": [
+      "referring_agent→ref_agent"
+    ]
+  },
+  {
+    "operationId": "V2ListingReferringAgent_GetUpdateListingReferringAgentForm",
+    "unshortened": "v2_listing_referring_agent_get_update_listing_referring_agent_form",
+    "toolName": "v2_listing_ref_agent_get_update_listing_ref_agent_form",
+    "replacements": [
+      "referring_agent→ref_agent"
+    ]
+  }
+]

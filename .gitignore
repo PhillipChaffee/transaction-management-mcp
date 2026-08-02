@@ -16,6 +16,8 @@ openapi.json
 **/openapi.json
 *.openapi.json
 *.swagger.json
+!test/fixtures/openapi/*.openapi.json
+!test/fixtures/openapi/*.swagger.json
 
 # Temp and local tooling
 .tmp/

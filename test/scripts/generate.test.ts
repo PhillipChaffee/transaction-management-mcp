@@ -9,6 +9,7 @@ import type { z } from "zod";
 
 import { generateFromSpec, GENERATOR_ID } from "../../scripts/generate.ts";
 import type { OperationsManifest } from "../../scripts/lib/census.ts";
+import type { AbbreviationRecord } from "../../scripts/naming.ts";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const fixturePath = path.join(root, "test/fixtures/openapi/synthetic.openapi.json");
@@ -25,6 +26,23 @@ interface ToolSchemasModule {
   toolSchemas: Record<string, { input: z.ZodObject; output: z.ZodType }>;
 }
 
+const POLICY_FIELDS = [
+  "annotations",
+  "apiVersion",
+  "capabilities",
+  "description",
+  "inputCodec",
+  "method",
+  "operationId",
+  "outputCodec",
+  "path",
+  "primaryToolset",
+  "riskTier",
+  "tag",
+  "toolName",
+  "twinOperationId",
+];
+
 async function generateOnce(): Promise<{
   outDir: string;
   result: Awaited<ReturnType<typeof generateFromSpec>>;
@@ -33,7 +51,11 @@ async function generateOnce(): Promise<{
   await mkdir(tempRoot, { recursive: true });
   const outDir = await mkdtemp(path.join(tempRoot, "tm-gen-"));
   tempDirs.push(outDir);
-  const result = await generateFromSpec({ specPath: fixturePath, outDir });
+  const result = await generateFromSpec({
+    specPath: fixturePath,
+    outDir,
+    operationsOverrides: {},
+  });
   const schemas = (await import(
     `${pathToFileURL(path.join(outDir, "tool-schemas.ts")).href}?t=${Date.now()}`
   )) as ToolSchemasModule;
@@ -41,10 +63,10 @@ async function generateOnce(): Promise<{
 }
 
 describe("generateFromSpec (synthetic fixture)", () => {
-  it("emits types, schemas, and a census-only manifest for every fixture operation", async () => {
+  it("emits types, schemas, full policy manifest, and abbreviation map", async () => {
     const { outDir, result, schemas } = await generateOnce();
 
-    expect(result.files).toHaveLength(3);
+    expect(result.files).toHaveLength(4);
     expect(GENERATOR_ID).toBe("deterministic-zod-emitter");
     expect(schemas.generatorId).toBe(GENERATOR_ID);
 
@@ -58,21 +80,47 @@ describe("generateFromSpec (synthetic fixture)", () => {
     );
 
     for (const operation of manifest.operations) {
-      expect(Object.keys(operation).sort()).toEqual([
-        "apiVersion",
-        "method",
-        "operationId",
-        "path",
-        "tag",
-      ]);
+      expect(Object.keys(operation).sort()).toEqual(POLICY_FIELDS);
+      expect(operation).not.toHaveProperty("defaultEnabled");
       const entry = schemas.toolSchemas[operation.operationId];
       expect(typeof entry?.input.parse).toBe("function");
       expect(typeof entry?.output.parse).toBe("function");
     }
 
+    const abbreviations = JSON.parse(
+      await readFile(path.join(outDir, "tool-name-abbreviations.json"), "utf8"),
+    ) as AbbreviationRecord[];
+    expect(Array.isArray(abbreviations)).toBe(true);
+
     const dts = await readFile(path.join(outDir, "openapi.d.ts"), "utf8");
     expect(dts).toContain("AUTO-GENERATED FILE");
     expect(dts).toContain("paths");
+  });
+
+  it("classifies Sales_GetSales and codec anomaly classes", async () => {
+    const { result } = await generateOnce();
+    const byId = new Map(
+      result.manifest.operations.map((operation) => [operation.operationId, operation]),
+    );
+
+    const sales = byId.get("Sales_GetSales");
+    expect(sales?.capabilities).toEqual(["binary-io", "impersonation"]);
+    expect(sales?.riskTier).toBe("read");
+    expect(sales?.primaryToolset).toBe("sales");
+
+    expect(byId.get("Documents_AddDocument")?.inputCodec).toBe("base64-upload");
+    expect(byId.get("CdaDocumentData_Update")?.inputCodec).toBe("cda");
+    expect(byId.get("CdaDocumentData_Update")?.riskTier).toBe("financial");
+    expect(byId.get("BulkExport_GetExport")?.outputCodec).toBe("bulk-stream");
+    expect(byId.get("BulkExport_GetExport")?.capabilities).toContain("bulk-export");
+    expect(byId.get("Files_GetOctetStream")?.outputCodec).toBe("octet-stream");
+    expect(byId.get("Files_GetOctetStream")?.capabilities).toContain("binary-io");
+    expect(byId.get("Items_QueryWriteStatus")?.inputCodec).toBe("query-write");
+    expect(byId.get("Items_NoBodyClose")?.inputCodec).toBe("no-body-write");
+    expect(byId.get("Items_NoBodyClose")?.outputCodec).toBe("no-content");
+    expect(byId.get("Items_NoBodyClose")?.riskTier).toBe("destructive");
+    expect(byId.get("Items_OpenBodyUpdate")?.inputCodec).toBe("open-body");
+    expect(byId.get("Items_GetLinkedEmptyValue")?.outputCodec).toBe("empty-value");
   });
 
   it("accepts valid payloads and rejects invalid ones per anomaly class", async () => {
@@ -235,7 +283,12 @@ describe("generateFromSpec (synthetic fixture)", () => {
     const first = await generateOnce();
     const second = await generateOnce();
 
-    for (const fileName of ["openapi.d.ts", "tool-schemas.ts", "operations.manifest.json"]) {
+    for (const fileName of [
+      "openapi.d.ts",
+      "tool-schemas.ts",
+      "operations.manifest.json",
+      "tool-name-abbreviations.json",
+    ]) {
       const a = await readFile(path.join(first.outDir, fileName));
       const b = await readFile(path.join(second.outDir, fileName));
       expect(createHash("sha256").update(a).digest("hex")).toBe(
@@ -248,10 +301,29 @@ describe("generateFromSpec (synthetic fixture)", () => {
     const { outDir } = await generateOnce();
     await expect(readFile(path.join(outDir, "openapi.json"))).rejects.toThrow();
     await expect(readFile(path.join(outDir, "swagger.json"))).rejects.toThrow();
-    // Ensure a planted raw file is not part of generation outputs.
     await writeFile(path.join(outDir, "seed.txt"), "ok");
     const listed = await readFile(path.join(outDir, "operations.manifest.json"), "utf8");
-    expect(listed).not.toContain('openapi":');
+    expect(listed).not.toContain('"openapi":');
     expect(listed).not.toContain("swagger");
+  });
+
+  it("fails closed on an unmapped OpenAPI tag", async () => {
+    await mkdir(tempRoot, { recursive: true });
+    const dir = await mkdtemp(path.join(tempRoot, "tm-unmapped-"));
+    tempDirs.push(dir);
+    const badSpecPath = path.join(dir, "bad.openapi.json");
+    const fixture = JSON.parse(await readFile(fixturePath, "utf8")) as {
+      paths: Record<string, Record<string, { tags?: string[] }>>;
+    };
+    const firstPath = Object.values(fixture.paths)[0]!;
+    const firstOp = Object.values(firstPath)[0]!;
+    firstOp.tags = ["Definitely Not A Mapped Tag"];
+    await writeFile(badSpecPath, `${JSON.stringify(fixture, null, 2)}\n`, "utf8");
+
+    const outDir = await mkdtemp(path.join(tempRoot, "tm-unmapped-out-"));
+    tempDirs.push(outDir);
+    await expect(
+      generateFromSpec({ specPath: badSpecPath, outDir, operationsOverrides: {} }),
+    ).rejects.toThrow(/Unmapped OpenAPI tag/);
   });
 });
