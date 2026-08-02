@@ -16,9 +16,15 @@
     "README.md",
     "LICENSE",
     "NOTICE",
+    "SECURITY.md",
+    "CONTRIBUTING.md",
+    "CHANGELOG.md",
     "openapi.sha256",
     "server.json"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "mcpName": "io.github.PhillipChaffee/transaction-management-mcp",
   "repository": {
     "type": "git",
@@ -43,7 +49,10 @@
     "verify:manifest": "tsx scripts/verify-manifest.ts",
     "openapi:pin": "tsx scripts/fetch-openapi.ts --pin",
     "openapi:generate": "tsx scripts/fetch-openapi.ts --generate",
+    "openapi:drift": "tsx scripts/check-openapi-drift.ts",
+    "validate:server-json": "tsx scripts/validate-server-json.ts",
     "package:check": "npm pack --dry-run",
+    "ci": "npm run format:check && npm run lint && npm run typecheck && npm test && npm run verify:manifest && npm run build && npm run package:check && npm run validate:server-json",
     "inspector:smoke": "npm run build && node scripts/inspector-smoke.mjs"
   },
   "dependencies": {
@@ -56,6 +65,8 @@
     "@eslint/js": "^10.0.1",
     "@modelcontextprotocol/client": "^2.0.0",
     "@types/node": "^20.19.43",
+    "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1",
     "eslint": "^10.8.0",
     "msw": "^2.15.0",
     "openapi-typescript": "^7.13.0",

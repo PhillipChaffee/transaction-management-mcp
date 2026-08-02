@@ -1,0 +1,123 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.PhillipChaffee/transaction-management-mcp",
+  "title": "Transaction Management MCP",
+  "description": "Read-only-by-default MCP for transaction management REST workflows.",
+  "version": "0.1.0",
+  "websiteUrl": "https://github.com/PhillipChaffee/transaction-management-mcp#readme",
+  "repository": {
+    "url": "https://github.com/PhillipChaffee/transaction-management-mcp",
+    "source": "github"
+  },
+  "packages": [
+    {
+      "registryType": "npm",
+      "registryBaseUrl": "https://registry.npmjs.org",
+      "identifier": "transaction-management-mcp",
+      "version": "0.1.0",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "SKYSLOPE_TM_CLIENT_ID",
+          "description": "SkySlope API client id from API onboarding (not a normal account key).",
+          "isRequired": true,
+          "isSecret": true,
+          "format": "string"
+        },
+        {
+          "name": "SKYSLOPE_TM_CLIENT_SECRET",
+          "description": "SkySlope API client secret from API onboarding.",
+          "isRequired": true,
+          "isSecret": true,
+          "format": "string"
+        },
+        {
+          "name": "SKYSLOPE_TM_ACCESS_KEY",
+          "description": "Access key used with HMAC login.",
+          "isRequired": true,
+          "isSecret": true,
+          "format": "string"
+        },
+        {
+          "name": "SKYSLOPE_TM_ACCESS_SECRET",
+          "description": "Access secret used with HMAC login.",
+          "isRequired": true,
+          "isSecret": true,
+          "format": "string"
+        },
+        {
+          "name": "SKYSLOPE_TM_TOOLSETS",
+          "description": "Toolset selection: default, all, or comma-separated toolset ids.",
+          "isRequired": false,
+          "isSecret": false,
+          "format": "string"
+        },
+        {
+          "name": "SKYSLOPE_TM_TOOLS",
+          "description": "Comma-separated extra tool names to register.",
+          "isRequired": false,
+          "isSecret": false,
+          "format": "string"
+        },
+        {
+          "name": "SKYSLOPE_TM_EXCLUDE_TOOLSETS",
+          "description": "Comma-separated toolset ids to exclude after selection.",
+          "isRequired": false,
+          "isSecret": false,
+          "format": "string"
+        },
+        {
+          "name": "SKYSLOPE_TM_EXCLUDE_TOOLS",
+          "description": "Comma-separated tool names to exclude after selection.",
+          "isRequired": false,
+          "isSecret": false,
+          "format": "string"
+        },
+        {
+          "name": "SKYSLOPE_TM_READ_WRITE",
+          "description": "Set true to allow write tools (default false / read-only).",
+          "isRequired": false,
+          "isSecret": false,
+          "format": "boolean"
+        },
+        {
+          "name": "SKYSLOPE_TM_ALLOW",
+          "description": "Capability grants: all or comma-separated capability ids.",
+          "isRequired": false,
+          "isSecret": false,
+          "format": "string"
+        },
+        {
+          "name": "SKYSLOPE_TM_MAX_OUTPUT_BYTES",
+          "description": "Max structured JSON response bytes before parse.",
+          "isRequired": false,
+          "isSecret": false,
+          "format": "number"
+        },
+        {
+          "name": "SKYSLOPE_TM_MAX_BINARY_BYTES",
+          "description": "Max decoded binary response bytes.",
+          "isRequired": false,
+          "isSecret": false,
+          "format": "number"
+        },
+        {
+          "name": "SKYSLOPE_TM_MAX_UPLOAD_BYTES",
+          "description": "Max decoded upload bytes for base64 inputs.",
+          "isRequired": false,
+          "isSecret": false,
+          "format": "number"
+        },
+        {
+          "name": "SKYSLOPE_TM_MAX_BULK_ITEMS",
+          "description": "Max bulk-export items returned to the host.",
+          "isRequired": false,
+          "isSecret": false,
+          "format": "number"
+        }
+      ]
+    }
+  ]
+}

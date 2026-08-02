@@ -82,7 +82,11 @@ describe("packed tarball contract", () => {
         "README.md",
         "LICENSE",
         "NOTICE",
+        "SECURITY.md",
+        "CONTRIBUTING.md",
+        "CHANGELOG.md",
         "openapi.sha256",
+        "server.json",
       ]),
     );
 
@@ -96,6 +100,7 @@ describe("packed tarball contract", () => {
       "openapi.json",
       "swagger.json",
       ".env",
+      ".env.example",
     ]) {
       expect(normalized.includes(forbidden)).toBe(false);
     }

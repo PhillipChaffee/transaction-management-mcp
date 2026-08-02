@@ -1,0 +1,143 @@
+# Weekly / manual OpenAPI drift check against the public swagger URL.
+# Never commits, never pushes, never uploads the raw OpenAPI document.
+name: OpenAPI drift
+
+on:
+  schedule:
+    - cron: "17 11 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  drift:
+    name: Compare pinned digest
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check OpenAPI drift
+        id: drift
+        run: |
+          set -euo pipefail
+          npm run openapi:drift -- --json > drift-report.json
+          cat drift-report.json
+          STATUS="$(node -e 'const r=require("./drift-report.json"); process.stdout.write(r.status)')"
+          echo "status=${STATUS}" >> "$GITHUB_OUTPUT"
+          if [ "$STATUS" = "unavailable" ]; then
+            WARNING="$(node -e 'const r=require("./drift-report.json"); process.stdout.write(r.warning || r.message)')"
+            echo "::warning::OpenAPI drift check unavailable: ${WARNING}"
+          fi
+
+      - name: Create or update drift issue
+        if: steps.drift.outputs.status == 'drift'
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const fs = require('fs');
+            const report = JSON.parse(fs.readFileSync('drift-report.json', 'utf8'));
+            const title = '[openapi-drift] Upstream Transaction Management OpenAPI changed';
+            const label = 'openapi-drift';
+
+            const body = [
+              '## OpenAPI drift detected',
+              '',
+              'The public Transaction Management swagger digest no longer matches `openapi.sha256`.',
+              'This issue is opened by automation. It never commits the raw spec.',
+              '',
+              '### Digests',
+              '',
+              `- **Pinned:** \`${report.pinnedSha256}\``,
+              `- **Fetched:** \`${report.fetchedSha256 || '(unavailable)'}\``,
+              `- **Source:** ${report.openapiUrl}`,
+              '',
+              '### Census',
+              '',
+              `- **Pinned:** ${report.pinnedCensus ? `${report.pinnedCensus.total} operations / ${report.pinnedCensus.get} GET / ${report.pinnedCensus.nonGet} non-GET` : '(from committed manifest when available)'}`,
+              `- **Fetched:** ${report.fetchedCensus ? `${report.fetchedCensus.total} operations / ${report.fetchedCensus.get} GET / ${report.fetchedCensus.nonGet} non-GET` : '(unavailable)'}`,
+              '',
+              '### Added operationIds',
+              '',
+              ...(report.addedOperationIds.length
+                ? report.addedOperationIds.map((id) => `- \`${id}\``)
+                : ['- (none)']),
+              '',
+              '### Removed operationIds',
+              '',
+              ...(report.removedOperationIds.length
+                ? report.removedOperationIds.map((id) => `- \`${id}\``)
+                : ['- (none)']),
+              '',
+              '### Next steps',
+              '',
+              '1. Review upstream BETA OpenAPI changes.',
+              '2. Update the implementation plan / acceptance criteria if the census moved.',
+              '3. Run `npm run openapi:pin` then `npm run openapi:generate` locally.',
+              '4. Regenerate tests as needed and open a human-authored PR.',
+              '',
+              '_Do not paste the raw OpenAPI document into this issue._',
+              '',
+            ].join('\n');
+
+            await github.rest.issues
+              .getLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name: label,
+              })
+              .catch(async () => {
+                await github.rest.issues.createLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  name: label,
+                  color: 'B60205',
+                  description: 'Upstream OpenAPI digest differs from openapi.sha256',
+                });
+              });
+
+            const existing = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: label,
+              per_page: 10,
+            });
+            const match = existing.data.find((issue) => issue.title === title);
+            if (match) {
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: match.number,
+                body,
+              });
+              core.info(`Updated issue #${match.number}`);
+            } else {
+              const created = await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title,
+                body,
+                labels: [label],
+              });
+              core.info(`Created issue #${created.data.number}`);
+            }
+
+      - name: Upload generated drift report
+        if: steps.drift.outputs.status == 'drift'
+        uses: actions/upload-artifact@v7
+        with:
+          name: openapi-drift-report
+          path: drift-report.json
+          retention-days: 30

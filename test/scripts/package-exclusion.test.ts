@@ -42,16 +42,18 @@ describe("package exclusion", () => {
 
     expect([...files].some((file) => file.endsWith("tool-name-abbreviations.json"))).toBe(false);
 
-    // Runtime-derived artifacts are allowed once present.
-    for (const allowedPrefix of ["dist/", "README.md", "LICENSE", "NOTICE", "openapi.sha256"]) {
-      const present = [...files].some(
-        (file) => file === allowedPrefix || file.startsWith(allowedPrefix),
-      );
-      if (allowedPrefix === "dist/" || allowedPrefix === "openapi.sha256") {
-        // May be absent before first pin/build in some local states; assert no forbidden instead.
-        continue;
-      }
-      expect(present).toBe(true);
+    // Runtime-derived artifacts and public docs are allowed once present.
+    for (const allowed of [
+      "README.md",
+      "LICENSE",
+      "NOTICE",
+      "SECURITY.md",
+      "CONTRIBUTING.md",
+      "CHANGELOG.md",
+      "server.json",
+    ]) {
+      expect(files.has(allowed)).toBe(true);
     }
+    expect(files.has(".env.example")).toBe(false);
   });
 });
