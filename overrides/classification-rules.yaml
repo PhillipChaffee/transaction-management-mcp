@@ -1,0 +1,143 @@
+# Generator-only classification rules. Runtime never reads this file.
+# Tag → primary toolset (exclusive). Generation fails on missing or duplicate tags.
+
+tagToToolset:
+  reference:
+    - PropertyTypes
+    - Terminology
+    - Subscriber Resources
+  users:
+    - Users
+  sales:
+    - Sales
+    - Sale Stage
+    - Sale custom fields
+    - Sale Agents
+    - Sale Offices
+    - Sale Properties
+    - Sale Co Agents
+    - Sale Checklist Types
+  listings:
+    - Listings
+    - Listing Stage
+    - Listing custom fields
+    - Listing Agents
+    - Listing Offices
+    - Listing Properties
+    - Listing Co Agents
+    - Listing Checklist Types
+  contacts:
+    - Contacts
+  sale_contacts:
+    - Sale Contacts
+  listing_contacts:
+    - Listing Contacts
+  sale_documents:
+    - Sale documents
+    - Sale Documents
+    - Sale CDA document data
+  listing_documents:
+    - Listing Documents
+  sale_commissions:
+    - Sale Commissions
+    - Sale Tiered Commissions
+    - Sale Commission Referral
+    - Sale Commission Breakdowns
+    - Sale Commission Splits
+    - Sale Additional Commissions Information Log
+    - Earnest money deposit
+  listing_commissions:
+    - Listing Commissions
+    - Listing Tiered Commissions
+    - Listing Commission Referral
+  sale_parties:
+    - Sale Referring Agents
+    - Sale Transaction Coordinators
+  listing_parties:
+    - Listing Referring Agents
+    - Listing Transaction Coordinators
+  v2_sales:
+    - V2 Sales
+    - V2 Sale Properties
+    - V2 Sale Contacts
+    - V2 Sale Commissions
+    - V2 Sale Referring Agents
+    - V2 Sale Tiered Commissions
+  v2_listings:
+    - V2 Listings
+    - V2 Listing Properties
+    - V2 Listing Contacts
+    - V2 Listing Commissions
+    - V2 Listing Referring Agents
+    - V2 Listing Tiered Commissions
+  checklists:
+    - Checklists
+  stages:
+    - Stages
+  offices:
+    - Offices
+  bulk_export:
+    - Bulk Export
+
+defaultToolsetIds:
+  - reference
+  - users
+  - sales
+  - listings
+  - contacts
+  - listing_contacts
+  - checklists
+  - stages
+  - offices
+
+# Exclusive write-tier predicates (applied after GET→read).
+binaryIoOperationIds:
+  - Documents_AddDocumentToSale
+  - Documents_AddDocumentToListing
+
+adminTags:
+  - Offices
+
+adminOperationIds:
+  - Checklists_CopyChecklists
+
+# Non-GET ops on these tags are financial (before destructive).
+financialTags:
+  - Sale Commissions
+  - Sale Tiered Commissions
+  - Sale Commission Referral
+  - Sale Commission Breakdowns
+  - Sale Commission Splits
+  - Sale Additional Commissions Information Log
+  - Earnest money deposit
+  - Listing Commissions
+  - Listing Tiered Commissions
+  - Listing Commission Referral
+  - Sale CDA document data
+  - V2 Sale Commissions
+  - V2 Sale Tiered Commissions
+  - V2 Listing Commissions
+  - V2 Listing Tiered Commissions
+
+destructiveOperationIdSubstrings:
+  - Close
+  - Convert
+  - Reject
+  - UnReject
+  - Unassign
+
+# Capability predicates (independent / conjunctive with tier capabilities).
+binaryIoCapabilityOperationIds:
+  - Documents_AddDocumentToSale
+  - Documents_AddDocumentToListing
+  - CdaDocumentData_GetCdaDocumentData
+  - CdaDocumentData_SetCdaDocumentData
+  # Sales_GetSales returns form/binary fields and requires impersonation.
+  - Sales_GetSales
+
+binaryIoCapabilityOperationIdPrefixes:
+  - CdaDocumentData_
+
+impersonationParameterName: userBeingImpersonated
+
+bulkExportTag: Bulk Export

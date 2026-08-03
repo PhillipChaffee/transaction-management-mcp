@@ -1,0 +1,132 @@
+# Tag-gated release after merge. Do not run from pull requests.
+#
+# Prerequisites on npmjs.com (Trusted Publisher):
+# - Organization/user, repository, and workflow filename `release.yml`
+# - Allowed action: npm publish
+#
+# OIDC notes (npm Trusted Publishing):
+# - Requires Node >= 22.14 and npm >= 11.5.1
+# - permissions.id-token: write
+# - Do NOT set NODE_AUTH_TOKEN
+# - Do NOT pass registry-url to actions/setup-node (writes an empty _authToken
+#   that blocks the OIDC path; see actions/setup-node#1551)
+# - Provenance is generated automatically for public packages from public repos
+#
+# Recovery (manual; this workflow never unpublishes):
+# - Cancel in-flight release runs
+# - If npm succeeded but MCP Registry failed: re-run registry steps only
+#   (install mcp-publisher, login github-oidc, publish server.json)
+# - npm deprecate anytime; npm unpublish only within npm policy window
+# - Soft-hide a Registry version:
+#   mcp-publisher status --status deleted <server-name> <version>
+#   or mcp-publisher status --status deleted --all-versions <server-name>
+# - Prefer a prerelease tag for the first publish (e.g. v0.1.0-rc.1)
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Publish npm + MCP Registry
+    runs-on: ubuntu-latest
+    env:
+      MCP_PUBLISHER_VERSION: v1.8.0
+      MCP_PUBLISHER_LINUX_AMD64_SHA256: 1370446bbe74d562608e8005a6ccce02d146a661fbd78674e11cc70b9618d6cf
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Require tag commit on main
+        run: |
+          git fetch origin main
+          git merge-base --is-ancestor "${GITHUB_SHA}" origin/main
+
+      - name: Setup Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          # Trusted publishing requires Node >= 22.14; use current Node 24.
+          node-version: 24
+          cache: npm
+          # Intentionally omit registry-url so npm OIDC trusted publishing works.
+
+      - name: Ensure npm >= 11.5.1
+        run: |
+          npm install -g npm@11.5.1
+          npm --version
+          node -e 'const [maj,min,pat]=process.versions.node.split(".").map(Number); if(maj<22|| (maj===22&&min<14)) { console.error("Node >= 22.14 required"); process.exit(1); }'
+          node -e 'const {execSync}=require("node:child_process"); const v=execSync("npm --version",{encoding:"utf8"}).trim(); const [maj,min,pat]=v.split(".").map(Number); if(maj<11||(maj===11&&min<5)||(maj===11&&min===5&&pat<1)) { console.error("npm >= 11.5.1 required, got", v); process.exit(1); }'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Format check
+        run: npm run format:check
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Test
+        run: npm test
+
+      - name: Verify manifest
+        run: npm run verify:manifest
+
+      - name: Build
+        run: npm run build
+
+      - name: Validate server.json
+        run: npm run validate:server-json
+
+      - name: Validate package contents
+        run: npm run package:check
+
+      - name: Validate tag matches package and server versions
+        run: |
+          set -euo pipefail
+          TAG="${GITHUB_REF_NAME}"
+          EXPECTED="${TAG#v}"
+          PKG_VERSION="$(node -p 'require("./package.json").version')"
+          SERVER_VERSION="$(node -p 'require("./server.json").version')"
+          SERVER_PKG_VERSION="$(node -p 'require("./server.json").packages[0].version')"
+          echo "tag=${TAG} expected=${EXPECTED} package=${PKG_VERSION} server=${SERVER_VERSION} server.package=${SERVER_PKG_VERSION}"
+          test "${PKG_VERSION}" = "${EXPECTED}"
+          test "${SERVER_VERSION}" = "${EXPECTED}"
+          test "${SERVER_PKG_VERSION}" = "${EXPECTED}"
+          test "$(node -p 'require("./package.json").mcpName')" = "$(node -p 'require("./server.json").name')"
+
+      - name: Publish to npm (trusted OIDC)
+        # No NODE_AUTH_TOKEN. Provenance is automatic with trusted publishing.
+        run: npm publish
+
+      - name: Install MCP Publisher
+        run: |
+          set -euo pipefail
+          ASSET="mcp-publisher_linux_amd64.tar.gz"
+          curl -fsSL \
+            "https://github.com/modelcontextprotocol/registry/releases/download/${MCP_PUBLISHER_VERSION}/${ASSET}" \
+            -o "${ASSET}"
+          echo "${MCP_PUBLISHER_LINUX_AMD64_SHA256}  ${ASSET}" | sha256sum -c -
+          tar xzf "${ASSET}" mcp-publisher
+          ./mcp-publisher --help >/dev/null
+
+      - name: Login to MCP Registry (GitHub OIDC)
+        run: ./mcp-publisher login github-oidc
+
+      - name: Publish server.json to MCP Registry
+        run: ./mcp-publisher publish

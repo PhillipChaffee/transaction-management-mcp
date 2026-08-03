@@ -1,0 +1,27 @@
+{
+  "openapi": "3.0.1",
+  "info": { "title": "Synthetic drift changed", "version": "1.0.1" },
+  "paths": {
+    "/api/v1/sales": {
+      "get": {
+        "operationId": "Sales_GetSales",
+        "tags": ["Sales"],
+        "responses": { "200": { "description": "ok" } }
+      }
+    },
+    "/api/v1/offices": {
+      "get": {
+        "operationId": "Offices_GetOffices",
+        "tags": ["Offices"],
+        "responses": { "200": { "description": "ok" } }
+      }
+    },
+    "/api/v1/contacts": {
+      "post": {
+        "operationId": "Contacts_CreateContact",
+        "tags": ["Contacts"],
+        "responses": { "200": { "description": "ok" } }
+      }
+    }
+  }
+}

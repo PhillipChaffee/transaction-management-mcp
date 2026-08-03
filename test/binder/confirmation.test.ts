@@ -1,0 +1,470 @@
+import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from "vitest";
+
+import {
+  augmentInputSchemaWithConfirmation,
+  buildConfirmationSchema,
+  clientSupportsFormElicitation,
+  confirmationToElicitSchema,
+  createSdkConfirmationElicitor,
+  enforceConfirmation,
+  expectedConfirmation,
+  isHighRiskOperation,
+  pathResourceKeys,
+  reconstructConfirmationFromElicitContent,
+  validateConfirmationEcho,
+  type ConfirmationElicitor,
+  type ElicitationOutcome,
+} from "../../src/binder/confirmation.ts";
+import { ToolExecutionError } from "../../src/binder/errors.ts";
+import { toolSchemas } from "../../src/generated/tool-schemas.ts";
+import { argsForTool, createBinderHarness, operationById } from "./harness.ts";
+import { mswServer } from "../msw/server.ts";
+import { API_BASE_URL } from "../msw/handlers.ts";
+import { http, HttpResponse } from "msw";
+
+beforeAll(() => {
+  mswServer.listen({ onUnhandledRequest: "error" });
+});
+
+afterEach(() => {
+  mswServer.resetHandlers();
+});
+
+afterAll(() => {
+  mswServer.close();
+});
+
+describe("confirmation helpers", () => {
+  it("marks high-risk tiers and capabilities, including bulk-export and impersonation", () => {
+    expect(isHighRiskOperation(operationById("Contacts_DeleteContact"))).toBe(true);
+    expect(isHighRiskOperation(operationById("Documents_AddDocumentToListing"))).toBe(true);
+    expect(isHighRiskOperation(operationById("BulkExport_GetBulkExport"))).toBe(true);
+    expect(isHighRiskOperation(operationById("Sales_GetSales"))).toBe(true);
+    expect(isHighRiskOperation(operationById("Contacts_CreateContact"))).toBe(false);
+    expect(isHighRiskOperation(operationById("Contacts_GetContacts"))).toBe(false);
+  });
+
+  it("builds strict path-resource confirmation schemas and validates exact echoes", async () => {
+    const operation = operationById("Contacts_DeleteContact");
+    expect(pathResourceKeys(operation.path)).toEqual(["contactGuid"]);
+
+    const schema = buildConfirmationSchema(operation);
+    const input = { path: { contactGuid: "abc" } };
+    const confirmation = expectedConfirmation(operation, input);
+    expect(confirmation).toEqual({
+      confirm: true,
+      resources: { contactGuid: "abc" },
+    });
+    expect(schema.safeParse(confirmation).success).toBe(true);
+    expect(schema.safeParse({ confirm: true, resources: { contactGuid: "nope" } }).success).toBe(
+      true,
+    );
+
+    await expect(
+      enforceConfirmation({
+        operation,
+        input: { ...input, confirmation: { confirm: true, resources: { contactGuid: "nope" } } },
+      }),
+    ).rejects.toThrow(/does not match/);
+  });
+
+  it("requires bulk filter and impersonation echoes", async () => {
+    const bulk = operationById("BulkExport_GetBulkExport");
+    await expect(
+      enforceConfirmation({
+        operation: bulk,
+        input: {
+          query: {},
+          confirmation: { confirm: true, resources: {}, filters: {} },
+        },
+      }),
+    ).rejects.toThrow(/at least one filter/);
+
+    const bulkInput = {
+      query: { createdAfter: "2020-01-01", status: "Open" },
+    };
+    await expect(
+      enforceConfirmation({
+        operation: bulk,
+        input: {
+          ...bulkInput,
+          confirmation: {
+            confirm: true,
+            resources: {},
+            filters: { createdAfter: "2020-01-01" },
+          },
+        },
+      }),
+    ).rejects.toThrow(/does not match/);
+
+    await enforceConfirmation({
+      operation: bulk,
+      input: {
+        ...bulkInput,
+        confirmation: expectedConfirmation(bulk, bulkInput),
+      },
+    });
+
+    const sales = operationById("Sales_GetSales");
+    const salesInput = { query: { userBeingImpersonated: 7 } };
+    await enforceConfirmation({
+      operation: sales,
+      input: {
+        ...salesInput,
+        confirmation: expectedConfirmation(sales, salesInput),
+      },
+    });
+    await expect(
+      enforceConfirmation({
+        operation: sales,
+        input: {
+          ...salesInput,
+          confirmation: {
+            confirm: true,
+            resources: { userBeingImpersonated: 8 },
+          },
+        },
+      }),
+    ).rejects.toThrow(/does not match/);
+  });
+
+  it("treats confirmation object key order as irrelevant", () => {
+    const operation = operationById("Contacts_DeleteContact");
+    const input = { path: { contactGuid: "abc" } };
+    expect(
+      validateConfirmationEcho(operation, {
+        ...input,
+        confirmation: {
+          resources: { contactGuid: "abc" },
+          confirm: true,
+        },
+      }),
+    ).toEqual(expectedConfirmation(operation, input));
+  });
+
+  it("treats confirmation array order as significant", () => {
+    const operation = operationById("Contacts_DeleteContact");
+    const input = { path: { contactGuid: ["a", "b"] } };
+    expect(() =>
+      validateConfirmationEcho(operation, {
+        ...input,
+        confirmation: {
+          confirm: true,
+          resources: { contactGuid: ["b", "a"] },
+        },
+      }),
+    ).toThrow(/does not match/);
+  });
+
+  it("treats undefined values as distinct from missing keys", () => {
+    const operation = operationById("Sales_GetSales");
+    const input = { query: {} };
+    expect(() =>
+      validateConfirmationEcho(operation, {
+        ...input,
+        confirmation: {
+          confirm: true,
+          resources: { userBeingImpersonated: undefined },
+        },
+      }),
+    ).toThrow(/does not match/);
+  });
+
+  it("augments high-risk input schemas and leaves ordinary tools unchanged", () => {
+    const deleteOp = operationById("Contacts_DeleteContact");
+    const createOp = operationById("Contacts_CreateContact");
+    const augmented = augmentInputSchemaWithConfirmation(
+      deleteOp,
+      toolSchemas.Contacts_DeleteContact.input,
+    );
+    const unchanged = augmentInputSchemaWithConfirmation(
+      createOp,
+      toolSchemas.Contacts_CreateContact.input,
+    );
+    expect(augmented).not.toBe(toolSchemas.Contacts_DeleteContact.input);
+    expect(unchanged).toBe(toolSchemas.Contacts_CreateContact.input);
+    expect(
+      augmented.safeParse({
+        path: { contactGuid: "c-1" },
+        confirmation: expectedConfirmation(deleteOp, { path: { contactGuid: "c-1" } }),
+      }).success,
+    ).toBe(true);
+  });
+});
+
+describe("clientSupportsFormElicitation", () => {
+  it("accepts legacy empty elicitation and explicit form capability", () => {
+    expect(clientSupportsFormElicitation({ elicitation: {} })).toBe(true);
+    expect(clientSupportsFormElicitation({ elicitation: { form: {} } })).toBe(true);
+    expect(clientSupportsFormElicitation({ elicitation: { form: {}, url: {} } })).toBe(true);
+  });
+
+  it("rejects missing elicitation and URL-only capability", () => {
+    expect(clientSupportsFormElicitation(undefined)).toBe(false);
+    expect(clientSupportsFormElicitation({})).toBe(false);
+    expect(clientSupportsFormElicitation({ elicitation: { url: {} } })).toBe(false);
+    expect(clientSupportsFormElicitation({ elicitation: { form: undefined } })).toBe(false);
+  });
+});
+
+describe("confirmation elicitation", () => {
+  it("uses intent echo only when elicitation is unsupported", async () => {
+    const elicit = vi.fn();
+    const elicitor: ConfirmationElicitor = { supported: false, elicit };
+    const operation = operationById("Contacts_DeleteContact");
+    const input = argsForTool("contacts_delete_contact", { path: { contactGuid: "c-1" } });
+
+    await enforceConfirmation({ operation, input, elicitor });
+    expect(elicit).not.toHaveBeenCalled();
+  });
+
+  it("emits flat primitive elicitation schemas and reconstructs nested payloads", () => {
+    const operation = operationById("Sales_RejectChecklistItem");
+    const expected = expectedConfirmation(operation, {
+      path: { saleGuid: "sale-1", transactionChecklistId: 42 },
+    });
+    const schema = confirmationToElicitSchema(operation, expected);
+    expect(schema.properties).toEqual({
+      confirm: { type: "boolean", description: "Must be true to proceed" },
+      saleGuid: { type: "string" },
+      transactionChecklistId: { type: "number" },
+    });
+    expect(schema.required).toEqual(["confirm", "saleGuid", "transactionChecklistId"]);
+    expect(schema.properties).not.toHaveProperty("resources");
+
+    const flat = {
+      confirm: true as const,
+      saleGuid: "sale-1",
+      transactionChecklistId: 42,
+    };
+    expect(reconstructConfirmationFromElicitContent(operation, flat)).toEqual(expected);
+  });
+
+  it("flattens bulk filter keys for elicitation and reconstructs filters", async () => {
+    const operation = operationById("BulkExport_GetBulkExport");
+    const input = {
+      query: { createdAfter: "2020-01-01", modifiedAfter: null, status: "Open" },
+    };
+    const expected = expectedConfirmation(operation, input);
+    const schema = confirmationToElicitSchema(operation, expected);
+    expect(schema.properties).toMatchObject({
+      confirm: { type: "boolean", description: "Must be true to proceed" },
+      createdAfter: { type: "string" },
+      status: { type: "string" },
+    });
+    expect(schema.properties).not.toHaveProperty("filters");
+    expect(schema.properties).not.toHaveProperty("resources");
+    expect(schema.properties).not.toHaveProperty("modifiedAfter");
+
+    const flat = {
+      confirm: true,
+      createdAfter: "2020-01-01",
+      status: "Open",
+    };
+    expect(reconstructConfirmationFromElicitContent(operation, flat)).toEqual(expected);
+
+    await enforceConfirmation({
+      operation,
+      input: { ...input, confirmation: expected },
+      elicitor: {
+        supported: true,
+        elicit: async () => ({ status: "accept", content: flat }),
+      },
+    });
+  });
+
+  it("accepts flat elicitation content with string and numeric resources", async () => {
+    const operation = operationById("Sales_RejectChecklistItem");
+    const input = argsForTool("sales_reject_checklist_item", {
+      path: { saleGuid: "sale-1", transactionChecklistId: 42 },
+      body: { note: "missing document" },
+    });
+    const elicit = vi.fn(
+      async (_request: Parameters<ConfirmationElicitor["elicit"]>[0]) =>
+        ({
+          status: "accept" as const,
+          content: {
+            confirm: true,
+            saleGuid: "sale-1",
+            transactionChecklistId: 42,
+          },
+        }) satisfies ElicitationOutcome,
+    );
+
+    await enforceConfirmation({
+      operation,
+      input,
+      elicitor: { supported: true, elicit },
+    });
+    expect(elicit).toHaveBeenCalledOnce();
+    const requested = elicit.mock.calls[0]?.[0]?.requestedSchema as {
+      properties?: Record<string, { type?: string }>;
+    };
+    expect(requested.properties?.saleGuid?.type).toBe("string");
+    expect(requested.properties?.transactionChecklistId?.type).toBe("number");
+  });
+
+  it("accepts elicitation and only then allows an API side effect", async () => {
+    let apiHits = 0;
+    mswServer.use(
+      http.delete(`${API_BASE_URL}/api/contacts/:contactGuid`, () => {
+        apiHits += 1;
+        return new HttpResponse(null, { status: 204 });
+      }),
+    );
+
+    const input = argsForTool("contacts_delete_contact", { path: { contactGuid: "c-1" } });
+    const elicitor: ConfirmationElicitor = {
+      supported: true,
+      elicit: async () => ({
+        status: "accept",
+        content: { confirm: true, contactGuid: "c-1" },
+      }),
+    };
+
+    const harness = await createBinderHarness({
+      selectedToolNames: ["contacts_delete_contact"],
+      createElicitor: () => elicitor,
+    });
+    try {
+      const result = await harness.client.callTool({
+        name: "contacts_delete_contact",
+        arguments: input,
+      });
+      expect(result.isError).toBeFalsy();
+      expect(apiHits).toBe(1);
+    } finally {
+      await harness.close();
+    }
+  });
+
+  it.each([
+    ["decline", { status: "decline" } satisfies ElicitationOutcome],
+    ["cancel", { status: "cancel" } satisfies ElicitationOutcome],
+    ["error", { status: "error", message: "boom" } satisfies ElicitationOutcome],
+    ["timeout", { status: "timeout" } satisfies ElicitationOutcome],
+  ])("fails closed on elicitation %s without API side effects", async (_label, outcome) => {
+    let apiHits = 0;
+    mswServer.use(
+      http.delete(`${API_BASE_URL}/api/contacts/:contactGuid`, () => {
+        apiHits += 1;
+        return new HttpResponse(null, { status: 204 });
+      }),
+    );
+
+    const input = argsForTool("contacts_delete_contact", { path: { contactGuid: "c-1" } });
+    const harness = await createBinderHarness({
+      selectedToolNames: ["contacts_delete_contact"],
+      createElicitor: () => ({
+        supported: true,
+        elicit: async () => outcome,
+      }),
+    });
+    try {
+      const result = await harness.client.callTool({
+        name: "contacts_delete_contact",
+        arguments: input,
+      });
+      expect(result.isError).toBe(true);
+      expect(JSON.stringify(result.structuredContent)).toMatch(/elicitation/i);
+      expect(apiHits).toBe(0);
+    } finally {
+      await harness.close();
+    }
+  });
+
+  it("maps SDK elicitInput results through the context adapter", async () => {
+    const elicitInput = vi.fn(async () => ({
+      action: "accept" as const,
+      content: {
+        confirm: true,
+        contactGuid: "c-1",
+      },
+    }));
+    const ctx = {
+      mcpReq: { elicitInput },
+    } as unknown as Parameters<typeof createSdkConfirmationElicitor>[0];
+
+    const elicitor = createSdkConfirmationElicitor(ctx, true);
+    const outcome = await elicitor.elicit({
+      message: "confirm",
+      requestedSchema: { type: "object", properties: {} },
+    });
+    expect(outcome).toEqual({
+      status: "accept",
+      content: {
+        confirm: true,
+        contactGuid: "c-1",
+      },
+    });
+    expect(elicitInput).toHaveBeenCalledOnce();
+  });
+
+  it("maps SDK elicitInput decline, cancel, timeout, error, and unsupported", async () => {
+    const request = {
+      message: "confirm",
+      requestedSchema: { type: "object" as const, properties: {} },
+    };
+
+    const declineCtx = {
+      mcpReq: { elicitInput: async () => ({ action: "decline" as const }) },
+    } as unknown as Parameters<typeof createSdkConfirmationElicitor>[0];
+    expect(await createSdkConfirmationElicitor(declineCtx, true).elicit(request)).toEqual({
+      status: "decline",
+    });
+
+    const cancelCtx = {
+      mcpReq: { elicitInput: async () => ({ action: "cancel" as const }) },
+    } as unknown as Parameters<typeof createSdkConfirmationElicitor>[0];
+    expect(await createSdkConfirmationElicitor(cancelCtx, true).elicit(request)).toEqual({
+      status: "cancel",
+    });
+
+    const timeoutCtx = {
+      mcpReq: {
+        elicitInput: async () => {
+          throw new Error("socket timeout");
+        },
+      },
+    } as unknown as Parameters<typeof createSdkConfirmationElicitor>[0];
+    expect(await createSdkConfirmationElicitor(timeoutCtx, true).elicit(request)).toEqual({
+      status: "timeout",
+    });
+
+    const errorCtx = {
+      mcpReq: {
+        elicitInput: async () => {
+          throw new Error("boom");
+        },
+      },
+    } as unknown as Parameters<typeof createSdkConfirmationElicitor>[0];
+    expect(await createSdkConfirmationElicitor(errorCtx, true).elicit(request)).toEqual({
+      status: "error",
+      message: "boom",
+    });
+
+    const unsupported = createSdkConfirmationElicitor(declineCtx, false);
+    expect(unsupported.supported).toBe(false);
+    expect(await unsupported.elicit(request)).toEqual({
+      status: "error",
+      message: "elicitation is not supported",
+    });
+  });
+
+  it("does not fall back to model echo when elicitation errors", async () => {
+    const operation = operationById("Contacts_DeleteContact");
+    const input = argsForTool("contacts_delete_contact", { path: { contactGuid: "c-1" } });
+    await expect(
+      enforceConfirmation({
+        operation,
+        input,
+        elicitor: {
+          supported: true,
+          elicit: async () => {
+            throw new Error("socket timeout");
+          },
+        },
+      }),
+    ).rejects.toBeInstanceOf(ToolExecutionError);
+  });
+});
