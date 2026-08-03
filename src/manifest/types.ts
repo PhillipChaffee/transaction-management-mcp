@@ -80,6 +80,10 @@ export type ManifestOperation = {
   annotations: ToolAnnotations;
 };
 
+export type ManifestFile = {
+  operations: ManifestOperation[];
+};
+
 /**
  * Return whether an operation is a read (GET + readOnlyHint) tool.
  */

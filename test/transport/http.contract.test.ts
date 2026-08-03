@@ -98,6 +98,7 @@ describe("HTTP transport contract", () => {
             },
           },
           (res) => {
+            const socket = res.socket ?? undefined;
             const chunks: Buffer[] = [];
             res.on("data", (chunk: Buffer) => {
               chunks.push(chunk);
@@ -106,7 +107,7 @@ describe("HTTP transport contract", () => {
               resolve({
                 status: res.statusCode ?? 0,
                 body: Buffer.concat(chunks).toString("utf8"),
-                socket: res.socket ?? undefined,
+                socket,
               });
             });
           },
@@ -134,11 +135,12 @@ describe("HTTP transport contract", () => {
               },
             },
             (res) => {
+              const socket = res.socket ?? undefined;
               res.resume();
               res.on("end", () => {
                 resolve({
                   status: res.statusCode ?? 0,
-                  socket: res.socket ?? undefined,
+                  socket,
                 });
               });
             },
@@ -148,9 +150,8 @@ describe("HTTP transport contract", () => {
         },
       );
       expect(authorized.status).not.toBe(401);
-      if (unauthorized.socket && authorized.socket) {
-        expect(authorized.socket).toBe(unauthorized.socket);
-      }
+      expect(unauthorized.socket).toBeDefined();
+      expect(authorized.socket).toBe(unauthorized.socket);
     } finally {
       agent.destroy();
       await handle.close();

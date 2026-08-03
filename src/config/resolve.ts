@@ -6,8 +6,7 @@
  * the result and must not re-parse configuration.
  */
 
-import type { ManifestOperation } from "../manifest/types.js";
-import { isReadOperation } from "../manifest/types.js";
+import { isReadOperation, type ManifestOperation } from "../manifest/types.js";
 import {
   createRuntimeLimits,
   MAX_BINARY_OUTPUT_BYTES_CEILING,
@@ -26,8 +25,6 @@ import {
   type ResolvedRuntimePolicy,
 } from "./runtime-policy.js";
 import { DEFAULT_TOOLSET_IDS, TOOLSET_IDS, isToolsetId, type ToolsetId } from "./toolsets.js";
-
-export { isReadOperation } from "../manifest/types.js";
 
 export type ResolveRuntimeOptions = {
   /** CLI arguments excluding the node/executable prefix (e.g. `process.argv.slice(2)`). */

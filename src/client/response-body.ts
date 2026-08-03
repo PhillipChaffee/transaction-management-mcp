@@ -13,8 +13,9 @@ export type ReadJsonBodyWithCapResult =
 
 export type ReadBytesWithCapOptions = {
   /**
-   * When true (default), await stream cancel so undici can release the connection.
-   * Codecs set false because some test transports hang on a drained cancel promise.
+   * When true (default), await the reader cancel so undici can release the
+   * connection before returning. When false the cancel is still issued but not
+   * awaited, so a body whose cancel never settles cannot block the read.
    */
   awaitCancel?: boolean;
 };

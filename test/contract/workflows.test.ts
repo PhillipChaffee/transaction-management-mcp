@@ -34,7 +34,11 @@ describe("GitHub Actions workflows", () => {
         path.join(root, ".github/workflows", workflowName),
         "utf8",
       );
-      expect(workflowSource).not.toMatch(/uses:\s*actions\/[^@\s]+@v\d/);
+      const usesRefs = workflowSource.match(/^[ \t]*uses:[ \t]*\S+/gm) ?? [];
+      expect(usesRefs.length).toBeGreaterThan(0);
+      for (const ref of usesRefs) {
+        expect(ref).toMatch(/@[0-9a-f]{40}$/);
+      }
     }
   });
 });

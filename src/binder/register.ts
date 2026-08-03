@@ -15,7 +15,12 @@ import type { TransactionApiClient } from "../client/transaction-api-client.js";
 import type { RuntimeLimits } from "../config/runtime-limits.js";
 import type { ResolvedRuntimePolicy } from "../config/runtime-policy.js";
 import { toolSchemas } from "../generated/tool-schemas.js";
-import { TOOL_NAME_REGEX, manifestFileSchema, type ManifestOperation } from "../manifest/types.js";
+import {
+  TOOL_NAME_REGEX,
+  manifestFileSchema,
+  type ManifestFile,
+  type ManifestOperation,
+} from "../manifest/types.js";
 import { executeOperation, type ToolInput, resolveOutputSchema } from "./codecs/index.js";
 import {
   augmentInputSchemaWithConfirmation,
@@ -25,10 +30,6 @@ import {
 } from "./confirmation.js";
 import { ToolExecutionError, toBinderToolError } from "./errors.js";
 import { authorizeToolCall } from "./guards.js";
-
-type ManifestFile = {
-  operations: ManifestOperation[];
-};
 
 export type ToolHandlerBinding = {
   getClientCapabilities: () => { elicitation?: unknown } | undefined;

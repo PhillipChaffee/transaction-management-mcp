@@ -4,7 +4,7 @@ import {
   EXPECTED_DEFAULT_READS_AFTER_CAPABILITIES,
   EXPECTED_DEFAULT_READS_BEFORE_CAPABILITIES,
 } from "../../scripts/lib/census.ts";
-import { isReadOperation, resolveRuntimeConfig } from "../../src/config/resolve.ts";
+import { resolveRuntimeConfig } from "../../src/config/resolve.ts";
 import {
   createRuntimeLimits,
   DEFAULT_RUNTIME_LIMITS,
@@ -14,7 +14,7 @@ import {
 } from "../../src/config/runtime-limits.ts";
 import { DEFAULT_TOOLSET_IDS } from "../../src/config/toolsets.ts";
 import operationsManifest from "../../src/generated/operations.manifest.json" with { type: "json" };
-import type { ManifestOperation } from "../../src/manifest/types.ts";
+import { isReadOperation, type ManifestOperation } from "../../src/manifest/types.ts";
 
 const operations = operationsManifest.operations as ManifestOperation[];
 

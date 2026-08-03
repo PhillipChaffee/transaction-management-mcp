@@ -26,7 +26,7 @@ import { loadCredentials, type Credentials } from "./config/credentials.js";
 import { resolveRuntimeConfig } from "./config/resolve.js";
 import type { RuntimeLimits } from "./config/runtime-limits.js";
 import type { ResolvedRuntimePolicy } from "./config/runtime-policy.js";
-import type { ManifestOperation } from "./manifest/types.js";
+import type { ManifestFile, ManifestOperation } from "./manifest/types.js";
 
 export const SERVER_NAME = "transaction-management-mcp";
 
@@ -42,7 +42,7 @@ export type CreateTransactionManagementServerOptions = {
   /** Optional operations list; defaults to the runtime manifest. */
   operations?: readonly ManifestOperation[];
   /** Optional full manifest override for registration (tests). */
-  manifest?: { operations: ManifestOperation[] };
+  manifest?: ManifestFile;
   /** Injectable fetch for the Transaction Management API. */
   fetch?: FetchLike | typeof fetch;
   /** Injectable wall clock. */
@@ -67,10 +67,6 @@ export type TransactionManagementServerHandle = {
    * server instance per connection or request.
    */
   createBoundServer: () => Promise<McpServer>;
-};
-
-type ManifestFile = {
-  operations: ManifestOperation[];
 };
 
 /**
