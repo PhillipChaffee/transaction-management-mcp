@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { mkdir, mkdtemp, readdir, rm } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, readdir, rm } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -104,6 +104,25 @@ describe("packed tarball contract", () => {
     ]) {
       expect(normalized.includes(forbidden)).toBe(false);
     }
+
+    expect(normalized.some((entry) => entry === "scripts" || entry.startsWith("scripts/"))).toBe(
+      false,
+    );
+    expect(normalized.some((entry) => entry === "test" || entry.startsWith("test/"))).toBe(false);
+    expect(
+      normalized.some((entry) => entry === "overrides" || entry.startsWith("overrides/")),
+    ).toBe(false);
+    expect(normalized.some((entry) => /(?:^|\/)(?:swagger|openapi).*\.json$/i.test(entry))).toBe(
+      false,
+    );
+
+    const packageJson = JSON.parse(
+      await readFile(path.join(packageRoot, "package.json"), "utf8"),
+    ) as { version: string };
+    const serverJson = JSON.parse(
+      await readFile(path.join(packageRoot, "server.json"), "utf8"),
+    ) as { version: string };
+    expect(serverJson.version).toBe(packageJson.version);
   });
 
   it("runs the packed stdio bin via MCP client and lists 30 tools", async () => {

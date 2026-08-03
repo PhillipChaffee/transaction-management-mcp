@@ -6,7 +6,7 @@ import {
   computeToolName,
   operationIdToSnakeCase,
   shortenToolName,
-} from "../../scripts/naming.ts";
+} from "../../scripts/lib/naming.ts";
 
 describe("naming", () => {
   it("snake_cases operationIds and preserves v2_", () => {

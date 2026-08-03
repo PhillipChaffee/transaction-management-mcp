@@ -1,8 +1,5 @@
-import createClient from "openapi-fetch";
-
 import { formatUtcTimestamp } from "../auth/hmac.js";
 import type { SessionManager } from "../auth/session-manager.js";
-import type { paths } from "../generated/openapi.js";
 import {
   AmbiguousCompletionError,
   isRetryableHttpStatus,
@@ -66,8 +63,7 @@ async function defaultSleep(ms: number): Promise<void> {
  * pre-response network failures or 408/429/502/503, and may perform one session
  * refresh retry on 401. Writes never retry — including on 401 or ambiguous completion.
  *
- * Dynamic `request()` stays the primary binder surface. `createOpenApiClient()` wraps
- * the same pipeline with `openapi-fetch` for typed path helpers without unsafe casts.
+ * Dynamic `request()` is the primary binder surface for operation dispatch.
  */
 export class TransactionApiClient {
   readonly #sessionManager: SessionManager;
@@ -90,18 +86,6 @@ export class TransactionApiClient {
 
   get baseUrl(): string {
     return this.#baseUrl;
-  }
-
-  /**
-   * Create an `openapi-fetch` client that shares this instance's auth/retry pipeline.
-   *
-   * Prefer `request()` for binder-driven dynamic operation dispatch.
-   */
-  createOpenApiClient() {
-    return createClient<paths>({
-      baseUrl: this.#baseUrl,
-      fetch: (input) => this.dispatch(input),
-    });
   }
 
   /**
@@ -129,7 +113,7 @@ export class TransactionApiClient {
   }
 
   /**
-   * Authenticated fetch entry point used by `request()` and `openapi-fetch`.
+   * Authenticated fetch entry point used by `request()`.
    */
   async dispatch(input: Request): Promise<Response> {
     const method = input.method.toUpperCase();

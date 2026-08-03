@@ -29,7 +29,7 @@ import {
   type OperationOverride,
 } from "./lib/overrides.ts";
 import { ZodEmitter } from "./lib/zod-emitter.ts";
-import { assignToolNames, type AbbreviationRecord } from "./naming.ts";
+import { assignToolNames, type AbbreviationRecord } from "./lib/naming.ts";
 
 export const GENERATOR_ID = "deterministic-zod-emitter";
 export const GENERATOR_LOCK =

@@ -1,4 +1,4 @@
-import { request as httpRequest } from "node:http";
+import { Agent, request as httpRequest } from "node:http";
 
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import { Client, StreamableHTTPClientTransport } from "@modelcontextprotocol/client";
@@ -57,6 +57,102 @@ describe("HTTP transport contract", () => {
       });
       expect(wrong.status).toBe(401);
     } finally {
+      await handle.close();
+    }
+  });
+
+  it("reuses a keep-alive agent after a 401 rejection with a response body", async () => {
+    const handle = await startHttpTransport({
+      env: SYNTHETIC_CREDENTIAL_ENV,
+      credentials: SYNTHETIC_CREDENTIALS,
+      baseUrl: API_BASE_URL,
+      httpEnv: {
+        ...SYNTHETIC_CREDENTIAL_ENV,
+        SKYSLOPE_TM_HTTP_BEARER_TOKEN: SYNTHETIC_HTTP_BEARER,
+        SKYSLOPE_TM_HTTP_HOST: "127.0.0.1",
+        SKYSLOPE_TM_HTTP_PORT: "0",
+      },
+      host: "127.0.0.1",
+      port: 0,
+      log: () => undefined,
+    });
+
+    const agent = new Agent({ keepAlive: true, maxSockets: 1 });
+    try {
+      const unauthorized = await new Promise<{
+        status: number;
+        body: string;
+        socket: object | undefined;
+      }>((resolve, reject) => {
+        const req = httpRequest(
+          {
+            agent,
+            hostname: "127.0.0.1",
+            port: handle.port,
+            path: "/",
+            method: "POST",
+            headers: {
+              Authorization: "Bearer totally-wrong-token-value-xxxxx",
+              "Content-Type": "application/json",
+              "Content-Length": 2,
+            },
+          },
+          (res) => {
+            const chunks: Buffer[] = [];
+            res.on("data", (chunk: Buffer) => {
+              chunks.push(chunk);
+            });
+            res.on("end", () => {
+              resolve({
+                status: res.statusCode ?? 0,
+                body: Buffer.concat(chunks).toString("utf8"),
+                socket: res.socket ?? undefined,
+              });
+            });
+          },
+        );
+        req.on("error", reject);
+        req.end("{}");
+      });
+      expect(unauthorized.status).toBe(401);
+      expect(unauthorized.body).toContain("unauthorized");
+
+      const authorized = await new Promise<{ status: number; socket: object | undefined }>(
+        (resolve, reject) => {
+          const req = httpRequest(
+            {
+              agent,
+              hostname: "127.0.0.1",
+              port: handle.port,
+              path: "/",
+              method: "POST",
+              headers: {
+                Authorization: `Bearer ${SYNTHETIC_HTTP_BEARER}`,
+                Origin: "http://127.0.0.1",
+                "Content-Type": "application/json",
+                "Content-Length": 2,
+              },
+            },
+            (res) => {
+              res.resume();
+              res.on("end", () => {
+                resolve({
+                  status: res.statusCode ?? 0,
+                  socket: res.socket ?? undefined,
+                });
+              });
+            },
+          );
+          req.on("error", reject);
+          req.end("{}");
+        },
+      );
+      expect(authorized.status).not.toBe(401);
+      if (unauthorized.socket && authorized.socket) {
+        expect(authorized.socket).toBe(unauthorized.socket);
+      }
+    } finally {
+      agent.destroy();
       await handle.close();
     }
   });

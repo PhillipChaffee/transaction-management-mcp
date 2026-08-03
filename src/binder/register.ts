@@ -15,8 +15,7 @@ import type { TransactionApiClient } from "../client/transaction-api-client.js";
 import type { RuntimeLimits } from "../config/runtime-limits.js";
 import type { ResolvedRuntimePolicy } from "../config/runtime-policy.js";
 import { toolSchemas } from "../generated/tool-schemas.js";
-import { TOOL_NAME_REGEX } from "../manifest/tool-names.js";
-import type { ManifestOperation } from "../manifest/types.js";
+import { TOOL_NAME_REGEX, manifestFileSchema, type ManifestOperation } from "../manifest/types.js";
 import { executeOperation, type ToolInput, resolveOutputSchema } from "./codecs/index.js";
 import {
   augmentInputSchemaWithConfirmation,
@@ -233,11 +232,7 @@ export async function loadOperationsManifest(): Promise<ManifestFile> {
     "../generated/operations.manifest.json",
   );
   const raw = await readFile(manifestPath, "utf8");
-  const parsed = JSON.parse(raw) as ManifestFile;
-  if (!parsed.operations || !Array.isArray(parsed.operations)) {
-    throw new Error("Invalid operations manifest");
-  }
-  return parsed;
+  return manifestFileSchema.parse(JSON.parse(raw));
 }
 
 /**

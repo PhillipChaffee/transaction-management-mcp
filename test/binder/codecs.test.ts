@@ -2,10 +2,10 @@ import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 import { http, HttpResponse } from "msw";
 
 import { SessionManager } from "../../src/auth/session-manager.ts";
+import { parseBulkItems } from "../../src/binder/codecs/bulk-stream.ts";
 import {
   executeOperation,
   normalizeEmptyValue,
-  parseBulkItems,
   prepareRequest,
   resolveOutputSchema,
   substitutePath,

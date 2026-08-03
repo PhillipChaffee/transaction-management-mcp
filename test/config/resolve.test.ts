@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
 
+import {
+  EXPECTED_DEFAULT_READS_AFTER_CAPABILITIES,
+  EXPECTED_DEFAULT_READS_BEFORE_CAPABILITIES,
+} from "../../scripts/lib/census.ts";
 import { isReadOperation, resolveRuntimeConfig } from "../../src/config/resolve.ts";
 import {
   createRuntimeLimits,
@@ -8,6 +12,7 @@ import {
   MAX_STRUCTURED_OUTPUT_BYTES_CEILING,
   MAX_UPLOAD_BYTES_CEILING,
 } from "../../src/config/runtime-limits.ts";
+import { DEFAULT_TOOLSET_IDS } from "../../src/config/toolsets.ts";
 import operationsManifest from "../../src/generated/operations.manifest.json" with { type: "json" };
 import type { ManifestOperation } from "../../src/manifest/types.ts";
 
@@ -24,8 +29,12 @@ function resolve(options: { argv?: string[]; env?: Record<string, string | undef
 describe("resolveRuntimeConfig", () => {
   it("defaults to 31 pre-capability tools and 30 selected reads", () => {
     const result = resolve({});
-    expect(result.preCapabilityToolNames.size).toBe(31);
-    expect(result.policy.selectedToolNames.size).toBe(30);
+    const defaultToolsetIds = new Set<string>(DEFAULT_TOOLSET_IDS);
+    const readsBeforeCapabilities = operations.filter(
+      (operation) => defaultToolsetIds.has(operation.primaryToolset) && isReadOperation(operation),
+    );
+    expect(readsBeforeCapabilities).toHaveLength(EXPECTED_DEFAULT_READS_BEFORE_CAPABILITIES);
+    expect(result.policy.selectedToolNames.size).toBe(EXPECTED_DEFAULT_READS_AFTER_CAPABILITIES);
     expect(result.policy.readWrite).toBe(false);
     expect(result.policy.grantedCapabilities.size).toBe(0);
     expect(result.policy.selectedToolNames.has("sales_get_sales")).toBe(false);
@@ -192,10 +201,16 @@ describe("resolveRuntimeConfig", () => {
   });
 
   it("applies capability and read-only filtering after union", () => {
+    const salesReadsBeforeCaps = operations.filter(
+      (operation) => operation.primaryToolset === "sales" && isReadOperation(operation),
+    );
+    expect(salesReadsBeforeCaps.some((operation) => operation.toolName === "sales_get_sales")).toBe(
+      true,
+    );
+
     const withoutCaps = resolve({
       argv: ["--toolsets", "sales"],
     });
-    expect(withoutCaps.preCapabilityToolNames.has("sales_get_sales")).toBe(true);
     expect(withoutCaps.policy.selectedToolNames.has("sales_get_sales")).toBe(false);
 
     const withCapsReadOnly = resolve({

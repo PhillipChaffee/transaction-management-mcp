@@ -1,10 +1,11 @@
 import type { z } from "zod";
 
-import { cancelResponseBody } from "../../client/response-body.js";
+import { cancelResponseBody, readBytesWithCap } from "../../client/response-body.js";
 import type { TransactionApiClient } from "../../client/transaction-api-client.js";
 import type { RuntimeLimits } from "../../config/runtime-limits.js";
 import type { ManifestOperation } from "../../manifest/types.js";
 import { ToolExecutionError } from "../errors.js";
+import { parseBulkItems } from "./bulk-stream.js";
 import {
   BulkStreamOutputSchema,
   EmptyValueOutputSchema,
@@ -12,6 +13,8 @@ import {
   OctetStreamOutputSchema,
   ReplicaTimestampOutputSchema,
 } from "./output-schemas.js";
+
+export { parseBulkItems } from "./bulk-stream.js";
 
 export type ToolInput = {
   path?: Record<string, unknown>;
@@ -341,7 +344,7 @@ async function decodeOctetStream(
   maxBytes: number,
 ): Promise<Record<string, unknown>> {
   const mediaType = response.headers.get("content-type") ?? "application/octet-stream";
-  const { bytes, truncated } = await readBytesWithCap(response, maxBytes);
+  const { bytes, truncated } = await readBytesWithCap(response, maxBytes, { awaitCancel: false });
   return {
     mediaType,
     base64: Buffer.from(bytes).toString("base64"),
@@ -356,6 +359,7 @@ async function decodeBulkStream(
   const { bytes, truncated: byteTruncated } = await readBytesWithCap(
     response,
     limits.maxStructuredOutputBytes,
+    { awaitCancel: false },
   );
   const text = new TextDecoder("utf-8").decode(bytes);
   const items = parseBulkItems(text, limits.maxBulkItems);
@@ -369,251 +373,6 @@ async function decodeBulkStream(
       maxStructuredOutputBytes: limits.maxStructuredOutputBytes,
     },
   };
-}
-
-/**
- * Parse vendor bulk payloads: a JSON array, `{value:[...],links}` envelope, or
- * comma/newline-separated JSON values. Stops after maxItems complete values.
- */
-export function parseBulkItems(
-  text: string,
-  maxItems: number,
-): { items: unknown[]; truncated: boolean } {
-  const trimmed = text.trim();
-  if (trimmed.length === 0) {
-    return { items: [], truncated: false };
-  }
-
-  if (trimmed.startsWith("[")) {
-    return parseJsonArrayPrefix(trimmed, maxItems);
-  }
-
-  if (trimmed.startsWith("{")) {
-    const valueArrayStart = findEnvelopeValueArrayStart(trimmed);
-    if (valueArrayStart !== undefined) {
-      return parseJsonArrayPrefix(trimmed.slice(valueArrayStart), maxItems);
-    }
-  }
-
-  return parseCommaNewlineValues(trimmed, maxItems);
-}
-
-/**
- * Locate the `[` of a documented bulk envelope `value` array.
- *
- * Only accepts top-level keys `value` and/or `links`. Any other key means this is
- * not the envelope shape (e.g. a bare comma-newline object that also starts with `{`).
- * Returns the array offset even when the stream is truncated mid-array.
- */
-function findEnvelopeValueArrayStart(text: string): number | undefined {
-  let i = 1; // skip '{'
-  while (i < text.length) {
-    while (i < text.length && /[\s,]/.test(text[i]!)) {
-      i += 1;
-    }
-    if (i >= text.length || text[i] === "}" || text[i] !== '"') {
-      return undefined;
-    }
-    const parsedKey = readJsonValueAt(text, i);
-    if (!parsedKey || typeof parsedKey.value !== "string") {
-      return undefined;
-    }
-    i = parsedKey.end;
-    while (i < text.length && /\s/.test(text[i]!)) {
-      i += 1;
-    }
-    if (text[i] !== ":") {
-      return undefined;
-    }
-    i += 1;
-    while (i < text.length && /\s/.test(text[i]!)) {
-      i += 1;
-    }
-    if (parsedKey.value === "value") {
-      return text[i] === "[" ? i : undefined;
-    }
-    if (parsedKey.value === "links") {
-      const linksEnd = findJsonValueEnd(text, i);
-      if (linksEnd === undefined) {
-        return undefined;
-      }
-      i = linksEnd;
-      continue;
-    }
-    return undefined;
-  }
-  return undefined;
-}
-
-function parseJsonArrayPrefix(
-  text: string,
-  maxItems: number,
-): { items: unknown[]; truncated: boolean } {
-  const items: unknown[] = [];
-  let i = 1; // skip '['
-  let truncated = false;
-
-  while (i < text.length && items.length < maxItems) {
-    while (i < text.length && /[\s,]/.test(text[i]!)) {
-      i += 1;
-    }
-    if (i >= text.length) {
-      break;
-    }
-    if (text[i] === "]") {
-      break;
-    }
-    const parsed = readJsonValueAt(text, i);
-    if (!parsed) {
-      truncated = true;
-      break;
-    }
-    items.push(parsed.value);
-    i = parsed.end;
-  }
-
-  if (items.length >= maxItems) {
-    // More complete items may remain after the cap.
-    while (i < text.length && /[\s,]/.test(text[i]!)) {
-      i += 1;
-    }
-    if (i < text.length && text[i] !== "]") {
-      truncated = true;
-    }
-  } else if (!text.includes("]", i)) {
-    // Stream ended mid-array without a closing bracket after the last item.
-    truncated = truncated || looksIncomplete(text);
-  }
-
-  return { items, truncated };
-}
-
-function parseCommaNewlineValues(
-  text: string,
-  maxItems: number,
-): { items: unknown[]; truncated: boolean } {
-  const items: unknown[] = [];
-  let i = 0;
-  let truncated = false;
-
-  while (i < text.length && items.length < maxItems) {
-    while (i < text.length && /[\s,]/.test(text[i]!)) {
-      i += 1;
-    }
-    if (i >= text.length) {
-      break;
-    }
-    const parsed = readJsonValueAt(text, i);
-    if (!parsed) {
-      truncated = true;
-      break;
-    }
-    items.push(parsed.value);
-    i = parsed.end;
-  }
-
-  if (items.length >= maxItems) {
-    while (i < text.length && /[\s,]/.test(text[i]!)) {
-      i += 1;
-    }
-    if (i < text.length) {
-      truncated = true;
-    }
-  }
-
-  return { items, truncated };
-}
-
-function readJsonValueAt(text: string, start: number): { value: unknown; end: number } | undefined {
-  const slice = text.slice(start);
-  try {
-    // Use JSON.parse on progressively longer complete-looking prefixes via end scan.
-    const end = findJsonValueEnd(text, start);
-    if (end === undefined) {
-      return undefined;
-    }
-    const value = JSON.parse(text.slice(start, end)) as unknown;
-    return { value, end };
-  } catch {
-    void slice;
-    return undefined;
-  }
-}
-
-function findJsonValueEnd(text: string, start: number): number | undefined {
-  const first = text[start];
-  if (first === undefined) {
-    return undefined;
-  }
-
-  if (first === '"') {
-    let i = start + 1;
-    while (i < text.length) {
-      if (text[i] === "\\") {
-        i += 2;
-        continue;
-      }
-      if (text[i] === '"') {
-        return i + 1;
-      }
-      i += 1;
-    }
-    return undefined;
-  }
-
-  if (first === "{" || first === "[") {
-    const open = first;
-    const close = first === "{" ? "}" : "]";
-    let depth = 0;
-    let inString = false;
-    let escape = false;
-    for (let i = start; i < text.length; i += 1) {
-      const ch = text[i]!;
-      if (inString) {
-        if (escape) {
-          escape = false;
-          continue;
-        }
-        if (ch === "\\") {
-          escape = true;
-          continue;
-        }
-        if (ch === '"') {
-          inString = false;
-        }
-        continue;
-      }
-      if (ch === '"') {
-        inString = true;
-        continue;
-      }
-      if (ch === open) {
-        depth += 1;
-      } else if (ch === close) {
-        depth -= 1;
-        if (depth === 0) {
-          return i + 1;
-        }
-      }
-    }
-    return undefined;
-  }
-
-  // number / literal
-  let i = start;
-  while (i < text.length && !/[\s,\]}]/.test(text[i]!)) {
-    i += 1;
-  }
-  if (i === start) {
-    return undefined;
-  }
-  return i;
-}
-
-function looksIncomplete(text: string): boolean {
-  const open = (text.match(/\[/g) ?? []).length;
-  const close = (text.match(/\]/g) ?? []).length;
-  return open > close;
 }
 
 function requireJsonObjectBody(body: unknown): Record<string, unknown> {
@@ -672,7 +431,7 @@ function decodeCanonicalBase64(value: string): Buffer | undefined {
 }
 
 async function readJsonWithByteCap(response: Response, maxBytes: number): Promise<unknown> {
-  const { bytes, truncated } = await readBytesWithCap(response, maxBytes);
+  const { bytes, truncated } = await readBytesWithCap(response, maxBytes, { awaitCancel: false });
   if (truncated) {
     throw new ToolExecutionError("Structured output exceeds MCP size limit");
   }
@@ -684,65 +443,6 @@ async function readJsonWithByteCap(response: Response, maxBytes: number): Promis
   } catch {
     throw new ToolExecutionError("Response is not valid JSON");
   }
-}
-
-async function readBytesWithCap(
-  response: Response,
-  maxBytes: number,
-): Promise<{ bytes: Uint8Array; truncated: boolean }> {
-  if (!response.body) {
-    const buffer = new Uint8Array(await response.arrayBuffer());
-    if (buffer.byteLength > maxBytes) {
-      return { bytes: buffer.slice(0, maxBytes), truncated: true };
-    }
-    return { bytes: buffer, truncated: false };
-  }
-
-  const reader = response.body.getReader();
-  const chunks: Uint8Array[] = [];
-  let total = 0;
-  let truncated = false;
-
-  try {
-    for (;;) {
-      const { done, value } = await reader.read();
-      if (done) {
-        break;
-      }
-      if (!value || value.byteLength === 0) {
-        continue;
-      }
-      if (total >= maxBytes) {
-        truncated = true;
-        break;
-      }
-      const remaining = maxBytes - total;
-      if (value.byteLength > remaining) {
-        chunks.push(value.slice(0, remaining));
-        total += remaining;
-        truncated = true;
-        break;
-      }
-      chunks.push(value);
-      total += value.byteLength;
-    }
-  } finally {
-    // Do not await cancel — some test transports hang on a drained cancel promise.
-    void reader.cancel().catch(() => undefined);
-  }
-
-  const bytes = concatBytes(chunks, total);
-  return { bytes, truncated };
-}
-
-function concatBytes(chunks: Uint8Array[], total: number): Uint8Array {
-  const out = new Uint8Array(total);
-  let offset = 0;
-  for (const chunk of chunks) {
-    out.set(chunk, offset);
-    offset += chunk.byteLength;
-  }
-  return out;
 }
 
 function formatSuccessText(

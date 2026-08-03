@@ -7,6 +7,8 @@
 
 import { timingSafeEqual } from "node:crypto";
 
+import { parseEnvBoolean } from "../config/runtime-limits.js";
+
 export const MIN_REMOTE_BEARER_BYTES = 32;
 
 /**
@@ -189,7 +191,10 @@ export function resolveHttpTransportConfig(
     throw new Error("SKYSLOPE_TM_HTTP_BEARER_TOKEN is required for HTTP transport");
   }
 
-  const allowRemote = parseEnvBoolean(env.SKYSLOPE_TM_HTTP_ALLOW_REMOTE, false);
+  const allowRemote =
+    env.SKYSLOPE_TM_HTTP_ALLOW_REMOTE === undefined
+      ? false
+      : parseEnvBoolean(env.SKYSLOPE_TM_HTTP_ALLOW_REMOTE, "SKYSLOPE_TM_HTTP_ALLOW_REMOTE");
   const loopback = isLoopbackHost(host);
   const allowedHostnames = parseExactHostnames(env.SKYSLOPE_TM_HTTP_ALLOWED_HOSTS);
   const allowedOrigins = parseExactOrigins(env.SKYSLOPE_TM_HTTP_ALLOWED_ORIGINS);
@@ -226,18 +231,4 @@ export function resolveHttpTransportConfig(
     allowedOrigins,
     isLoopback: loopback,
   };
-}
-
-function parseEnvBoolean(raw: string | undefined, defaultValue: boolean): boolean {
-  if (raw === undefined) {
-    return defaultValue;
-  }
-  const normalized = raw.trim().toLowerCase();
-  if (normalized === "true" || normalized === "1") {
-    return true;
-  }
-  if (normalized === "false" || normalized === "0") {
-    return false;
-  }
-  throw new Error("SKYSLOPE_TM_HTTP_ALLOW_REMOTE must be true or false");
 }

@@ -75,6 +75,30 @@ export function httpRequestBodyLimitBytes(limits: RuntimeLimits): number {
 }
 
 /**
+ * Parse a boolean environment or CLI flag value.
+ *
+ * Args:
+ *   raw: Raw true/false (or 1/0) string.
+ *   name: Flag or environment variable name used in validation errors.
+ *
+ * Returns:
+ *   The parsed boolean.
+ *
+ * Raises:
+ *   Error: If the value is not a recognized boolean token.
+ */
+export function parseEnvBoolean(raw: string, name: string): boolean {
+  const normalized = raw.trim().toLowerCase();
+  if (normalized === "true" || normalized === "1") {
+    return true;
+  }
+  if (normalized === "false" || normalized === "0") {
+    return false;
+  }
+  throw new Error(`${name} must be true or false`);
+}
+
+/**
  * Parse a positive integer limit override from an environment string.
  *
  * Args:

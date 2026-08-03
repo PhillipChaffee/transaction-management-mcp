@@ -7,6 +7,8 @@
  * error, or timeout fail closed and never fall back to model intent-echo.
  */
 
+import { isDeepStrictEqual } from "node:util";
+
 import type {
   ElicitRequestFormParams,
   ElicitResult,
@@ -14,20 +16,13 @@ import type {
 } from "@modelcontextprotocol/server";
 import { z } from "zod";
 
-import type { CapabilityId } from "../config/runtime-policy.js";
-import type { ManifestOperation } from "../manifest/types.js";
+import {
+  HIGH_RISK_CAPABILITIES,
+  HIGH_RISK_RISK_TIERS,
+  type ManifestOperation,
+} from "../manifest/types.js";
 import type { ToolInput } from "./codecs/index.js";
 import { ToolExecutionError } from "./errors.js";
-
-const HIGH_RISK_TIERS = new Set(["destructive", "financial", "admin", "binary-io"]);
-const HIGH_RISK_CAPABILITIES = new Set<CapabilityId>([
-  "destructive",
-  "financial",
-  "admin",
-  "binary-io",
-  "bulk-export",
-  "impersonation",
-]);
 
 export type ConfirmationPayload = {
   confirm: true;
@@ -64,12 +59,10 @@ export type EnforceConfirmationOptions = {
  * Return whether an operation requires high-risk confirmation.
  */
 export function isHighRiskOperation(operation: ManifestOperation): boolean {
-  if (HIGH_RISK_TIERS.has(operation.riskTier)) {
+  if (HIGH_RISK_RISK_TIERS[operation.riskTier]) {
     return true;
   }
-  return operation.capabilities.some((capability) =>
-    HIGH_RISK_CAPABILITIES.has(capability as CapabilityId),
-  );
+  return operation.capabilities.some((capability) => HIGH_RISK_CAPABILITIES[capability]);
 }
 
 /**
@@ -209,7 +202,7 @@ export function validateConfirmationEcho(
   }
 
   const expected = expectedConfirmation(operation, input);
-  if (!deepEqual(parsed.data, expected)) {
+  if (!isDeepStrictEqual(parsed.data, expected)) {
     throw new ToolExecutionError("High-risk confirmation does not match tool input");
   }
   return parsed.data;
@@ -255,7 +248,7 @@ export async function enforceConfirmation(options: EnforceConfirmationOptions): 
       const reconstructed = reconstructConfirmationFromElicitContent(operation, outcome.content);
       const schema = buildConfirmationSchema(operation);
       const accepted = schema.safeParse(reconstructed);
-      if (!accepted.success || !deepEqual(accepted.data, expected)) {
+      if (!accepted.success || !isDeepStrictEqual(accepted.data, expected)) {
         throw new ToolExecutionError("High-risk elicitation confirmation does not match");
       }
       return;
@@ -441,29 +434,4 @@ function elicitationPrimitiveSchema(
     return { type: "boolean" };
   }
   return { type: "string" };
-}
-
-function deepEqual(left: unknown, right: unknown): boolean {
-  if (Object.is(left, right)) {
-    return true;
-  }
-  if (typeof left !== "object" || typeof right !== "object" || left === null || right === null) {
-    return false;
-  }
-  if (Array.isArray(left) || Array.isArray(right)) {
-    if (!Array.isArray(left) || !Array.isArray(right) || left.length !== right.length) {
-      return false;
-    }
-    return left.every((value, index) => deepEqual(value, right[index]));
-  }
-  const leftRecord = left as Record<string, unknown>;
-  const rightRecord = right as Record<string, unknown>;
-  const leftKeys = Object.keys(leftRecord).sort();
-  const rightKeys = Object.keys(rightRecord).sort();
-  if (leftKeys.length !== rightKeys.length) {
-    return false;
-  }
-  return leftKeys.every(
-    (key, index) => key === rightKeys[index] && deepEqual(leftRecord[key], rightRecord[key]),
-  );
 }

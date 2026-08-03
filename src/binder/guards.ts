@@ -6,8 +6,8 @@
  */
 
 import type { ResolvedRuntimePolicy } from "../config/runtime-policy.js";
-import { isCapabilityId, type CapabilityId } from "../config/runtime-policy.js";
-import type { ManifestOperation } from "../manifest/types.js";
+import { isCapabilityId } from "../config/runtime-policy.js";
+import { isReadOperation, type ManifestOperation } from "../manifest/types.js";
 import type { ToolInput } from "./codecs/index.js";
 import {
   type ConfirmationElicitor,
@@ -40,7 +40,7 @@ export async function authorizeToolCall(options: AuthorizeToolCallOptions): Prom
     throw new ToolExecutionError(`Tool call rejected: ${operation.toolName} is not selected`);
   }
 
-  const isWrite = operation.method.toLowerCase() !== "get" || !operation.annotations.readOnlyHint;
+  const isWrite = !isReadOperation(operation);
   if (isWrite && !policy.readWrite) {
     throw new ToolExecutionError(
       `Tool call rejected: write access is disabled for ${operation.toolName}`,
@@ -51,7 +51,7 @@ export async function authorizeToolCall(options: AuthorizeToolCallOptions): Prom
     if (!isCapabilityId(capability)) {
       throw new ToolExecutionError(`Tool call rejected: unknown capability ${capability}`);
     }
-    if (!policy.grantedCapabilities.has(capability as CapabilityId)) {
+    if (!policy.grantedCapabilities.has(capability)) {
       throw new ToolExecutionError(
         `Tool call rejected: missing capability ${capability} for ${operation.toolName}`,
       );

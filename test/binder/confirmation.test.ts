@@ -11,6 +11,7 @@ import {
   isHighRiskOperation,
   pathResourceKeys,
   reconstructConfirmationFromElicitContent,
+  validateConfirmationEcho,
   type ConfirmationElicitor,
   type ElicitationOutcome,
 } from "../../src/binder/confirmation.ts";
@@ -125,6 +126,48 @@ describe("confirmation helpers", () => {
         },
       }),
     ).rejects.toThrow(/does not match/);
+  });
+
+  it("treats confirmation object key order as irrelevant", () => {
+    const operation = operationById("Contacts_DeleteContact");
+    const input = { path: { contactGuid: "abc" } };
+    expect(
+      validateConfirmationEcho(operation, {
+        ...input,
+        confirmation: {
+          resources: { contactGuid: "abc" },
+          confirm: true,
+        },
+      }),
+    ).toEqual(expectedConfirmation(operation, input));
+  });
+
+  it("treats confirmation array order as significant", () => {
+    const operation = operationById("Contacts_DeleteContact");
+    const input = { path: { contactGuid: ["a", "b"] } };
+    expect(() =>
+      validateConfirmationEcho(operation, {
+        ...input,
+        confirmation: {
+          confirm: true,
+          resources: { contactGuid: ["b", "a"] },
+        },
+      }),
+    ).toThrow(/does not match/);
+  });
+
+  it("treats undefined values as distinct from missing keys", () => {
+    const operation = operationById("Sales_GetSales");
+    const input = { query: {} };
+    expect(() =>
+      validateConfirmationEcho(operation, {
+        ...input,
+        confirmation: {
+          confirm: true,
+          resources: { userBeingImpersonated: undefined },
+        },
+      }),
+    ).toThrow(/does not match/);
   });
 
   it("augments high-risk input schemas and leaves ordinary tools unchanged", () => {
@@ -355,6 +398,57 @@ describe("confirmation elicitation", () => {
       },
     });
     expect(elicitInput).toHaveBeenCalledOnce();
+  });
+
+  it("maps SDK elicitInput decline, cancel, timeout, error, and unsupported", async () => {
+    const request = {
+      message: "confirm",
+      requestedSchema: { type: "object" as const, properties: {} },
+    };
+
+    const declineCtx = {
+      mcpReq: { elicitInput: async () => ({ action: "decline" as const }) },
+    } as unknown as Parameters<typeof createSdkConfirmationElicitor>[0];
+    expect(await createSdkConfirmationElicitor(declineCtx, true).elicit(request)).toEqual({
+      status: "decline",
+    });
+
+    const cancelCtx = {
+      mcpReq: { elicitInput: async () => ({ action: "cancel" as const }) },
+    } as unknown as Parameters<typeof createSdkConfirmationElicitor>[0];
+    expect(await createSdkConfirmationElicitor(cancelCtx, true).elicit(request)).toEqual({
+      status: "cancel",
+    });
+
+    const timeoutCtx = {
+      mcpReq: {
+        elicitInput: async () => {
+          throw new Error("socket timeout");
+        },
+      },
+    } as unknown as Parameters<typeof createSdkConfirmationElicitor>[0];
+    expect(await createSdkConfirmationElicitor(timeoutCtx, true).elicit(request)).toEqual({
+      status: "timeout",
+    });
+
+    const errorCtx = {
+      mcpReq: {
+        elicitInput: async () => {
+          throw new Error("boom");
+        },
+      },
+    } as unknown as Parameters<typeof createSdkConfirmationElicitor>[0];
+    expect(await createSdkConfirmationElicitor(errorCtx, true).elicit(request)).toEqual({
+      status: "error",
+      message: "boom",
+    });
+
+    const unsupported = createSdkConfirmationElicitor(declineCtx, false);
+    expect(unsupported.supported).toBe(false);
+    expect(await unsupported.elicit(request)).toEqual({
+      status: "error",
+      message: "elicitation is not supported",
+    });
   });
 
   it("does not fall back to model echo when elicitation errors", async () => {

@@ -3,8 +3,8 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { TOOLSET_IDS, DEFAULT_TOOLSET_IDS } from "../src/config/toolsets.ts";
-import type { AbbreviationRecord } from "./naming.ts";
-import { TOOL_NAME_REGEX, computeToolName } from "./naming.ts";
+import type { AbbreviationRecord } from "./lib/naming.ts";
+import { TOOL_NAME_REGEX, computeToolName } from "./lib/naming.ts";
 import type {
   CapabilityId,
   CodecId,
@@ -144,7 +144,7 @@ function assertOperationShape(operation: OperationRecord, index: number): void {
 }
 
 /**
- * Verify the pinned full policy manifest against Commit 3 invariants.
+ * Verify the pinned full policy manifest against the pinned policy invariants.
  */
 export async function verifyManifest(
   manifestPath = path.join(repoRoot(), "src/generated/operations.manifest.json"),

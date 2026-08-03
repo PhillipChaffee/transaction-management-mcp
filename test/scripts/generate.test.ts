@@ -9,7 +9,7 @@ import type { z } from "zod";
 
 import { generateFromSpec, GENERATOR_ID } from "../../scripts/generate.ts";
 import type { OperationsManifest } from "../../scripts/lib/census.ts";
-import type { AbbreviationRecord } from "../../scripts/naming.ts";
+import type { AbbreviationRecord } from "../../scripts/lib/naming.ts";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const fixturePath = path.join(root, "test/fixtures/openapi/synthetic.openapi.json");

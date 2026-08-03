@@ -452,25 +452,4 @@ describe("TransactionApiClient", () => {
     expect(apiCalls).toBe(3);
     expect(cancelled).toEqual([true, true]);
   });
-
-  it("exposes openapi-fetch without blocking dynamic request dispatch", async () => {
-    const fetchMock = vi.fn(async (input: FetchInput, init?: RequestInit) => {
-      const request = input instanceof Request ? input : new Request(input, init);
-      if (new URL(request.url).pathname === "/auth/login") {
-        return jsonResponse({
-          Session: "sess",
-          Expiration: "2020-01-02T05:00:00Z",
-        });
-      }
-      return jsonResponse({ value: [] });
-    });
-
-    const { client } = createHarness(fetchMock as unknown as typeof fetch);
-    const typed = client.createOpenApiClient();
-    expect(typeof typed.GET).toBe("function");
-    expect(typeof typed.request).toBe("function");
-
-    const dynamic = await client.request({ method: "GET", path: "/api/custom/untyped" });
-    expect(dynamic.data).toEqual({ value: [] });
-  });
 });

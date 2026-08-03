@@ -11,6 +11,14 @@ export const MAX_AUTH_ERROR_BODY_BYTES = 64 * 1024;
 export type ReadJsonBodyWithCapResult =
   { ok: true; value: unknown } | { ok: false; reason: "truncated" | "invalid-json" | "empty" };
 
+export type ReadBytesWithCapOptions = {
+  /**
+   * When true (default), await stream cancel so undici can release the connection.
+   * Codecs set false because some test transports hang on a drained cancel promise.
+   */
+  awaitCancel?: boolean;
+};
+
 /**
  * Read at most `maxBytes` from a Response, cancel the remainder, and JSON-parse.
  */
@@ -50,10 +58,16 @@ export async function cancelResponseBody(response: Response): Promise<void> {
   }
 }
 
-async function readBytesWithCap(
+/**
+ * Read at most `maxBytes` from a Response body and cancel any unread remainder.
+ */
+export async function readBytesWithCap(
   response: Response,
   maxBytes: number,
+  options: ReadBytesWithCapOptions = {},
 ): Promise<{ bytes: Uint8Array; truncated: boolean }> {
+  const awaitCancel = options.awaitCancel ?? true;
+
   if (!response.body) {
     const buffer = new Uint8Array(await response.arrayBuffer());
     if (buffer.byteLength > maxBytes) {
@@ -91,10 +105,14 @@ async function readBytesWithCap(
       total += value.byteLength;
     }
   } finally {
-    try {
-      await reader.cancel();
-    } catch {
-      // Already closed or locked after a full read — safe to ignore.
+    if (awaitCancel) {
+      try {
+        await reader.cancel();
+      } catch {
+        // Already closed or locked after a full read — safe to ignore.
+      }
+    } else {
+      void reader.cancel().catch(() => undefined);
     }
   }
 

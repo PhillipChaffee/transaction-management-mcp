@@ -59,7 +59,6 @@
   "dependencies": {
     "@modelcontextprotocol/node": "^2.0.0",
     "@modelcontextprotocol/server": "^2.0.0",
-    "openapi-fetch": "^0.17.0",
     "zod": "^4.4.3"
   },
   "devDependencies": {

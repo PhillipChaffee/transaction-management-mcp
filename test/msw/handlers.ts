@@ -334,8 +334,5 @@ export function createGenericManifestHandlers(
   return handlers;
 }
 
-/** Backward-compatible name used by Commit 4 binder tests. */
-export const binderHandlers = explicitHandlers;
-
 /** Full fake API: explicit codec handlers first, then generic manifest coverage. */
 export const allHandlers: HttpHandler[] = [...explicitHandlers, ...createGenericManifestHandlers()];

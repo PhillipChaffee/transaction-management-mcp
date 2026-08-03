@@ -16,7 +16,7 @@ import {
 
 import type { CreateTransactionManagementServerOptions } from "../server.js";
 import { createTransactionManagementServer } from "../server.js";
-import { httpRequestBodyLimitBytes, type RuntimeLimits } from "../config/runtime-limits.js";
+import { httpRequestBodyLimitBytes } from "../config/runtime-limits.js";
 import {
   bearerTokenMatches,
   isLoopbackHost,
@@ -337,13 +337,6 @@ export function drainRequest(req: IncomingMessage): void {
     return;
   }
   req.resume();
-}
-
-/**
- * Expose the body-limit helper for tests that assert HTTP sizing policy.
- */
-export function resolveHttpRequestBodyLimit(limits: RuntimeLimits): number {
-  return httpRequestBodyLimitBytes(limits);
 }
 
 function listen(server: Server, port: number, host: string): Promise<void> {

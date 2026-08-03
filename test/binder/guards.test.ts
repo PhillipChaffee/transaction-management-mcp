@@ -48,6 +48,25 @@ describe("authorizeToolCall", () => {
     ).rejects.toThrow(/missing capability/);
   });
 
+  it("rejects unknown capability ids at call time", async () => {
+    const source = operationById("Contacts_GetContacts");
+    const operation = {
+      ...source,
+      capabilities: ["not-a-real-capability"] as unknown as typeof source.capabilities,
+    };
+    await expect(
+      authorizeToolCall({
+        operation,
+        policy: createResolvedRuntimePolicy({
+          selectedToolNames: [operation.toolName],
+          readWrite: false,
+          grantedCapabilities: [],
+        }),
+        input: {},
+      }),
+    ).rejects.toThrow(/unknown capability/);
+  });
+
   it("blocks writes when readWrite is false even if the tool is selected", async () => {
     const operation = operationById("Contacts_CreateContact");
     await expect(

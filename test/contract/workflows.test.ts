@@ -27,5 +27,14 @@ describe("GitHub Actions workflows", () => {
     expect(source).toContain("npm install -g npm@11.5.1");
     expect(source).toContain('git merge-base --is-ancestor "${GITHUB_SHA}" origin/main');
     expect(source).toContain("npm run package:check");
+    expect(source).toContain("cancel-in-progress: false");
+
+    for (const workflowName of workflowNames) {
+      const workflowSource = await readFile(
+        path.join(root, ".github/workflows", workflowName),
+        "utf8",
+      );
+      expect(workflowSource).not.toMatch(/uses:\s*actions\/[^@\s]+@v\d/);
+    }
   });
 });

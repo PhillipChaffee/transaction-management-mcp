@@ -7,12 +7,14 @@
  */
 
 import type { ManifestOperation } from "../manifest/types.js";
+import { isReadOperation } from "../manifest/types.js";
 import {
   createRuntimeLimits,
   MAX_BINARY_OUTPUT_BYTES_CEILING,
   MAX_BULK_ITEMS_CEILING,
   MAX_STRUCTURED_OUTPUT_BYTES_CEILING,
   MAX_UPLOAD_BYTES_CEILING,
+  parseEnvBoolean,
   parsePositiveSafeIntegerLimit,
   type RuntimeLimits,
 } from "./runtime-limits.js";
@@ -24,6 +26,8 @@ import {
   type ResolvedRuntimePolicy,
 } from "./runtime-policy.js";
 import { DEFAULT_TOOLSET_IDS, TOOLSET_IDS, isToolsetId, type ToolsetId } from "./toolsets.js";
+
+export { isReadOperation } from "../manifest/types.js";
 
 export type ResolveRuntimeOptions = {
   /** CLI arguments excluding the node/executable prefix (e.g. `process.argv.slice(2)`). */
@@ -37,12 +41,6 @@ export type ResolveRuntimeOptions = {
 export type ResolveRuntimeResult = {
   policy: ResolvedRuntimePolicy;
   limits: RuntimeLimits;
-  /**
-   * Read tool names after toolset expansion and explicit-tool union, before
-   * capability filtering. Default toolsets yield 31 names (Sales_GetSales is
-   * still present until capabilities are applied).
-   */
-  preCapabilityToolNames: ReadonlySet<string>;
 };
 
 type CliFlags = {
@@ -76,6 +74,9 @@ export function resolveRuntimeConfig(options: ResolveRuntimeOptions): ResolveRun
 
   const byToolset = indexByToolset(options.operations);
   const knownToolNames = new Set(options.operations.map((operation) => operation.toolName));
+  const operationByToolName = new Map(
+    options.operations.map((operation) => [operation.toolName, operation]),
+  );
 
   const selected = new Set<string>();
   for (const toolsetId of toolsetIds) {
@@ -90,16 +91,8 @@ export function resolveRuntimeConfig(options: ResolveRuntimeOptions): ResolveRun
     selected.add(toolName);
   }
 
-  const preCapabilityToolNames = new Set<string>();
-  for (const toolName of selected) {
-    const operation = options.operations.find((entry) => entry.toolName === toolName);
-    if (operation && isReadOperation(operation)) {
-      preCapabilityToolNames.add(toolName);
-    }
-  }
-
   for (const toolName of [...selected]) {
-    const operation = options.operations.find((entry) => entry.toolName === toolName);
+    const operation = operationByToolName.get(toolName);
     if (!operation) {
       selected.delete(toolName);
       continue;
@@ -110,7 +103,7 @@ export function resolveRuntimeConfig(options: ResolveRuntimeOptions): ResolveRun
   }
 
   for (const toolName of [...selected]) {
-    const operation = options.operations.find((entry) => entry.toolName === toolName);
+    const operation = operationByToolName.get(toolName);
     if (!operation) {
       selected.delete(toolName);
       continue;
@@ -126,7 +119,7 @@ export function resolveRuntimeConfig(options: ResolveRuntimeOptions): ResolveRun
 
   if (!readWrite) {
     for (const toolName of [...selected]) {
-      const operation = options.operations.find((entry) => entry.toolName === toolName);
+      const operation = operationByToolName.get(toolName);
       if (!operation) {
         selected.delete(toolName);
         continue;
@@ -146,7 +139,6 @@ export function resolveRuntimeConfig(options: ResolveRuntimeOptions): ResolveRun
       grantedCapabilities,
     }),
     limits,
-    preCapabilityToolNames,
   };
 }
 
@@ -196,15 +188,6 @@ export function capabilitiesGranted(
     }
   }
   return true;
-}
-
-/**
- * Return whether an operation is a read (GET) tool.
- */
-export function isReadOperation(
-  operation: Pick<ManifestOperation, "method" | "annotations">,
-): boolean {
-  return operation.method.toLowerCase() === "get" && operation.annotations.readOnlyHint === true;
 }
 
 function resolveExplicitTools(
@@ -370,17 +353,6 @@ function pickListSource(
     return envValue;
   }
   return cliValue;
-}
-
-function parseEnvBoolean(raw: string, name: string): boolean {
-  const normalized = raw.trim().toLowerCase();
-  if (normalized === "true" || normalized === "1") {
-    return true;
-  }
-  if (normalized === "false" || normalized === "0") {
-    return false;
-  }
-  throw new Error(`${name} must be true or false`);
 }
 
 function splitCommaList(raw: string): string[] {
